@@ -1,0 +1,5 @@
+D:\WebAccess\Code\ThirdPartyToolControl\ThirdPartyToolControl\bin\Debug\ThirdPartyToolControl.dll
+D:\WebAccess\Code\ThirdPartyToolControl\ThirdPartyToolControl\bin\Debug\ThirdPartyToolControl.pdb
+D:\WebAccess\Code\ThirdPartyToolControl\ThirdPartyToolControl\obj\Debug\ThirdPartyToolControl.dll
+D:\WebAccess\Code\ThirdPartyToolControl\ThirdPartyToolControl\obj\Debug\ThirdPartyToolControl.pdb
+D:\WebAccess\Code\ThirdPartyToolControl\ThirdPartyToolControl\obj\Debug\ThirdPartyToolControl.csprojResolveAssemblyReference.cache

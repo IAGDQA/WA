@@ -1,0 +1,10 @@
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\CreateRedundancyData.exe
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.Properties.Resources.resources
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.csproj.GenerateResource.Cache
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.exe
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\AdvSeleniumAPI.dll
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\iATesterAPI.dll
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\ThirdPartyToolControl.dll
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\WebDriver.dll
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\WebDriver.Support.dll
+D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.Form1.resources
