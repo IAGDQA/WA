@@ -46,14 +46,18 @@
             this.Result = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.UserEmail = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox_CloudPC_IP = new System.Windows.Forms.TextBox();
+            this.textBox_BackupPC_IP = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // Start
             // 
-            this.Start.Location = new System.Drawing.Point(484, 36);
+            this.Start.Location = new System.Drawing.Point(473, 36);
             this.Start.Name = "Start";
-            this.Start.Size = new System.Drawing.Size(158, 130);
+            this.Start.Size = new System.Drawing.Size(169, 174);
             this.Start.TabIndex = 0;
             this.Start.Text = "Start";
             this.Start.UseVisualStyleBackColor = true;
@@ -68,7 +72,7 @@
             "Mozilla FireFox",
             "Chrome",
             "Safari"});
-            this.Browser.Location = new System.Drawing.Point(135, 168);
+            this.Browser.Location = new System.Drawing.Point(135, 216);
             this.Browser.Name = "Browser";
             this.Browser.Size = new System.Drawing.Size(121, 20);
             this.Browser.TabIndex = 1;
@@ -95,7 +99,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 104);
+            this.label3.Location = new System.Drawing.Point(26, 157);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(79, 12);
             this.label3.TabIndex = 4;
@@ -104,7 +108,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(26, 172);
+            this.label4.Location = new System.Drawing.Point(26, 219);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(44, 12);
             this.label4.TabIndex = 5;
@@ -121,7 +125,7 @@
             // 
             // WebAccessIP
             // 
-            this.WebAccessIP.Location = new System.Drawing.Point(135, 69);
+            this.WebAccessIP.Location = new System.Drawing.Point(135, 66);
             this.WebAccessIP.Name = "WebAccessIP";
             this.WebAccessIP.Size = new System.Drawing.Size(290, 22);
             this.WebAccessIP.TabIndex = 7;
@@ -129,7 +133,7 @@
             // 
             // TestLogFolder
             // 
-            this.TestLogFolder.Location = new System.Drawing.Point(135, 104);
+            this.TestLogFolder.Location = new System.Drawing.Point(135, 154);
             this.TestLogFolder.Name = "TestLogFolder";
             this.TestLogFolder.Size = new System.Drawing.Size(290, 22);
             this.TestLogFolder.TabIndex = 8;
@@ -144,7 +148,7 @@
             this.Column_Result,
             this.Column_ErrorCode,
             this.Column1_ExeTime});
-            this.dataGridView1.Location = new System.Drawing.Point(28, 200);
+            this.dataGridView1.Location = new System.Drawing.Point(28, 252);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(643, 194);
@@ -184,7 +188,7 @@
             // Result
             // 
             this.Result.AutoSize = true;
-            this.Result.Location = new System.Drawing.Point(311, 173);
+            this.Result.Location = new System.Drawing.Point(313, 224);
             this.Result.Name = "Result";
             this.Result.Size = new System.Drawing.Size(35, 12);
             this.Result.TabIndex = 10;
@@ -193,25 +197,63 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(28, 142);
+            this.label5.Location = new System.Drawing.Point(26, 191);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 12);
+            this.label5.Size = new System.Drawing.Size(56, 12);
             this.label5.TabIndex = 11;
-            this.label5.Text = "UserEmail";
+            this.label5.Text = "User Email";
             // 
             // UserEmail
             // 
-            this.UserEmail.Location = new System.Drawing.Point(135, 137);
+            this.UserEmail.Location = new System.Drawing.Point(135, 188);
             this.UserEmail.Name = "UserEmail";
             this.UserEmail.Size = new System.Drawing.Size(290, 22);
             this.UserEmail.TabIndex = 12;
             this.UserEmail.Text = "xxx@advantech.com.tw";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(26, 97);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(64, 12);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Cloud PC IP";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(26, 127);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(71, 12);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Backup PC IP";
+            // 
+            // textBox_CloudPC_IP
+            // 
+            this.textBox_CloudPC_IP.Location = new System.Drawing.Point(135, 94);
+            this.textBox_CloudPC_IP.Name = "textBox_CloudPC_IP";
+            this.textBox_CloudPC_IP.Size = new System.Drawing.Size(290, 22);
+            this.textBox_CloudPC_IP.TabIndex = 15;
+            this.textBox_CloudPC_IP.Text = "172.18.xx.xx";
+            // 
+            // textBox_BackupPC_IP
+            // 
+            this.textBox_BackupPC_IP.Location = new System.Drawing.Point(135, 124);
+            this.textBox_BackupPC_IP.Name = "textBox_BackupPC_IP";
+            this.textBox_BackupPC_IP.Size = new System.Drawing.Size(290, 22);
+            this.textBox_BackupPC_IP.TabIndex = 16;
+            this.textBox_BackupPC_IP.Text = "172.18.xx.xx";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(698, 412);
+            this.ClientSize = new System.Drawing.Size(698, 467);
+            this.Controls.Add(this.textBox_BackupPC_IP);
+            this.Controls.Add(this.textBox_CloudPC_IP);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.UserEmail);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.Result);
@@ -256,6 +298,10 @@
         private System.Windows.Forms.Label Result;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox UserEmail;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBox_CloudPC_IP;
+        private System.Windows.Forms.TextBox textBox_BackupPC_IP;
     }
 }
 

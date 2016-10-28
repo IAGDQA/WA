@@ -325,6 +325,7 @@ namespace CreateProjectSCADANode
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
+            StringBuilder sDefaultIP3 = new StringBuilder(255);
             /*
             tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", "TestProject", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", @"C:\WebAccessAutoTestSetting.ini");
@@ -333,12 +334,14 @@ namespace CreateProjectSCADANode
             */
             tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Redundant Secondary PC", "NA", sDefaultIP3, 255, sFilePath);
             UserEmail.Text = sDefaultUserEmail.ToString();
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
+            textBox_CloudPC_IP.Text = sDefaultIP2.ToString();
+            textBox_BackupPC_IP.Text = sDefaultIP3.ToString();
         }
 
         private bool ReturnSCADAPage(int iTimeout)
@@ -367,7 +370,9 @@ namespace CreateProjectSCADANode
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
-            StringBuilder sDefaultIP2 = new StringBuilder(255);
+            StringBuilder sDefaultIP2 = new StringBuilder(255); // cloud pc ip
+            StringBuilder sDefaultIP3 = new StringBuilder(255); // backup pc ip
+
             if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
             {
                 EventLog.AddLog(".ini file exist, check if .ini file need to update");
@@ -376,6 +381,7 @@ namespace CreateProjectSCADANode
                 tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Redundant Secondary PC", "NA", sDefaultIP3, 255, sIniFilePath);
 
                 if (UserEmail.Text != sDefaultUserEmail.ToString())
                 {
@@ -398,15 +404,31 @@ namespace CreateProjectSCADANode
                     EventLog.AddLog("Original ini:" + sDefaultIP1.ToString());
                     EventLog.AddLog("New ini:" + WebAccessIP.Text);
                 }
+                if (textBox_CloudPC_IP.Text != sDefaultIP2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", textBox_CloudPC_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New WebAccess Cloud PC IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_CloudPC_IP.Text);
+                }
+                if (textBox_BackupPC_IP.Text != sDefaultIP3.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Redundant Secondary PC", textBox_BackupPC_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New WebAccess Backup PC IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP3.ToString());
+                    EventLog.AddLog("New ini:" + textBox_BackupPC_IP.Text);
+                }
             }
             else
-            {
+            {   // 若ini檔不存在 則建立新的
                 EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
                 tpc.F_WritePrivateProfileString("UserInfo", "Email", UserEmail.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Redundant Secondary PC", "TestProject_bk", sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", textBox_CloudPC_IP.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Redundant Secondary PC", textBox_BackupPC_IP.Text, sIniFilePath);
             }
         }
     }
