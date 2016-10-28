@@ -23,3 +23,16 @@ D:\WebAccess\Code\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProj
 D:\WebAccess\Code\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\WebDriver.dll
 D:\WebAccess\Code\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\WebDriver.Support.dll
 D:\WebAccess\Code\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\obj\x86\Debug\PlugandPlay_DeleteProjectTest_GtoC.exe
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\obj\x86\Debug\PlugandPlay_DeleteProjectTest_GtoC.pdb
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\PlugandPlay_DeleteProjectTest_GtoC.exe
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\PlugandPlay_DeleteProjectTest_GtoC.pdb
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\obj\x86\Debug\PlugandPlay_DeleteProjectTest_GtoC.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\obj\x86\Debug\PlugandPlay_DeleteProjectTest_GtoC.Form1.resources
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\obj\x86\Debug\PlugandPlay_DeleteProjectTest_GtoC.Properties.Resources.resources
+D:\DQA-Code\WA\1014-PlugandPlay_DeleteProjectTest_GtoC\PlugandPlay_DeleteProjectTest_GtoC\obj\x86\Debug\PlugandPlay_DeleteProjectTest_GtoC.csproj.GenerateResource.Cache

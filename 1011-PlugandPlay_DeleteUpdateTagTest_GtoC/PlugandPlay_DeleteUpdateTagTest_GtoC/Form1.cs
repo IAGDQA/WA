@@ -831,6 +831,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
 
         private void Start_Click(object sender, EventArgs e)

@@ -22,3 +22,16 @@ D:\WebAccess\Code\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUA
 D:\WebAccess\Code\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.exe
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.pdb
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\CreateOPCUATags.exe
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\CreateOPCUATags.pdb
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.Form1.resources
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.Properties.Resources.resources
+D:\DQA-Code\WA\0008-CreateOPCUATags\CreateOPCUATags\obj\x86\Debug\CreateOPCUATags.csproj.GenerateResource.Cache

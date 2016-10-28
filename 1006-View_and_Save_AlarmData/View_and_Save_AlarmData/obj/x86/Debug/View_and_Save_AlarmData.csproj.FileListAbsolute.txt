@@ -35,3 +35,16 @@ D:\WebAccess\Code\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\D
 D:\WebAccess\Code\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\WebDriver.dll
 D:\WebAccess\Code\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\WebDriver.Support.dll
 D:\WebAccess\Code\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\Debug\View_and_Save_AlarmData.exe
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\Debug\View_and_Save_AlarmData.pdb
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\View_and_Save_AlarmData.exe
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\View_and_Save_AlarmData.pdb
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\Debug\View_and_Save_AlarmData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\Debug\View_and_Save_AlarmData.Form1.resources
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\Debug\View_and_Save_AlarmData.Properties.Resources.resources
+D:\DQA-Code\WA\1006-View_and_Save_AlarmData\View_and_Save_AlarmData\obj\x86\Debug\View_and_Save_AlarmData.csproj.GenerateResource.Cache

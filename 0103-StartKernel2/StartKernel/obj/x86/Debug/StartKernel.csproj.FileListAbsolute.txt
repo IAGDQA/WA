@@ -47,3 +47,16 @@ D:\WebAccess\Code\0101-StartKernel\StartKernel\obj\x86\Debug\StartKernel.csproj.
 D:\WebAccess\Code\0101-StartKernel\StartKernel\bin\Debug\WebDriver.dll
 D:\WebAccess\Code\0101-StartKernel\StartKernel\bin\Debug\WebDriver.Support.dll
 D:\WebAccess\Code\0101-StartKernel\StartKernel\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\obj\x86\Debug\StartKernel.exe
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\obj\x86\Debug\StartKernel.pdb
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\StartKernel.exe
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\StartKernel.pdb
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\obj\x86\Debug\StartKernel.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\obj\x86\Debug\StartKernel.Form1.resources
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\obj\x86\Debug\StartKernel.Properties.Resources.resources
+D:\DQA-Code\WA\0103-StartKernel2\StartKernel\obj\x86\Debug\StartKernel.csproj.GenerateResource.Cache

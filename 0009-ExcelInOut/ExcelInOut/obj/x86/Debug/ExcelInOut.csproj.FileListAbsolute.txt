@@ -33,3 +33,16 @@ D:\WebAccess\Code\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.Properties
 D:\WebAccess\Code\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0009-ExcelInOut\ExcelInOut\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0009-ExcelInOut\ExcelInOut\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.exe
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.pdb
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\ExcelInOut.exe
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\ExcelInOut.pdb
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.Form1.resources
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.Properties.Resources.resources
+D:\DQA-Code\WA\0009-ExcelInOut\ExcelInOut\obj\x86\Debug\ExcelInOut.csproj.GenerateResource.Cache

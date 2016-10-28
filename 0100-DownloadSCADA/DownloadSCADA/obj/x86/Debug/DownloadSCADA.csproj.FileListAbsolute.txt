@@ -33,3 +33,16 @@ D:\WebAccess\Code\0100-DownloadSCADA\DownloadSCADA\bin\Debug\ThirdPartyToolContr
 D:\WebAccess\Code\0100-DownloadSCADA\DownloadSCADA\bin\Debug\WebDriver.dll
 D:\WebAccess\Code\0100-DownloadSCADA\DownloadSCADA\bin\Debug\WebDriver.Support.dll
 D:\WebAccess\Code\0100-DownloadSCADA\DownloadSCADA\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\obj\x86\Debug\DownloadSCADA.exe
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\obj\x86\Debug\DownloadSCADA.pdb
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\DownloadSCADA.exe
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\DownloadSCADA.pdb
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\obj\x86\Debug\DownloadSCADA.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\obj\x86\Debug\DownloadSCADA.Form1.resources
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\obj\x86\Debug\DownloadSCADA.Properties.Resources.resources
+D:\DQA-Code\WA\0100-DownloadSCADA\DownloadSCADA\obj\x86\Debug\DownloadSCADA.csproj.GenerateResource.Cache

@@ -23,3 +23,16 @@ D:\WebAccess\Code\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\Vie
 D:\WebAccess\Code\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.Properties.Resources.resources
 D:\WebAccess\Code\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.csproj.GenerateResource.Cache
 D:\WebAccess\Code\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.exe
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.pdb
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\View_and_Save_Users.exe
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\View_and_Save_Users.pdb
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.Form1.resources
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.Properties.Resources.resources
+D:\DQA-Code\WA\1008-View_and_Save_Users\View_and_Save_Users\obj\x86\Debug\View_and_Save_Users.csproj.GenerateResource.Cache

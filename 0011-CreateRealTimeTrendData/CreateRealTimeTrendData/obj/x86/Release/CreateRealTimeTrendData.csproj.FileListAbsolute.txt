@@ -52,3 +52,14 @@ D:\WebAccess\Code\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\R
 D:\WebAccess\Code\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\iATesterAPI.dll
 D:\WebAccess\Code\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\Release\CreateRealTimeTrendData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\CreateRealTimeTrendData.exe
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\Release\CreateRealTimeTrendData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\Release\CreateRealTimeTrendData.Form1.resources
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\Release\CreateRealTimeTrendData.Properties.Resources.resources
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\Release\CreateRealTimeTrendData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0011-CreateRealTimeTrendData\CreateRealTimeTrendData\obj\x86\Release\CreateRealTimeTrendData.exe

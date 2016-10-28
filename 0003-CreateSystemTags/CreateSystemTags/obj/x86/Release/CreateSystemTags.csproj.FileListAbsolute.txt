@@ -30,3 +30,14 @@ D:\WebAccess\Code\0003-CreateSystemTags\CreateSystemTags\bin\Release\ThirdPartyT
 D:\WebAccess\Code\0003-CreateSystemTags\CreateSystemTags\bin\Release\WebDriver.dll
 D:\WebAccess\Code\0003-CreateSystemTags\CreateSystemTags\bin\Release\WebDriver.Support.dll
 D:\WebAccess\Code\0003-CreateSystemTags\CreateSystemTags\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\bin\Release\CreateSystemTags.exe
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\obj\x86\Release\CreateSystemTags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\obj\x86\Release\CreateSystemTags.Form1.resources
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\obj\x86\Release\CreateSystemTags.Properties.Resources.resources
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\obj\x86\Release\CreateSystemTags.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0003-CreateSystemTags\CreateSystemTags\obj\x86\Release\CreateSystemTags.exe

@@ -78,7 +78,9 @@ namespace View_and_Save_ModbusServerData
 
         long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
         {
-            string sCurrentFilePath = Directory.GetCurrentDirectory();
+            //string sCurrentFilePath = Directory.GetCurrentDirectory();
+            string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
+            
             Process pModScan = new Process();
             // FileName 是要執行的檔案
             EventLog.AddLog("Open ModScan32.exe and load ModSca1_AutoTest setting file");
@@ -228,6 +230,7 @@ namespace View_and_Save_ModbusServerData
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
 
         private void Start_Click(object sender, EventArgs e)

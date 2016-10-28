@@ -42,3 +42,14 @@ D:\WebAccess\Code\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Rel
 D:\WebAccess\Code\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\iATesterAPI.dll
 D:\WebAccess\Code\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Release\CreateModbusServerData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\CreateModbusServerData.exe
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Release\CreateModbusServerData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Release\CreateModbusServerData.Form1.resources
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Release\CreateModbusServerData.Properties.Resources.resources
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Release\CreateModbusServerData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0015-CreateModbusServerData\CreateModbusServerData\obj\x86\Release\CreateModbusServerData.exe

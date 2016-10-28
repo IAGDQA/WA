@@ -19,3 +19,14 @@ D:\WebAccess\Code\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags
 D:\WebAccess\Code\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0005-CreateAccTags\CreateAccTags\bin\Release\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0005-CreateAccTags\CreateAccTags\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\bin\Release\CreateAccTags.exe
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags.Form1.resources
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags.Properties.Resources.resources
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0005-CreateAccTags\CreateAccTags\obj\x86\Release\CreateAccTags.exe

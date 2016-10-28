@@ -20,3 +20,14 @@ D:\WebAccess\Code\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release
 D:\WebAccess\Code\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\WebDriver.dll
 D:\WebAccess\Code\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\WebDriver.Support.dll
 D:\WebAccess\Code\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Release\CreateProjectSCADANode.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\CreateProjectSCADANode.exe
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Release\CreateProjectSCADANode.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Release\CreateProjectSCADANode.Form1.resources
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Release\CreateProjectSCADANode.Properties.Resources.resources
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Release\CreateProjectSCADANode.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Release\CreateProjectSCADANode.exe

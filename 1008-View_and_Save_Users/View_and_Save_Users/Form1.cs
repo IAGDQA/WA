@@ -540,6 +540,7 @@ namespace View_and_Save_Users
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
 
         private void Start_Click(object sender, EventArgs e)

@@ -44,3 +44,16 @@ D:\WebAccess\Code\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTag
 D:\WebAccess\Code\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0006-CreateCalcTags\CreateCalcTags\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0006-CreateCalcTags\CreateCalcTags\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.exe
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.pdb
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\CreateCalcTags.exe
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\CreateCalcTags.pdb
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.Form1.resources
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.Properties.Resources.resources
+D:\DQA-Code\WA\0006-CreateCalcTags\CreateCalcTags\obj\x86\Debug\CreateCalcTags.csproj.GenerateResource.Cache

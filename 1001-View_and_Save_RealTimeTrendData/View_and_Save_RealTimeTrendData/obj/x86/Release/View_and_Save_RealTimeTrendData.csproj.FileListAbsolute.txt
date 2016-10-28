@@ -33,3 +33,14 @@ D:\WebAccess\Code\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTre
 D:\WebAccess\Code\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\WebDriver.dll
 D:\WebAccess\Code\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\WebDriver.Support.dll
 D:\WebAccess\Code\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\View_and_Save_RealTimeTrendData.exe
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\obj\x86\Release\View_and_Save_RealTimeTrendData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\obj\x86\Release\View_and_Save_RealTimeTrendData.Form1.resources
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\obj\x86\Release\View_and_Save_RealTimeTrendData.Properties.Resources.resources
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\obj\x86\Release\View_and_Save_RealTimeTrendData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\1001-View_and_Save_RealTimeTrendData\View_and_Save_RealTimeTrendData\obj\x86\Release\View_and_Save_RealTimeTrendData.exe

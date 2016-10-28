@@ -22,3 +22,16 @@ D:\WebAccess\Code\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.Propert
 D:\WebAccess\Code\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0018-CreateUsers\CreateUsers\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0018-CreateUsers\CreateUsers\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.exe
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.pdb
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\CreateUsers.exe
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\CreateUsers.pdb
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.Form1.resources
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.Properties.Resources.resources
+D:\DQA-Code\WA\0018-CreateUsers\CreateUsers\obj\x86\Debug\CreateUsers.csproj.GenerateResource.Cache

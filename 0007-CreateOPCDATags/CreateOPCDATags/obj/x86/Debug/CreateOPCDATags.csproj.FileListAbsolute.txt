@@ -22,3 +22,16 @@ D:\WebAccess\Code\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDA
 D:\WebAccess\Code\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.exe
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.pdb
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\CreateOPCDATags.exe
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\CreateOPCDATags.pdb
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.Form1.resources
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.Properties.Resources.resources
+D:\DQA-Code\WA\0007-CreateOPCDATags\CreateOPCDATags\obj\x86\Debug\CreateOPCDATags.csproj.GenerateResource.Cache

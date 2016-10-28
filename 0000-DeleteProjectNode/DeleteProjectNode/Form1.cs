@@ -237,26 +237,7 @@ namespace DeleteProjectNode
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
     }
 }

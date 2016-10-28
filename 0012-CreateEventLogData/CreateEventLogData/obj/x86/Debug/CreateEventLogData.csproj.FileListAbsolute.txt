@@ -44,3 +44,16 @@ D:\WebAccess\Code\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\Creat
 D:\WebAccess\Code\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0012-CreateEventLogData\CreateEventLogData\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0012-CreateEventLogData\CreateEventLogData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.exe
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.pdb
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\CreateEventLogData.exe
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\CreateEventLogData.pdb
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.Form1.resources
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.Properties.Resources.resources
+D:\DQA-Code\WA\0012-CreateEventLogData\CreateEventLogData\obj\x86\Debug\CreateEventLogData.csproj.GenerateResource.Cache

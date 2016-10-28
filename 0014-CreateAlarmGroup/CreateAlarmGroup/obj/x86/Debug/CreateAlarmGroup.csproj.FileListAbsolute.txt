@@ -32,3 +32,16 @@ D:\WebAccess\Code\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAla
 D:\WebAccess\Code\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.exe
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.pdb
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\CreateAlarmGroup.exe
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\CreateAlarmGroup.pdb
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.Form1.resources
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.Properties.Resources.resources
+D:\DQA-Code\WA\0014-CreateAlarmGroup\CreateAlarmGroup\obj\x86\Debug\CreateAlarmGroup.csproj.GenerateResource.Cache

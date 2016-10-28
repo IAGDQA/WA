@@ -266,6 +266,7 @@ namespace CreateEventLogData
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
 
         private void InitialRequiredInfo(string sFilePath)
@@ -326,25 +327,5 @@ namespace CreateEventLogData
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
             }
         }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
     }
 }

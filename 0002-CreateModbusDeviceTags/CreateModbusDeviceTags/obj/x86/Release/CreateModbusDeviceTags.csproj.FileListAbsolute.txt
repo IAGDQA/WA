@@ -9,3 +9,14 @@ D:\WebAccess\Code\CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\WebD
 D:\WebAccess\Code\CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\WebDriver.Support.dll
 D:\WebAccess\Code\CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.exe
 D:\WebAccess\Code\CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\CreateModbusDeviceTags.exe
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.Form1.resources
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.Properties.Resources.resources
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0002-CreateModbusDeviceTags\CreateModbusDeviceTags\obj\x86\Release\CreateModbusDeviceTags.exe

@@ -292,6 +292,7 @@ namespace StopKernel
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
 
         private void InitialRequiredInfo(string sFilePath)

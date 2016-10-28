@@ -118,7 +118,8 @@ namespace CreateGlobalScriptData
             //Step1: Copy "ConstTag_Set.scr" and "alm_set_ConAna_51.scr" and "alm_ack.scr" 
             //        to C:\WebAccess\Node\config\ProjectName\bgr  and  C:\WebAccess\Node\ProjectName\bgr
             {
-                string sCurrentFilePath = Directory.GetCurrentDirectory();
+                //string sCurrentFilePath = Directory.GetCurrentDirectory();
+                string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
 
                 string sourceFile1 = sCurrentFilePath + "\\GlobalScriptSample\\ConstTag_Set.scr";
                 string destFile1_1 = string.Format("C:\\WebAccess\\Node\\config\\{0}_TestSCADA\\bgr\\ConstTag_Set.scr", sProjectName);
@@ -340,6 +341,7 @@ namespace CreateGlobalScriptData
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
+            Application.DoEvents();
         }
 
         private void InitialRequiredInfo(string sFilePath)
@@ -400,25 +402,5 @@ namespace CreateGlobalScriptData
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
             }
         }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
     }
 }

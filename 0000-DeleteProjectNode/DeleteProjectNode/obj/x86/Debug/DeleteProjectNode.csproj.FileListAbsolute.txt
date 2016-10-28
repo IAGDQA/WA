@@ -19,3 +19,15 @@ D:\WebAccess\Code\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteP
 D:\WebAccess\Code\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.Properties.Resources.resources
 D:\WebAccess\Code\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.exe
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.pdb
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\DeleteProjectNode.exe
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\DeleteProjectNode.pdb
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.Form1.resources
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.Properties.Resources.resources
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\obj\x86\Debug\DeleteProjectNode.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\0000-DeleteProjectNode\DeleteProjectNode\bin\Debug\WebDriver.Support.dll

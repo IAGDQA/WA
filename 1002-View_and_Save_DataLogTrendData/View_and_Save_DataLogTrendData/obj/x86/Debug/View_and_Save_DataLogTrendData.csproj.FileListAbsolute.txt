@@ -35,3 +35,16 @@ D:\WebAccess\Code\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrend
 D:\WebAccess\Code\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\WebDriver.dll
 D:\WebAccess\Code\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\WebDriver.Support.dll
 D:\WebAccess\Code\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\obj\x86\Debug\View_and_Save_DataLogTrendData.exe
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\obj\x86\Debug\View_and_Save_DataLogTrendData.pdb
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\View_and_Save_DataLogTrendData.exe
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\View_and_Save_DataLogTrendData.pdb
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\obj\x86\Debug\View_and_Save_DataLogTrendData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\obj\x86\Debug\View_and_Save_DataLogTrendData.Form1.resources
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\obj\x86\Debug\View_and_Save_DataLogTrendData.Properties.Resources.resources
+D:\DQA-Code\WA\1002-View_and_Save_DataLogTrendData\View_and_Save_DataLogTrendData\obj\x86\Debug\View_and_Save_DataLogTrendData.csproj.GenerateResource.Cache

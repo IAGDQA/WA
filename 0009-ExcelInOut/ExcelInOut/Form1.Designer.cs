@@ -203,7 +203,10 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Browser);
             this.Controls.Add(this.Start);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Advantech WebAccess Auto Test ( Excel In or Out )";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);

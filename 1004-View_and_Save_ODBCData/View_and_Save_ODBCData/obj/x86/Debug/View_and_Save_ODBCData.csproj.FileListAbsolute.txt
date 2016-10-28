@@ -35,3 +35,16 @@ D:\WebAccess\Code\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Deb
 D:\WebAccess\Code\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\WebDriver.dll
 D:\WebAccess\Code\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\WebDriver.Support.dll
 D:\WebAccess\Code\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Debug\View_and_Save_ODBCData.exe
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Debug\View_and_Save_ODBCData.pdb
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\View_and_Save_ODBCData.exe
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\View_and_Save_ODBCData.pdb
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Debug\View_and_Save_ODBCData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Debug\View_and_Save_ODBCData.Form1.resources
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Debug\View_and_Save_ODBCData.Properties.Resources.resources
+D:\DQA-Code\WA\1004-View_and_Save_ODBCData\View_and_Save_ODBCData\obj\x86\Debug\View_and_Save_ODBCData.csproj.GenerateResource.Cache

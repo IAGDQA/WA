@@ -8,3 +8,14 @@ D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\Thi
 D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\WebDriver.dll
 D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\WebDriver.Support.dll
 D:\WebAccess\Code\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.Form1.resources
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\CreateRedundancyData.exe
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.Form1.resources
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.Properties.Resources.resources
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0019-CreateRedundancyData\CreateRedundancyData\obj\x86\Release\CreateRedundancyData.exe

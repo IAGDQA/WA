@@ -52,3 +52,14 @@ D:\WebAccess\Code\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Rel
 D:\WebAccess\Code\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Release\CreateGlobalScriptData.csproj.GenerateResource.Cache
 D:\WebAccess\Code\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\ThirdPartyToolControl.dll
 D:\WebAccess\Code\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\CreateGlobalScriptData.exe
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Release\CreateGlobalScriptData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Release\CreateGlobalScriptData.Form1.resources
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Release\CreateGlobalScriptData.Properties.Resources.resources
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Release\CreateGlobalScriptData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\0013-CreateGlobalScriptData\CreateGlobalScriptData\obj\x86\Release\CreateGlobalScriptData.exe

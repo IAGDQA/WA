@@ -33,3 +33,14 @@ D:\WebAccess\Code\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServer
 D:\WebAccess\Code\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.Properties.Resources.resources
 D:\WebAccess\Code\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.csproj.GenerateResource.Cache
 D:\WebAccess\Code\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\View_and_Save_ModbusServerData.exe
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.Form1.resources
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.Properties.Resources.resources
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\1005-View_and_Save_ModbusServerData\View_and_Save_ModbusServerData\obj\x86\Release\View_and_Save_ModbusServerData.exe
