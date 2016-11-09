@@ -114,7 +114,7 @@ namespace CreateExcelReport
             
             //step 2
             EventLog.AddLog("Create SelfDefined Excel Report...");
-            Create_SelfDefined_ExcelReport();
+            Create_SelfDefined_ExcelReport(sUserEmail);
             PrintStep("Create SelfDefined Excel Report");
             PrintScreen("ExcelReportTest1", sTestLogFolder);
             /*
@@ -361,16 +361,43 @@ namespace CreateExcelReport
             }
         }
 
-        private void Create_SelfDefined_ExcelReport()
+        private void Create_SelfDefined_ExcelReport(string sUserEmail)
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/WaExlViewer/WaExlViewer.asp')]").Click();
+
+            EventLog.AddLog("Create SelfDefined Data log ExcelReport");
+            Create_SelfDefined_Datalog_ExcelReport(sUserEmail);
+            PrintStep("Create SelfDefined Data log ExcelReport");
+
+            EventLog.AddLog("Create SelfDefined ODBC Data ExcelReport");
+            Create_SelfDefined_ODBCData_ExcelReport(sUserEmail);
+            PrintStep("Create SelfDefined ODBC Data ExcelReport");
+
+            EventLog.AddLog("Create SelfDefined Alarm ExcelReport");
+            Create_SelfDefined_Alarm_ExcelReport(sUserEmail);
+            PrintStep("Create SelfDefined Alarm ExcelReport");
+
+            EventLog.AddLog("Create SelfDefined Action Log ExcelReport");
+            Create_SelfDefined_ActionLog_ExcelReport(sUserEmail);
+            PrintStep("Create SelfDefined Action Log ExcelReport");
+
+            EventLog.AddLog("Create SelfDefined Event Log ExcelReport");
+            Create_SelfDefined_EventLog_ExcelReport(sUserEmail);
+            PrintStep("Create SelfDefined Event Log ExcelReport");
+        }
+
+        private void Create_SelfDefined_Datalog_ExcelReport(string sUserEmail)
+        {
+            //api.SwitchToCurWindow(0);
+            //api.SwitchToFrame("rightFrame", 0);
+            //api.ByXpath("//a[contains(@href, '/broadWeb/WaExlViewer/WaExlViewer.asp')]").Click();
             api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
 
             api.ByName("rptName").Clear();
             api.ByName("rptName").Enter("ExcelReport_SelfDefined_DataLog_Excel").Exe();
-            api.ByName("dataSrc").Click();
+            api.ByName("dataSrc").Click();  // Click "Data Log" button
             api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
             api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
 
@@ -378,6 +405,7 @@ namespace CreateExcelReport
             string sToday = string.Format("{0:dd}", DateTime.Now);
             int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
             string ssToday = string.Format("{0}", iToday);
+            string ssTomorrow = string.Format("{0}", iToday + 1);
             api.ByName("tStart").Click();
             Thread.Sleep(500);
             api.ByTxt(ssToday).Click();
@@ -386,9 +414,9 @@ namespace CreateExcelReport
 
             api.ByName("tEnd").Click();
             Thread.Sleep(500);
-            api.ByTxt(ssToday).Click();
+            api.ByTxt(ssTomorrow).Click();
             Thread.Sleep(500);
-            api.ByXpath("//button[@type='button']").Click();
+            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
             api.ByXpath("(//button[@type='button'])[2]").Click();
 
 
@@ -417,7 +445,189 @@ namespace CreateExcelReport
 
             api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
             api.ByName("emailto").Clear();
-            api.ByName("emailto").Enter("aaron.huang@advantech.com.tw").Exe();
+            api.ByName("emailto").Enter(sUserEmail).Exe();
+            api.ByName("cfgSubmit").Click();
+        }
+
+        private void Create_SelfDefined_ODBCData_ExcelReport(string sUserEmail)
+        {
+            //api.SwitchToCurWindow(0);
+            //api.SwitchToFrame("rightFrame", 0);
+            //api.ByXpath("//a[contains(@href, '/broadWeb/WaExlViewer/WaExlViewer.asp')]").Click();
+            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
+
+            api.ByName("rptName").Clear();
+            api.ByName("rptName").Enter("ExcelReport_SelfDefined_ODBCData_Excel").Exe();
+            api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
+            api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
+            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+
+            // set today as start/end date
+            string sToday = string.Format("{0:dd}", DateTime.Now);
+            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            string ssToday = string.Format("{0}", iToday);
+            string ssTomorrow = string.Format("{0}", iToday + 1);
+            api.ByName("tStart").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssToday).Click();
+            Thread.Sleep(500);
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            api.ByName("tEnd").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssTomorrow).Click();
+            Thread.Sleep(500);
+            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+
+            api.ByName("interval").Clear();
+            api.ByName("interval").Enter("1").Exe();
+            api.ByXpath("(//input[@name='fileType'])[2]").Click();
+
+            // 湊到最大上限32個TAG
+            string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
+                                     "Calc_ANDConDisAll", "Calc_ANDDIAll", "Calc_ANDDOAll", "Calc_AvgAIAll", "Calc_AvgAOAll", "Calc_AvgConAnaAll", "Calc_AvgSystemAll",
+                                     "AT_AI0050", "AT_AI0100", "AT_AI0150", "AT_AO0050", "AT_AO0100", "AT_AO0150", "AT_DI0050", "AT_DI0100", "AT_DI0150", "AT_DO0050",
+                                     "AT_DO0100", "AT_DO0150", "ConAna_0100", "ConDis_0100", "SystemSec_0100", "SystemSec_0200"};
+            for (int i = 0; i < ReportTagName.Length; i++)
+            {
+                try
+                {
+                    api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                }
+                catch (Exception ex)
+                {
+                    i--;
+                }
+            }
+            api.ById("torightBtn").Click();
+            api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
+
+            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
+            api.ByName("emailto").Clear();
+            api.ByName("emailto").Enter(sUserEmail).Exe();
+            api.ByName("cfgSubmit").Click();
+        }
+
+        private void Create_SelfDefined_Alarm_ExcelReport(string sUserEmail)
+        {
+            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
+
+            api.ByName("rptName").Clear();
+            api.ByName("rptName").Enter("ExcelReport_SelfDefined_Alarm_Excel").Exe();
+            api.ByXpath("(//input[@name='dataSrc'])[3]").Click();   // Alarm
+            api.ByName("selectTemplate").SelectVal("AlarmTemplate1_ver.xlsx").Exe();
+            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+
+            // set today as start/end date
+            string sToday = string.Format("{0:dd}", DateTime.Now);
+            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            string ssToday = string.Format("{0}", iToday);
+            string ssTomorrow = string.Format("{0}", iToday + 1);
+            api.ByName("tStart").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssToday).Click();
+            Thread.Sleep(500);
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            api.ByName("tEnd").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssTomorrow).Click();
+            Thread.Sleep(500);
+            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            // 湊到最大上限32個TAG
+            string[] ReportTagName = { "AT_AI0001", "AT_AO0001", "AT_DI0001", "AT_DO0001", "Calc_ConAna", "Calc_ConDis", "ConDis_0001", "SystemSec_0001",
+                                       "ConAna_0001", "ConAna_0010", "ConAna_0020", "ConAna_0030", "ConAna_0040", "ConAna_0050", "ConAna_0060", "ConAna_0070",
+                                       "ConAna_0080", "ConAna_0090", "ConAna_0100", "ConAna_0110", "ConAna_0120", "ConAna_0130", "ConAna_0140", "ConAna_0150", 
+                                       "ConAna_0160", "ConAna_0170","ConAna_0180", "ConAna_0190", "ConAna_0200", "ConAna_0210", "ConAna_0220", "ConAna_0230"};
+            for (int i = 0; i < ReportTagName.Length; i++)
+            {
+                try
+                {
+                    api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                }
+                catch (Exception ex)
+                {
+                    i--;
+                }
+            }
+            api.ById("torightBtn").Click();
+            api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
+
+            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
+            api.ByName("emailto").Clear();
+            api.ByName("emailto").Enter(sUserEmail).Exe();
+            api.ByName("cfgSubmit").Click();
+        }
+
+        private void Create_SelfDefined_ActionLog_ExcelReport(string sUserEmail)
+        {
+            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
+
+            api.ByName("rptName").Clear();
+            api.ByName("rptName").Enter("ExcelReport_SelfDefined_ActionLog_Excel").Exe();
+            api.ByXpath("(//input[@name='dataSrc'])[4]").Click();   // Action Log
+            api.ByName("selectTemplate").SelectVal("ActionTemplate1_ver.xlsx").Exe();
+            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+
+            // set today as start/end date
+            string sToday = string.Format("{0:dd}", DateTime.Now);
+            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            string ssToday = string.Format("{0}", iToday);
+            string ssTomorrow = string.Format("{0}", iToday + 1);
+            api.ByName("tStart").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssToday).Click();
+            Thread.Sleep(500);
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            api.ByName("tEnd").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssTomorrow).Click();
+            Thread.Sleep(500);
+            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
+            api.ByName("emailto").Clear();
+            api.ByName("emailto").Enter(sUserEmail).Exe();
+            api.ByName("cfgSubmit").Click();
+        }
+
+        private void Create_SelfDefined_EventLog_ExcelReport(string sUserEmail)
+        {
+            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
+
+            api.ByName("rptName").Clear();
+            api.ByName("rptName").Enter("ExcelReport_SelfDefined_EventLog_Excel").Exe();
+            api.ByXpath("(//input[@name='dataSrc'])[5]").Click();   // Action Log
+            api.ByName("selectTemplate").SelectVal("EventTemplate1_ver.xlsx").Exe();
+            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+
+            // set today as start/end date
+            string sToday = string.Format("{0:dd}", DateTime.Now);
+            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            string ssToday = string.Format("{0}", iToday);
+            string ssTomorrow = string.Format("{0}", iToday + 1);
+            api.ByName("tStart").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssToday).Click();
+            Thread.Sleep(500);
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            api.ByName("tEnd").Click();
+            Thread.Sleep(500);
+            api.ByTxt(ssTomorrow).Click();
+            Thread.Sleep(500);
+            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+            api.ByXpath("(//button[@type='button'])[2]").Click();
+
+            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
+            api.ByName("emailto").Clear();
+            api.ByName("emailto").Enter(sUserEmail).Exe();
             api.ByName("cfgSubmit").Click();
         }
 
