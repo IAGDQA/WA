@@ -217,7 +217,9 @@ namespace CreateProjectSCADANode
             string alertText = api.GetAlartTxt();
 
             //if (alertText == "您要建立新的工程 ( 工程名稱 : AutoTest )? ")
-            if (alertText == "Do you want to create a new project ( Project Name : " + sProjectName + " )? ")
+            if ((alertText == "Do you want to create a new project ( Project Name : " + sProjectName + " )? ") ||
+                (alertText == "您要建立新的工程 ( 工程名稱 : " + sProjectName + " )? ") ||
+                (alertText == "你想建立新的工程 ( 工程名称 : " + sProjectName + " )? "))
                 api.Accept();
                 //driver.SwitchTo().Alert().Accept();
         }
