@@ -22,6 +22,7 @@ namespace CreateExcelReport
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -219,7 +220,26 @@ namespace CreateExcelReport
                 api.ByName("rptName").Enter(string.Format("ER_ODBC_T{0}_DR_8min_LastValue_ER", t)).Exe();
                 api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
                 api.ByName("selectTemplate").SelectVal(string.Format("template{0}.xlsx", t)).Exe();
-                api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                        break;
+                    case "CHT":
+                        api.ByName("speTimeFmt").SelectTxt("日報表").Exe();
+                        break;
+                    case "CHS":
+                        api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
+                        break;
+                    case "JPN":
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                        break;
+                }
 
                 // set end date
                 string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -263,7 +283,25 @@ namespace CreateExcelReport
                 api.ByName("rptName").Enter(string.Format("ER_ODBC_T{0}_DR_1hour_LastValue_ER", t)).Exe();
                 api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
                 api.ByName("selectTemplate").SelectVal(string.Format("template{0}.xlsx", t)).Exe();
-                api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                        break;
+                    case "CHT":
+                        api.ByName("speTimeFmt").SelectTxt("日報表").Exe();
+                        break;
+                    case "CHS":
+                        api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
+                        break;
+                    case "JPN":
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                        break;
+                }
 
                 // set end date
                 string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -319,7 +357,25 @@ namespace CreateExcelReport
 
                 api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
                 api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
-                api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                        break;
+                    case "CHT":
+                        api.ByName("speTimeFmt").SelectTxt("日報表").Exe();
+                        break;
+                    case "CHS":
+                        api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
+                        break;
+                    case "JPN":
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
+                        break;
+                }
 
                 // set end date
                 string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -399,7 +455,25 @@ namespace CreateExcelReport
             api.ByName("rptName").Enter("ExcelReport_SelfDefined_DataLog_Excel").Exe();
             api.ByName("dataSrc").Click();  // Click "Data Log" button
             api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
-            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+            }
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -460,7 +534,25 @@ namespace CreateExcelReport
             api.ByName("rptName").Enter("ExcelReport_SelfDefined_ODBCData_Excel").Exe();
             api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
             api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
-            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+            }
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -518,7 +610,25 @@ namespace CreateExcelReport
             api.ByName("rptName").Enter("ExcelReport_SelfDefined_Alarm_Excel").Exe();
             api.ByXpath("(//input[@name='dataSrc'])[3]").Click();   // Alarm
             api.ByName("selectTemplate").SelectVal("AlarmTemplate1_ver.xlsx").Exe();
-            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+            }
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -571,7 +681,25 @@ namespace CreateExcelReport
             api.ByName("rptName").Enter("ExcelReport_SelfDefined_ActionLog_Excel").Exe();
             api.ByXpath("(//input[@name='dataSrc'])[4]").Click();   // Action Log
             api.ByName("selectTemplate").SelectVal("ActionTemplate1_ver.xlsx").Exe();
-            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+            }
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -605,7 +733,25 @@ namespace CreateExcelReport
             api.ByName("rptName").Enter("ExcelReport_SelfDefined_EventLog_Excel").Exe();
             api.ByXpath("(//input[@name='dataSrc'])[5]").Click();   // Action Log
             api.ByName("selectTemplate").SelectVal("EventTemplate1_ver.xlsx").Exe();
-            api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
+            }
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
@@ -694,6 +840,7 @@ namespace CreateExcelReport
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultUserEmail = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
@@ -705,11 +852,13 @@ namespace CreateExcelReport
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             UserEmail.Text = sDefaultUserEmail.ToString();
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
