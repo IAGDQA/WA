@@ -22,6 +22,7 @@ namespace CreateConstTags
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -171,7 +172,27 @@ namespace CreateConstTags
             EventLog.AddLog("create analog constant");
             api.ByName("ParaName").SelectVal("ConAna").Exe();
             Thread.Sleep(1000);
-            api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("AlarmStatus").SelectTxt("警報").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("AlarmStatus").SelectTxt("报警").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+            }
+
             Thread.Sleep(1000);
             api.ByName("RocPriority").SelectVal("1").Exe();
             Thread.Sleep(500);
@@ -318,6 +339,7 @@ namespace CreateConstTags
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -328,10 +350,12 @@ namespace CreateConstTags
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
         }
