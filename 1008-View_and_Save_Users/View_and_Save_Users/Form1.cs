@@ -25,6 +25,7 @@ namespace View_and_Save_Users
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -153,6 +154,55 @@ namespace View_and_Save_Users
             PrintStep("Start View");
 
             // Control browser
+            int iIE_Handl, iIE_Handl_2, iIE_Handl_3, iIE_Handl_4, iIE_Handl_5, iIE_Handl_6, iIE_Handl_7, iWA_MainPage = 0;
+            switch (slanguage)
+            {
+                case "ENG":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "CHT":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "節點 : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "節點 : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "CHS":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "节点 : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "节点 : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+            }
+            /*
             int iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
             int iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
             int iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
@@ -161,6 +211,7 @@ namespace View_and_Save_Users
             int iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
             int iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
             int iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+            */
 
             if (iWA_MainPage > 0)
             {
@@ -174,48 +225,33 @@ namespace View_and_Save_Users
                 EventLog.AddLog("Cannot get Start View WebAccess Main Page handle");
 
             // Login keyboard
-            //int iLoginKeyboard_Handle = FindWindow("#32770 (Dialog)", "Login");
-            int iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+            int iLoginKeyboard_Handle;
+            switch (slanguage)
+            {
+                case "ENG":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+                    break;
+                case "CHT":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登入");
+                    break;
+                case "CHS":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登录");
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+                    break;
+            }
             int iEnterText = tpc.F_FindWindowEx(iLoginKeyboard_Handle, 0, "Edit", "");
             int iEnter_PW = tpc.F_GetWindow(iEnterText, tpc.V_GW_HWNDNEXT);
 
             if (iEnterText > 0 && iEnter_PW > 0 )
             {
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'P', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'o', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'w', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'r', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'U', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 's', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0); 
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'r', 0);
-                System.Threading.Thread.Sleep(100);
-
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '1', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '2', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '3', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '4', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '5', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '6', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '7', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '8', 0);
-                System.Threading.Thread.Sleep(100);
+                SendCharToHandle(iEnterText, 100, "PowerUser");
+                SendCharToHandle(iEnter_PW, 100, "12345678");
 
                 tpc.F_PostMessage(iEnterText, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
                 
@@ -264,6 +300,55 @@ namespace View_and_Save_Users
             PrintStep("Start View");
 
             // Control browser
+            int iIE_Handl, iIE_Handl_2, iIE_Handl_3, iIE_Handl_4, iIE_Handl_5, iIE_Handl_6, iIE_Handl_7, iWA_MainPage = 0;
+            switch (slanguage)
+            {
+                case "ENG":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "CHT":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "節點 : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "節點 : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "CHS":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "节点 : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "节点 : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+            }
+            /*
             int iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
             int iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
             int iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
@@ -272,6 +357,7 @@ namespace View_and_Save_Users
             int iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
             int iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
             int iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+            */
 
             if (iWA_MainPage > 0)
             {
@@ -285,52 +371,33 @@ namespace View_and_Save_Users
                 EventLog.AddLog("Cannot get Start View WebAccess Main Page handle");
 
             // Login keyboard
-            //int iLoginKeyboard_Handle = FindWindow("#32770 (Dialog)", "Login");
-            int iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+            int iLoginKeyboard_Handle;
+            switch (slanguage)
+            {
+                case "ENG":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+                    break;
+                case "CHT":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登入");
+                    break;
+                case "CHS":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登录");
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+                    break;
+            }
             int iEnterText = tpc.F_FindWindowEx(iLoginKeyboard_Handle, 0, "Edit", "");
             int iEnter_PW = tpc.F_GetWindow(iEnterText, tpc.V_GW_HWNDNEXT);
 
             if (iEnterText > 0 && iEnter_PW > 0)
             {
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'G', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'n', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'r', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'a', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'l', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'U', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 's', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'r', 0);
-                System.Threading.Thread.Sleep(100);
-
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '2', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '3', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '4', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '5', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '6', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '7', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '8', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '9', 0);
-                System.Threading.Thread.Sleep(100);
+                SendCharToHandle(iEnterText, 100, "GeneralUser");
+                SendCharToHandle(iEnter_PW, 100, "23456789");
 
                 tpc.F_PostMessage(iEnterText, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
 
@@ -379,6 +446,55 @@ namespace View_and_Save_Users
             PrintStep("Start View");
 
             // Control browser
+            int iIE_Handl, iIE_Handl_2, iIE_Handl_3, iIE_Handl_4, iIE_Handl_5, iIE_Handl_6, iIE_Handl_7, iWA_MainPage = 0;
+            switch (slanguage)
+            {
+                case "ENG":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "CHT":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "節點 : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "節點 : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "CHS":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "节点 : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "节点 : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
+            }
+            /*
             int iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : TestSCADA - main:untitled");
             int iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
             int iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : TestSCADA - Internet Explorer");
@@ -387,6 +503,7 @@ namespace View_and_Save_Users
             int iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
             int iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
             int iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+            */
 
             if (iWA_MainPage > 0)
             {
@@ -400,58 +517,33 @@ namespace View_and_Save_Users
                 EventLog.AddLog("Cannot get Start View WebAccess Main Page handle");
 
             // Login keyboard
-            //int iLoginKeyboard_Handle = FindWindow("#32770 (Dialog)", "Login");
-            int iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+            int iLoginKeyboard_Handle;
+            switch (slanguage)
+            {
+                case "ENG":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+                    break;
+                case "CHT":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登入");
+                    break;
+                case "CHS":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登录");
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
+                    break;
+            }
             int iEnterText = tpc.F_FindWindowEx(iLoginKeyboard_Handle, 0, "Edit", "");
             int iEnter_PW = tpc.F_GetWindow(iEnterText, tpc.V_GW_HWNDNEXT);
 
             if (iEnterText > 0 && iEnter_PW > 0)
             {
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'R', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 's', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 't', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'r', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'i', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'c', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 't', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'd', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'U', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 's', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'e', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'r', 0);
-                System.Threading.Thread.Sleep(100);
-
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '3', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '4', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '5', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '6', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '7', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '8', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '9', 0);
-                System.Threading.Thread.Sleep(100);
-                tpc.F_PostMessage(iEnter_PW, tpc.V_WM_CHAR, '0', 0);
-                System.Threading.Thread.Sleep(100);
+                SendCharToHandle(iEnterText, 100, "RestrictedUser");
+                SendCharToHandle(iEnter_PW, 100, "34567890");
 
                 tpc.F_PostMessage(iEnterText, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
 
@@ -554,8 +646,19 @@ namespace View_and_Save_Users
             EventLog.AddLog("===View and Save Users end===");
         }
 
+        private void SendCharToHandle(int iHandle, int iDelay, string sText)
+        {
+            var chars = sText.ToCharArray();
+            for (int ctr = 0; ctr < chars.Length; ctr++)
+            {
+                tpc.F_PostMessage(iHandle, tpc.V_WM_CHAR, chars[ctr], 0);
+                Thread.Sleep(iDelay);
+            }
+        }
+
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -566,10 +669,12 @@ namespace View_and_Save_Users
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
         }
@@ -611,25 +716,6 @@ namespace View_and_Save_Users
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
             }
-        }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
     }
