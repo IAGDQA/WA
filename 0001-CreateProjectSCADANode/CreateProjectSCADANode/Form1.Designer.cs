@@ -50,6 +50,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.textBox_CloudPC_IP = new System.Windows.Forms.TextBox();
             this.textBox_BackupPC_IP = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.comboBox_language = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -148,10 +150,10 @@
             this.Column_Result,
             this.Column_ErrorCode,
             this.Column1_ExeTime});
-            this.dataGridView1.Location = new System.Drawing.Point(28, 252);
+            this.dataGridView1.Location = new System.Drawing.Point(28, 277);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(643, 194);
+            this.dataGridView1.Size = new System.Drawing.Size(643, 169);
             this.dataGridView1.TabIndex = 9;
             // 
             // Column_TestItem
@@ -188,7 +190,7 @@
             // Result
             // 
             this.Result.AutoSize = true;
-            this.Result.Location = new System.Drawing.Point(313, 224);
+            this.Result.Location = new System.Drawing.Point(343, 235);
             this.Result.Name = "Result";
             this.Result.Size = new System.Drawing.Size(35, 12);
             this.Result.TabIndex = 10;
@@ -245,11 +247,38 @@
             this.textBox_BackupPC_IP.TabIndex = 16;
             this.textBox_BackupPC_IP.Text = "172.18.xx.xx";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(26, 245);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(51, 12);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "Language";
+            // 
+            // comboBox_language
+            // 
+            this.comboBox_language.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_language.FormattingEnabled = true;
+            this.comboBox_language.Items.AddRange(new object[] {
+            "ENG",
+            "CHT",
+            "CHS",
+            "JPN",
+            "KRN",
+            "FRN"});
+            this.comboBox_language.Location = new System.Drawing.Point(135, 245);
+            this.comboBox_language.Name = "comboBox_language";
+            this.comboBox_language.Size = new System.Drawing.Size(121, 20);
+            this.comboBox_language.TabIndex = 18;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(698, 467);
+            this.Controls.Add(this.comboBox_language);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.textBox_BackupPC_IP);
             this.Controls.Add(this.textBox_CloudPC_IP);
             this.Controls.Add(this.label7);
@@ -302,6 +331,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox_CloudPC_IP;
         private System.Windows.Forms.TextBox textBox_BackupPC_IP;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox comboBox_language;
     }
 }
 

@@ -23,6 +23,7 @@ namespace CreateProjectSCADANode
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         [DllImport("kernel32")]
         public static extern uint GetTickCount();
@@ -71,6 +72,7 @@ namespace CreateProjectSCADANode
                 MessageBox.Show(ex.ToString());
             }
             Browser.SelectedIndex = 0;
+            comboBox_language.SelectedIndex = 0;
 
             if (System.IO.File.Exists(sIniFilePath))
             {
@@ -322,6 +324,7 @@ namespace CreateProjectSCADANode
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultUserEmail = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
@@ -334,11 +337,13 @@ namespace CreateProjectSCADANode
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Redundant Secondary PC", "NA", sDefaultIP3, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             UserEmail.Text = sDefaultUserEmail.ToString();
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
@@ -368,6 +373,7 @@ namespace CreateProjectSCADANode
 
         private void CheckifIniFileChange()
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultUserEmail = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
@@ -378,6 +384,7 @@ namespace CreateProjectSCADANode
             if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
             {
                 EventLog.AddLog(".ini file exist, check if .ini file need to update");
+                tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
@@ -385,6 +392,13 @@ namespace CreateProjectSCADANode
                 tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("IP", "Redundant Secondary PC", "NA", sDefaultIP3, 255, sIniFilePath);
 
+                if (comboBox_language.Text != sDefaultUserLanguage.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_language.Text, sIniFilePath);
+                    EventLog.AddLog("New Language update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserLanguage.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_language.Text);
+                }
                 if (UserEmail.Text != sDefaultUserEmail.ToString())
                 {
                     tpc.F_WritePrivateProfileString("UserInfo", "Email", UserEmail.Text, sIniFilePath);
@@ -424,6 +438,7 @@ namespace CreateProjectSCADANode
             else
             {   // 若ini檔不存在 則建立新的
                 EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_language.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("UserInfo", "Email", UserEmail.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", sIniFilePath);
