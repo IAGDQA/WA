@@ -23,6 +23,7 @@ namespace CreateGlobalScriptData
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -140,7 +141,7 @@ namespace CreateGlobalScriptData
                 System.IO.File.Copy(sourceFile3, destFile3_1, true);
                 System.IO.File.Copy(sourceFile3, destFile3_2, true);
             }
-
+            
             //Step2: Set global script
             EventLog.AddLog("Set global script...");
             CreateGlobalScript();
@@ -208,7 +209,25 @@ namespace CreateGlobalScriptData
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/GbScript/GbScriptPg.asp')]").Click();
 
-            api.ByName("StatusSel_1").SelectTxt("Enable").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("StatusSel_1").SelectTxt("Enable").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("StatusSel_1").SelectTxt("啟用").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("StatusSel_1").SelectTxt("允许").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("StatusSel_1").SelectTxt("Enable").Exe();
+                    break;
+            }
             api.ByName("Description_1").Clear();
             api.ByName("Description_1").Enter("Set each Const tag plus 1").Exe();
             api.ByName("RunScript_1").Clear();
@@ -216,13 +235,49 @@ namespace CreateGlobalScriptData
             api.ByName("RunInterval_1").Clear();
             api.ByName("RunInterval_1").Enter("200").Exe();
 
-            api.ByName("StatusSel_2").SelectTxt("Enable").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("StatusSel_2").SelectTxt("Enable").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("StatusSel_2").SelectTxt("啟用").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("StatusSel_2").SelectTxt("允许").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("StatusSel_2").SelectTxt("Enable").Exe();
+                    break;
+            }
             api.ByName("Description_2").Clear();
             api.ByName("Description_2").Enter("Set all ConAna 51").Exe();
             api.ByName("StartScript_2").Clear();
             api.ByName("StartScript_2").Enter("alm_set_ConAna_51.scr").Exe();
 
-            api.ByName("StatusSel_3").SelectTxt("Enable").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("StatusSel_3").SelectTxt("Enable").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("StatusSel_3").SelectTxt("啟用").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("StatusSel_3").SelectTxt("允许").Exe();
+                    break;
+                case "JPN":
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("StatusSel_3").SelectTxt("Enable").Exe();
+                    break;
+            }
             api.ByName("RunScript_3").Clear();
             api.ByName("RunScript_3").Enter("alm_ack.scr").Exe();
             api.ByName("RunInterval_3").Clear();
@@ -346,6 +401,7 @@ namespace CreateGlobalScriptData
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -356,10 +412,12 @@ namespace CreateGlobalScriptData
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
         }
