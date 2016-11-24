@@ -303,6 +303,9 @@ namespace View_and_Save_DataLogTrendData
             else
                 EventLog.AddLog("Cannot get DataLog Trend List handle");
 
+            Thread.Sleep(3000);
+            PrintScreen("DataLogData", sTestLogFolder);
+
             // Export Data (ctrl+F4) , 會在C:\WebAccess\Client\TestProject_TestSCADA 產生 $view001.htm 檔
             EventLog.AddLog("Send ctrl+F4 keyboard command to export data");
             if (iWA_MainPage > 0)
@@ -349,6 +352,7 @@ namespace View_and_Save_DataLogTrendData
 
             if (iWA_MainPage > 0)
             {
+                Thread.Sleep(5000); //delay 5s before close $view001 window
                 EventLog.AddLog("Send alt+F4 keyboard command to close $view001.htm window");
                 SendKeys.SendWait("%{F4}");
                 Thread.Sleep(500);
@@ -356,7 +360,7 @@ namespace View_and_Save_DataLogTrendData
             else
                 EventLog.AddLog("Cannot find $view001.htm window");
 
-            PrintScreen("DataLogData", sTestLogFolder);
+            //PrintScreen("DataLogData", sTestLogFolder);
         }
 
         private void PrintScreen(string sFileName, string sFilePath)
