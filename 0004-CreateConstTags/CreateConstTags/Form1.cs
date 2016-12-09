@@ -185,6 +185,8 @@ namespace CreateConstTags
                     api.ByName("AlarmStatus").SelectTxt("报警").Exe();
                     break;
                 case "JPN":
+                    api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
