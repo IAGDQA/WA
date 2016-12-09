@@ -228,6 +228,15 @@ namespace PlugandPlay_TagInfoSyncTest
                     iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
                     break;
                 case "JPN":
+                    iIE_Handl = tpc.F_FindWindow("IEFrame", "ﾉｰﾄﾞ : CTestSCADA - main:untitled"); // 注意是CTestSCADA而不是TestSCADA
+                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
+                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "ﾉｰﾄﾞ : CTestSCADA - Internet Explorer");  // 注意是CTestSCADA而不是TestSCADA
+                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
+                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
+                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
+                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
+                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -276,6 +285,8 @@ namespace PlugandPlay_TagInfoSyncTest
                     iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登录");
                     break;
                 case "JPN":
+                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "ﾛｸﾞｲﾝ");
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -320,6 +331,8 @@ namespace PlugandPlay_TagInfoSyncTest
                     iPointInfo_Handle = tpc.F_FindWindow("#32770", "点信息");
                     break;
                 case "JPN":
+                    iPointInfo_Handle = tpc.F_FindWindow("#32770", "ﾎﾟｲﾝﾄ情報");
+                    break;
                 case "KRN":
                 case "FRN":
 
