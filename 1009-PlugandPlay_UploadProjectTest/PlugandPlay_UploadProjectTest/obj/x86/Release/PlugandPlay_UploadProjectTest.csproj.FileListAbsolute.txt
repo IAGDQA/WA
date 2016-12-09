@@ -26,8 +26,8 @@ D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\bin\Release\ThirdPartyToolControl.dll
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\bin\Release\WebDriver.dll
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\bin\Release\WebDriver.Support.dll
-D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\obj\x86\Release\PlugandPlay_UploadProjectTest.csprojResolveAssemblyReference.cache
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\obj\x86\Release\PlugandPlay_UploadProjectTest.Form1.resources
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\obj\x86\Release\PlugandPlay_UploadProjectTest.Properties.Resources.resources
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\obj\x86\Release\PlugandPlay_UploadProjectTest.csproj.GenerateResource.Cache
 D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\obj\x86\Release\PlugandPlay_UploadProjectTest.exe
+D:\DQA-Code\WA\1009-PlugandPlay_UploadProjectTest\PlugandPlay_UploadProjectTest\obj\x86\Release\PlugandPlay_UploadProjectTest.csprojResolveAssemblyReference.cache

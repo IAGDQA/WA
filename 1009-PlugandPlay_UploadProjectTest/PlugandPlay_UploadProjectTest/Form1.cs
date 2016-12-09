@@ -26,6 +26,7 @@ namespace PlugandPlay_UploadProjectTest
         internal const int Max_Rows_Val = 65535;
         string baseUrl, baseUrl2;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -215,7 +216,28 @@ namespace PlugandPlay_UploadProjectTest
             ////////////////////////////////// Cloud White list Setting //////////////////////////////////
             {   // AI/AO/DI/DO
                 EventLog.AddLog("<GroundPC> Modbus tag setting");
-                api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                //api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("通信埠3(tcpip)").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("通讯端口3(tcpip)").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                        break;
+                }
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -223,14 +245,36 @@ namespace PlugandPlay_UploadProjectTest
 
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
-
+                
                 for (int i = 2; i <= 500; i++)
                 {
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
+                
+                //api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
 
-                api.ByXpath("//input[@value='Save']").Click();
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
+
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -239,7 +283,27 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -248,7 +312,28 @@ namespace PlugandPlay_UploadProjectTest
             // Port4(opc)
             {
                 EventLog.AddLog("<GroundPC> Port4(opc) setting");
-                api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                //api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("通信埠4(opc)").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("通讯端口4(opc)").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                        break;
+                }
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -263,7 +348,27 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
 
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -272,7 +377,28 @@ namespace PlugandPlay_UploadProjectTest
             // Port5(tcpip)
             {
                 EventLog.AddLog("<GroundPC> Port5(tcpip) setting");
-                api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                //api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("通信埠5(tcpip)").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("通讯端口5(tcpip)").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                        break;
+                }
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -287,7 +413,27 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
 
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -296,7 +442,28 @@ namespace PlugandPlay_UploadProjectTest
             // Acc Point
             {
                 EventLog.AddLog("<GroundPC> Acc Point setting");
-                api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                //api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("累算點").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("累算点").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                        break;
+                }
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -311,7 +478,27 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
 
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -320,13 +507,54 @@ namespace PlugandPlay_UploadProjectTest
             // Calc Point
             {
                 EventLog.AddLog("<GroundPC> Calc Point setting");
-                api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                //api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("計算點").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("计算点").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                        break;
+                }
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
 
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -335,7 +563,28 @@ namespace PlugandPlay_UploadProjectTest
             // Const Point
             {
                 EventLog.AddLog("<GroundPC> Const Point setting");
-                api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                //api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("常數點").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("常数点").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                        break;
+                }
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -350,7 +599,27 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
 
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -359,7 +628,27 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -368,7 +657,28 @@ namespace PlugandPlay_UploadProjectTest
             // System Point
             {
                 EventLog.AddLog("<GroundPC> System Point setting");
-                api.ById("tagTypes").SelectTxt("System Point").Exe();
+                //api.ById("tagTypes").SelectTxt("System Point").Exe();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ById("tagTypes").SelectTxt("System Point").Exe();
+                        break;
+                    case "CHT":
+                        api.ById("tagTypes").SelectTxt("系統點").Exe();
+                        break;
+                    case "CHS":
+                        api.ById("tagTypes").SelectTxt("系统点").Exe();
+                        break;
+                    case "JPN":
+                        api.ById("tagTypes").SelectTxt("System Point").Exe();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ById("tagTypes").SelectTxt("System Point").Exe();
+                        break;
+                }
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -383,7 +693,27 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
 
-                api.ByXpath("//input[@value='Save']").Click();
+                switch (slanguage)
+                {
+                    case "ENG":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "CHT":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "CHS":
+                        api.ByXpath("//input[@value='保存']").Click();
+                        break;
+                    case "JPN":
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        api.ByXpath("//input[@value='Save']").Click();
+                        break;
+                }
                 Thread.Sleep(500);
                 api.ByXpath("//input[@value='Ok']").Click();
                 Thread.Sleep(100);
@@ -562,6 +892,7 @@ namespace PlugandPlay_UploadProjectTest
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -572,10 +903,13 @@ namespace PlugandPlay_UploadProjectTest
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
+
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
 
@@ -634,25 +968,6 @@ namespace PlugandPlay_UploadProjectTest
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", WebAccessIP2.Text, sIniFilePath);
             }
-        }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
     }
