@@ -221,6 +221,8 @@ namespace CreateGlobalScriptData
                     api.ByName("StatusSel_1").SelectTxt("允许").Exe();
                     break;
                 case "JPN":
+                    api.ByName("StatusSel_1").SelectTxt("稼動").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -247,6 +249,8 @@ namespace CreateGlobalScriptData
                     api.ByName("StatusSel_2").SelectTxt("允许").Exe();
                     break;
                 case "JPN":
+                    api.ByName("StatusSel_2").SelectTxt("稼動").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -271,6 +275,8 @@ namespace CreateGlobalScriptData
                     api.ByName("StatusSel_3").SelectTxt("允许").Exe();
                     break;
                 case "JPN":
+                    api.ByName("StatusSel_3").SelectTxt("稼動").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
