@@ -233,6 +233,8 @@ namespace CreateExcelReport
                         api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
                         break;
                     case "JPN":
+                        api.ByName("speTimeFmt").SelectTxt("日報").Exe();
+                        break;
                     case "KRN":
                     case "FRN":
 
@@ -295,6 +297,8 @@ namespace CreateExcelReport
                         api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
                         break;
                     case "JPN":
+                        api.ByName("speTimeFmt").SelectTxt("日報").Exe();
+                        break;
                     case "KRN":
                     case "FRN":
 
@@ -369,6 +373,8 @@ namespace CreateExcelReport
                         api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
                         break;
                     case "JPN":
+                        api.ByName("speTimeFmt").SelectTxt("日報").Exe();
+                        break;
                     case "KRN":
                     case "FRN":
 
@@ -467,6 +473,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("自订").Exe();
                     break;
                 case "JPN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -546,6 +554,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("自订").Exe();
                     break;
                 case "JPN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -622,6 +632,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("自订").Exe();
                     break;
                 case "JPN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -693,6 +705,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("自订").Exe();
                     break;
                 case "JPN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
@@ -745,6 +759,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("自订").Exe();
                     break;
                 case "JPN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
                 case "KRN":
                 case "FRN":
 
