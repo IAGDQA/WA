@@ -218,12 +218,32 @@ namespace CreateProjectSCADANode
             //string alertText = driver.SwitchTo().Alert().Text;
             string alertText = api.GetAlartTxt();
 
-            //if (alertText == "您要建立新的工程 ( 工程名稱 : AutoTest )? ")
-            if ((alertText == "Do you want to create a new project ( Project Name : " + sProjectName + " )? ") ||
-                (alertText == "您要建立新的工程 ( 工程名稱 : " + sProjectName + " )? ") ||
-                (alertText == "你想建立新的工程 ( 工程名称 : " + sProjectName + " )? "))
-                api.Accept();
-                //driver.SwitchTo().Alert().Accept();
+            switch (slanguage)
+            {
+                case "ENG":
+                    if (alertText == "Do you want to create a new project ( Project Name : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
+                case "CHT":
+                    if (alertText == "您要建立新的工程 ( 工程名稱 : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
+                case "CHS":
+                    if (alertText == "你想建立新的工程 ( 工程名称 : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
+                case "JPN":
+                    if (alertText == "新しいﾌﾟﾛｼﾞｪｸﾄを作成しますか ( ﾌﾟﾛｼﾞｪｸﾄ名 : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    if (alertText == "Do you want to create a new project ( Project Name : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
+            }
         }
 
         private void CreateSCADANode(string sWebAccessIP, string sUserEmail)

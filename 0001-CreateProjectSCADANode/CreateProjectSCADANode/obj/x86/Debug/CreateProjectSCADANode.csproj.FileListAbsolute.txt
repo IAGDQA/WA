@@ -31,7 +31,6 @@ D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Debug\iATe
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Debug\ThirdPartyToolControl.dll
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Debug\WebDriver.dll
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\bin\Debug\WebDriver.Support.dll
-D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.csprojResolveAssemblyReference.cache
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.Form1.resources
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.Properties.Resources.resources
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.csproj.GenerateResource.Cache
