@@ -309,15 +309,364 @@ namespace View_and_Save_DataLogTrendData
                     iDataLogTrend_Handle = tpc.F_FindWindow("#32770", "Datalog Trend List");
                     break;
             }
-            //int iDataLogTrend_Handle = tpc.F_FindWindow("#32770", "Datalog Trend List");
+            iDataLogTrend_Handle = tpc.F_FindWindow("#32770", "Datalog Trend List");
             int iEnterText2 = tpc.F_FindWindowEx(iDataLogTrend_Handle, 0, "Edit", "");
             if (iEnterText2 > 0)
                 tpc.F_PostMessage(iEnterText2, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
             else
                 EventLog.AddLog("Cannot get DataLog Trend List handle");
+            /*
+            int iOK_Button_of_DataLogTrendList = tpc.F_FindWindowEx(iDataLogTrend_Handle, 0, "Button", "OK");
+            if (iOK_Button_of_DataLogTrendList > 0)
+            {
+                // Change interval value
+                EventLog.AddLog("Click Change button of PointInfo window");
+                tpc.F_PostMessage(iOK_Button_of_DataLogTrendList, tpc.V_BM_CLICK, 0, 0);
+                System.Threading.Thread.Sleep(1000);
+            }
+            else
+                EventLog.AddLog("Cannot get iOK_Button_of_DataLogTrendList handle");
 
             Thread.Sleep(3000);
             PrintScreen("DataLogData", sTestLogFolder);
+            */
+            for (int iInterval = 1; iInterval <= 3; iInterval++)
+            {
+                string[] sInterval = { "1 sec", "2 sec", "5 sec", "10 sec", "20 sec", "40 sec", 
+                                       "1Min", "2Min", "3Min", "4Min", "8Min", "16Min", "28Min", 
+                                       "1Hour", "2Hour", "4Hour", "6Hour", "8Hour", "12Hour", 
+                                       "1Day", "2Day", "3Day", "4Day", "5Day"};
+                int iii = sInterval.Length;
+                Thread.Sleep(4000);
+                SendKeys.SendWait("{F4}"); // Right most
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step1", sInterval[iInterval-1]), sTestLogFolder);
+
+                SendKeys.SendWait("{F2}"); // Left
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Left_Step2", sInterval[iInterval - 1]), sTestLogFolder);
+
+                SendKeys.SendWait("{F2}"); // Left
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step3", sInterval[iInterval - 1]), sTestLogFolder);
+
+                SendKeys.SendWait("{F3}"); // Right
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step4", sInterval[iInterval - 1]), sTestLogFolder);
+
+                SendKeys.SendWait("{F3}"); // Right
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step5", sInterval[iInterval - 1]), sTestLogFolder);
+
+                SendKeys.SendWait("{F1}"); // Left most
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_LeftMost_Step6", sInterval[iInterval - 1]), sTestLogFolder);
+
+                SendKeys.SendWait("{F4}"); // Right most
+                Thread.Sleep(4000);
+
+                PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step7", sInterval[iInterval - 1]), sTestLogFolder);
+
+                Thread.Sleep(1000);
+                SendKeys.SendWait("^{F5}"); // quick key of PointInfo window
+                Thread.Sleep(1000);
+
+                EventLog.AddLog("Open Point Info window");
+                int iPointInfo_Handle;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
+                        break;
+                    case "CHT":
+                        iPointInfo_Handle = tpc.F_FindWindow("#32770", "點資訊");
+                        break;
+                    case "CHS":
+                        iPointInfo_Handle = tpc.F_FindWindow("#32770", "点信息");
+                        break;
+                    case "JPN":
+                        iPointInfo_Handle = tpc.F_FindWindow("#32770", "ﾎﾟｲﾝﾄ情報");
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
+                        break;
+                }
+
+                //  用來改變interval
+                //int iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
+                int iEnterText_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Edit", "");
+                if (iEnterText_PointInfo > 0)
+                {
+                    EventLog.AddLog("Change Datalog Trend Interval");
+                    SendCharToHandle(iEnterText_PointInfo, 100, "%ADTRDST");
+                    System.Threading.Thread.Sleep(1000);
+                }
+                else
+                    EventLog.AddLog("Cannot get EnterText_PointInfo handle");
+
+                
+                int iChange_Button_of_PointInfo=0;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Change");
+                        break;
+                    case "CHT":
+                        iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "改變");
+                        break;
+                    case "CHS":
+                        iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "改变");
+                        break;
+                    case "JPN":
+                        iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "変更");
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Change");
+                        break;
+                }
+
+                if (iChange_Button_of_PointInfo > 0)
+                {
+                    // Change interval value
+                    EventLog.AddLog("Click Change button of PointInfo window");
+                    tpc.F_PostMessage(iChange_Button_of_PointInfo, tpc.V_BM_CLICK, 0, 0);
+                    System.Threading.Thread.Sleep(1000);
+                }
+                else
+                    EventLog.AddLog("Cannot get iChange_Button_of_PointInfo handle");
+
+                int iEditWindow_of_interval = tpc.F_FindWindow("#32770", "%ADTRDST");
+                int iEnterValue_of_interval = tpc.F_FindWindowEx(iEditWindow_of_interval, 0, "Button", "BW_DSPINUP");      // 換設定interval視窗裡的向右鍵
+                if (iEnterValue_of_interval > 0)
+                {
+                    // Change interval value
+                    EventLog.AddLog("Click add one interval button Change window");
+                    tpc.F_PostMessage(iEnterValue_of_interval, tpc.V_BM_CLICK, 0, 0);
+                    System.Threading.Thread.Sleep(1000);
+                }
+                else
+                    EventLog.AddLog("Cannot get iEnterValue_of_interval handle");
+
+                
+                int iEnterButton_ChangeWindow = 0;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        iEnterButton_ChangeWindow = tpc.F_FindWindowEx(iEditWindow_of_interval, 0, "Button", "Enter");   // 按設定interval視窗裡的enter
+                        break;
+                    case "CHT":
+                        iEnterButton_ChangeWindow = tpc.F_FindWindowEx(iEditWindow_of_interval, 0, "Button", "輸入");
+                        break;
+                    case "CHS":
+                        iEnterButton_ChangeWindow = tpc.F_FindWindowEx(iEditWindow_of_interval, 0, "Button", "回车");
+                        break;
+                    case "JPN":
+                        iEnterButton_ChangeWindow = tpc.F_FindWindowEx(iEditWindow_of_interval, 0, "Button", "ｴﾝﾀｰ");
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        iEnterButton_ChangeWindow = tpc.F_FindWindowEx(iEditWindow_of_interval, 0, "Button", "Enter");   // 按設定interval視窗裡的enter
+                        break;
+                }
+
+                if (iEnterButton_ChangeWindow > 0)
+                {
+                    // Change interval value
+                    EventLog.AddLog("Click Enter button Change window");
+                    tpc.F_PostMessage(iEnterButton_ChangeWindow, tpc.V_BM_CLICK, 0, 0);
+                    System.Threading.Thread.Sleep(1000);
+                }
+                else
+                    EventLog.AddLog("Cannot get iEnterButton_ChangeWindow handle");
+
+                int iExitButton_PointInfo = 0;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Exit");    // 按PointInfo視窗裡的Exit
+                        break;
+                    case "CHT":
+                        iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "退出");
+                        break;
+                    case "CHS":
+                        iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "退出");
+                        break;
+                    case "JPN":
+                        iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "終了");
+                        break;
+                    case "KRN":
+                    case "FRN":
+
+                    default:
+                        iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Exit");    // 按PointInfo視窗裡的Exit
+                        break;
+                }
+
+                if (iExitButton_PointInfo > 0)
+                {
+                    // Change interval value
+                    EventLog.AddLog("Click Exit button of PointInfo window");
+                    tpc.F_PostMessage(iExitButton_PointInfo, tpc.V_BM_CLICK, 0, 0);
+                    System.Threading.Thread.Sleep(1000);
+                }
+                else
+                    EventLog.AddLog("Cannot get iExitButton_PointInfo handle");
+
+                if(iInterval == sInterval.Length)
+                {
+                    Thread.Sleep(4000);
+                    SendKeys.SendWait("{F4}"); // Right most
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step1", sInterval[iInterval - 1]), sTestLogFolder);
+
+                    SendKeys.SendWait("{F2}"); // Left
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Left_Step2", sInterval[iInterval - 1]), sTestLogFolder);
+
+                    SendKeys.SendWait("{F2}"); // Left
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step3", sInterval[iInterval - 1]), sTestLogFolder);
+
+                    SendKeys.SendWait("{F3}"); // Right
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step4", sInterval[iInterval - 1]), sTestLogFolder);
+
+                    SendKeys.SendWait("{F3}"); // Right
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step5", sInterval[iInterval - 1]), sTestLogFolder);
+
+                    SendKeys.SendWait("{F1}"); // Left most
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_LeftMost_Step6", sInterval[iInterval - 1]), sTestLogFolder);
+
+                    SendKeys.SendWait("{F4}"); // Right most
+                    Thread.Sleep(4000);
+
+                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step7", sInterval[iInterval - 1]), sTestLogFolder);
+                }
+
+                /*
+                ////////這邊開始左左右右////////
+                DateTime dt = DateTime.Now.AddSeconds(-270); // 開始時間設定為4分半前
+                for (int LLRR = 1; LLRR <= 4; LLRR++)
+                {
+                    Thread.Sleep(1000);
+                    SendKeys.SendWait("^{F5}"); // quick key of PointInfo window
+                    Thread.Sleep(1000);
+
+                    EventLog.AddLog("Open Point Info window");
+                    //int iPointInfo_Handle;
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
+                            break;
+                        case "CHT":
+                            iPointInfo_Handle = tpc.F_FindWindow("#32770", "點資訊");
+                            break;
+                        case "CHS":
+                            iPointInfo_Handle = tpc.F_FindWindow("#32770", "点信息");
+                            break;
+                        case "JPN":
+                            iPointInfo_Handle = tpc.F_FindWindow("#32770", "ﾎﾟｲﾝﾄ情報");
+                            break;
+                        case "KRN":
+                        case "FRN":
+
+                        default:
+                            iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
+                            break;
+                    }
+
+                    //用來改變時間
+                    iEnterText_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Edit", "");
+                    if (iEnterText_PointInfo > 0)
+                    {
+                        EventLog.AddLog("Change Datalog Trend Interval");
+                        SendCharToHandle(iEnterText_PointInfo, 100, "%TDTRDSTM");
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else
+                        EventLog.AddLog("Cannot get EnterText_PointInfo handle");
+
+                    iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Change");     // 按 PointInfo視窗裡的change 按扭
+                    if (iChange_Button_of_PointInfo > 0)
+                    {
+                        // Change interval value
+                        EventLog.AddLog("Click Change button of PointInfo window");
+                        tpc.F_PostMessage(iChange_Button_of_PointInfo, tpc.V_BM_CLICK, 0, 0);
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else
+                        EventLog.AddLog("Cannot get iChange_Button_of_PointInfo handle");
+
+                    int iTDTRDSTM_window = tpc.F_FindWindow("#32770", "%TDTRDSTM");
+                    int iEditField_of_TDTRDSTM = tpc.F_FindWindowEx(iTDTRDSTM_window, 0, "Edit", "");
+                    int iBackspace_of_TDTRDSTM = tpc.F_FindWindowEx(iTDTRDSTM_window, 0, "Button", "");
+                    for (int i = 0; i < 37; i++)    // 換設定interval視窗裡的Backspace
+                    {
+                        iBackspace_of_TDTRDSTM = tpc.F_FindWindowEx(iTDTRDSTM_window, iBackspace_of_TDTRDSTM, "Button", "");
+                    }
+                    if (iBackspace_of_TDTRDSTM > 0)
+                    {
+                        // 
+                        EventLog.AddLog("Click Backspace button Change window");
+                        tpc.F_PostMessage(iBackspace_of_TDTRDSTM, tpc.V_BM_CLICK, 0, 0);
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else
+                        EventLog.AddLog("Cannot get iBackspace_of_TDTRDSTM handle");
+
+                    if (iEditField_of_TDTRDSTM > 0)
+                    {
+                        string sTime;
+                        if(LLRR <= 2)   //前兩次往左推2單位時間
+                            sTime = string.Format("{0:yyyy/MM/dd HH:mm:ss}", dt.AddSeconds(-(90*LLRR)));
+                        else            //後兩次往右推2單位時間
+                            sTime = string.Format("{0:yyyy/MM/dd HH:mm:ss}", dt.AddSeconds(90*(LLRR-2)));
+
+                        EventLog.AddLog("Enter the date time in Edit field");
+                        SendCharToHandle(iEditField_of_TDTRDSTM, 100, sTime);
+                        System.Threading.Thread.Sleep(1000);
+                        tpc.F_PostMessage(iEditField_of_TDTRDSTM, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
+                    }
+                    else
+                        EventLog.AddLog("Cannot get iEditField_of_TDTRDSTM handle");
+
+                    Thread.Sleep(1000);
+                    iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Exit");    // 按PointInfo視窗裡的Exit
+                    if (iExitButton_PointInfo > 0)
+                    {
+                        // Change interval value
+                        EventLog.AddLog("Click Exit button of PointInfo window");
+                        tpc.F_PostMessage(iExitButton_PointInfo, tpc.V_BM_CLICK, 0, 0);
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else
+                        EventLog.AddLog("Cannot get iExitButton_PointInfo handle");
+                }
+                */
+            }
 
             // Export Data (ctrl+F4) , 會在C:\WebAccess\Client\TestProject_TestSCADA 產生 $view001.htm 檔
             EventLog.AddLog("Send ctrl+F4 keyboard command to export data");
@@ -376,6 +725,16 @@ namespace View_and_Save_DataLogTrendData
             //PrintScreen("DataLogData", sTestLogFolder);
         }
 
+        private void SendCharToHandle(int iHandle, int iDelay, string sText)
+        {
+            var chars = sText.ToCharArray();
+            for (int ctr = 0; ctr < chars.Length; ctr++)
+            {
+                tpc.F_PostMessage(iHandle, tpc.V_WM_CHAR, chars[ctr], 0);
+                Thread.Sleep(iDelay);
+            }
+        }
+
         private void PrintScreen(string sFileName, string sFilePath)
         {
             Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
@@ -384,7 +743,7 @@ namespace View_and_Save_DataLogTrendData
             IntPtr dc1 = g.GetHdc();
             g.ReleaseHdc(dc1);
             //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
+            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_HHmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)

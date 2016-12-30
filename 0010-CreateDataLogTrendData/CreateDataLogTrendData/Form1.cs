@@ -101,6 +101,36 @@ namespace CreateDataLogTrendData
             api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
             PrintStep("Configure project");
 
+            //Step 0: Download
+            //EventLog.AddLog("Download...");
+            //StartDownload(api, sTestLogFolder);
+
+            //Step1: Copy DatalogTrendHotKey.kmp, dlogtrd.bxx and dlogtrd.dxx to specified path
+            //        to C:\WebAccess\Node\config\ProjectName\bgr
+            {
+                //string sCurrentFilePath = Directory.GetCurrentDirectory();
+                string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
+
+                string sourceFile1 = sCurrentFilePath + "\\DatalogTrendSettingFile\\DatalogTrendHotKey.kmp";
+                string destFile1_1 = string.Format("C:\\WebAccess\\Node\\config\\{0}_TestSCADA\\kst\\DatalogTrendHotKey.kmp", sProjectName);
+                //string destFile1_2 = string.Format("C:\\WebAccess\\Node\\{0}_TestSCADA\\bgr\\ConstTag_Set.scr", sProjectName);
+
+                string sourceFile2 = sCurrentFilePath + "\\DatalogTrendSettingFile\\dlogtrd.bxx";
+                string destFile2_1 = string.Format("C:\\WebAccess\\Node\\config\\{0}_TestSCADA\\bgr\\dlogtrd.bxx", sProjectName);
+                //string destFile2_2 = string.Format("C:\\WebAccess\\Node\\{0}_TestSCADA\\bgr\\alm_set_ConAna_51.scr", sProjectName);
+
+                string sourceFile3 = sCurrentFilePath + "\\DatalogTrendSettingFile\\dlogtrd.dxx";
+                string destFile3_1 = string.Format("C:\\WebAccess\\Node\\config\\{0}_TestSCADA\\drw\\dlogtrd.dxx", sProjectName);
+                //string destFile3_2 = string.Format("C:\\WebAccess\\Node\\{0}_TestSCADA\\bgr\\alm_ack.scr", sProjectName);
+
+                System.IO.File.Copy(sourceFile1, destFile1_1, true);
+                //System.IO.File.Copy(sourceFile1, destFile1_2, true);
+                System.IO.File.Copy(sourceFile2, destFile2_1, true);
+                //System.IO.File.Copy(sourceFile2, destFile2_2, true);
+                System.IO.File.Copy(sourceFile3, destFile3_1, true);
+                //System.IO.File.Copy(sourceFile3, destFile3_2, true);
+            }
+
             //Create Data Log Trend
             EventLog.AddLog("Create Data Log Trend...");
             CreateDataLogTrend();
@@ -144,6 +174,47 @@ namespace CreateDataLogTrendData
             }
 
             //return 0;
+        }
+
+        private void StartDownload(IAdvSeleniumAPI api, string sTestLogFolder)
+        {
+            api.SwitchToCurWindow(0);
+            api.SwitchToFrame("rightFrame", 0);
+            api.ByXpath("//tr[2]/td/a[3]/font").Click();    // "Download" click
+            Thread.Sleep(2000);
+            EventLog.AddLog("Find pop up download window handle");
+            string main; object subobj;                     // Find pop up download window handle
+            api.GetWinHandle(out main, out subobj);
+            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
+
+            List<string> items = new List<string>();
+            while (windowIterator.MoveNext())
+                items.Add(windowIterator.Current);
+
+            EventLog.AddLog("Main window handle= " + main);
+            EventLog.AddLog("Window handle list items[0]= " + items[0]);
+            EventLog.AddLog("Window handle list items[1]= " + items[1]);
+            if (main != items[1])
+            {
+                EventLog.AddLog("Switch to items[1]");
+                api.SwitchToWinHandle(items[1]);
+            }
+            else
+            {
+                EventLog.AddLog("Switch to items[0]");
+                api.SwitchToWinHandle(items[0]);
+            }
+            api.ByName("submit").Enter("").Submit().Exe();
+
+            EventLog.AddLog("Start to download and wait 80 seconds...");
+            Thread.Sleep(80000);    // Wait 80s for Download finish
+            EventLog.AddLog("It's been wait 80 seconds");
+            
+            api.Close();
+            EventLog.AddLog("Close download window and switch to main window");
+            api.SwitchToWinHandle(main);
+
+            PrintStep("Download");
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
