@@ -193,10 +193,17 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
 
             // Step1: Check deleted tag info from whhitelist
             bool bCheckDeletedTagInfo = CheckDeletedTagInfo();
+            if (bCheckDeletedTagInfo == false)
+                EventLog.AddLog(">>Check some deleted tag FAIL!!<<");
+            else
+                EventLog.AddLog(">>Check deleted tag PASS!!<<");
 
             // Step2: Check updated tag info
             bool bCheckUpdatedTagInfo = CheckUpdatedTagInfo();
-
+            if (bCheckUpdatedTagInfo == false)
+                EventLog.AddLog(">>Check some updated tag FAIL!!<<");
+            else
+                EventLog.AddLog(">>Check updated tag PASS!!<<");
             //if (bCheckUpdatedTagInfo && bCheckUpdatedTagInfo)
             //{
             //    Result.Text = "PASS!!";
@@ -407,8 +414,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
 
             if (bTotalResult == true)
             {
-                string sAI6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();
-                string sAI6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                //string sAI6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText(); // 20161121版本測試
+                //string sAI6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                string sAI6 = api.ByXpath("//tr[5]/td[2]").GetText();
+                string sAI6_checkbox = api.ByXpath("//tr[5]/td/input").GetAttr("checked");
                 if (sAI6 == "AT_AI0006" && sAI6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -419,8 +428,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             }
             if (bTotalResult == true)
             {
-                string sAO6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[255]/td[2]").GetText();
-                string sAO6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[255]/td/input").GetAttr("checked");
+                //string sAO6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[255]/td[2]").GetText();// 20161121版本測試
+                //string sAO6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[255]/td/input").GetAttr("checked");
+                string sAO6 = api.ByXpath("//tr[254]/td[2]").GetText();
+                string sAO6_checkbox = api.ByXpath("//tr[254]/td/input").GetAttr("checked");
                 if (sAO6 == "AT_AO0006" && sAO6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -434,8 +445,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
-                string sDI6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[4]/td[2]").GetText();
-                string sDI6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[4]/td/input").GetAttr("checked");
+                //string sDI6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[4]/td[2]").GetText();// 20161121版本測試
+                //string sDI6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[4]/td/input").GetAttr("checked");
+                string sDI6 = api.ByXpath("//tr[3]/td[2]").GetText();
+                string sDI6_checkbox = api.ByXpath("//tr[3]/td/input").GetAttr("checked");
                 if (sDI6 == "AT_DI0006" && sDI6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -446,8 +459,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             }
             if (bTotalResult == true)
             {
-                string sDO6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[253]/td[2]").GetText();
-                string sDO6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[253]/td/input").GetAttr("checked");
+                //string sDO6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[253]/td[2]").GetText();// 20161121版本測試
+                //string sDO6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[253]/td/input").GetAttr("checked");
+                string sDO6 = api.ByXpath("//tr[252]/td[2]").GetText();
+                string sDO6_checkbox = api.ByXpath("//tr[252]/td/input").GetAttr("checked");
                 if (sDO6 == "AT_DO0006" && sDO6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -463,8 +478,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
-                string sOPCDA6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();
-                string sOPCDA6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                //string sOPCDA6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();// 20161121版本測試
+                //string sOPCDA6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                string sOPCDA6 = api.ByXpath("//tr[5]/td[2]").GetText();
+                string sOPCDA6_checkbox = api.ByXpath("//tr[5]/td/input").GetAttr("checked");
                 if (sOPCDA6 == "OPCDA_0006" && sOPCDA6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -480,8 +497,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
-                string sOPCUA6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();
-                string sOPCUA6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                //string sOPCUA6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();// 20161121版本測試
+                //string sOPCUA6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                string sOPCUA6 = api.ByXpath("//tr[5]/td[2]").GetText();
+                string sOPCUA6_checkbox = api.ByXpath("//tr[5]/td/input").GetAttr("checked");
                 if (sOPCUA6 == "OPCUA_0006" && sOPCUA6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -496,8 +515,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
-                string sAcc6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();
-                string sAcc6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                //string sAcc6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();// 20161121版本測試
+                //string sAcc6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                string sAcc6 = api.ByXpath("//tr[5]/td[2]").GetText();
+                string sAcc6_checkbox = api.ByXpath("//tr[5]/td/input").GetAttr("checked");
                 if (sAcc6 == "Acc_0006" && sAcc6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -511,8 +532,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
-                string sConDis6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[256]/td[2]").GetText();
-                string sConDis6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[256]/td/input").GetAttr("checked");
+                //string sConDis6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[256]/td[2]").GetText();// 20161121版本測試
+                //string sConDis6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[256]/td/input").GetAttr("checked");
+                string sConDis6 = api.ByXpath("//tr[255]/td[2]").GetText();
+                string sConDis6_checkbox = api.ByXpath("//tr[255]/td/input").GetAttr("checked");
                 if (sConDis6 == "ConDis_0006" && sConDis6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -526,8 +549,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
-                string sSys6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();
-                string sSys6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                //string sSys6 = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td[2]").GetText();// 20161121版本測試
+                //string sSys6_checkbox = api.ByXpath("//table[@id='leftTopTable']/tbody/tr[6]/td/input").GetAttr("checked");
+                string sSys6 = api.ByXpath("//tr[5]/td[2]").GetText();
+                string sSys6_checkbox = api.ByXpath("//tr[5]/td/input").GetAttr("checked");
                 if (sSys6 == "SystemSec_0006" && sSys6_checkbox == "false")
                     bTotalResult = true;
                 else
@@ -985,25 +1010,5 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", WebAccessIP2.Text, sIniFilePath);
             }
         }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
     }
 }
