@@ -309,7 +309,6 @@ namespace View_and_Save_DataLogTrendData
                     iDataLogTrend_Handle = tpc.F_FindWindow("#32770", "Datalog Trend List");
                     break;
             }
-            iDataLogTrend_Handle = tpc.F_FindWindow("#32770", "Datalog Trend List");
             int iEnterText2 = tpc.F_FindWindowEx(iDataLogTrend_Handle, 0, "Edit", "");
             if (iEnterText2 > 0)
                 tpc.F_PostMessage(iEnterText2, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
@@ -608,7 +607,7 @@ namespace View_and_Save_DataLogTrendData
                     }
                     else
                         EventLog.AddLog("Cannot get EnterText_PointInfo handle");
-
+                                                                                                                    // 注意! 尚未加上多國語言版本
                     iChange_Button_of_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Change");     // 按 PointInfo視窗裡的change 按扭
                     if (iChange_Button_of_PointInfo > 0)
                     {
@@ -655,6 +654,7 @@ namespace View_and_Save_DataLogTrendData
 
                     Thread.Sleep(1000);
                     iExitButton_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Button", "Exit");    // 按PointInfo視窗裡的Exit
+                                                                                                           // 注意! 尚未加上多國語言版本
                     if (iExitButton_PointInfo > 0)
                     {
                         // Change interval value
