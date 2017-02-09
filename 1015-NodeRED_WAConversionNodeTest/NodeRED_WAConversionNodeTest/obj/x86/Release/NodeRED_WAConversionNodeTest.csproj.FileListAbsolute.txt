@@ -9,3 +9,14 @@ D:\DQA-Code\WA\NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86
 D:\DQA-Code\WA\NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\WebDriver.dll
 D:\DQA-Code\WA\NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\WebDriver.Support.dll
 D:\DQA-Code\WA\NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86\Release\NodeRED_WAConversionNodeTest.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\NodeRED_WAConversionNodeTest.exe
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86\Release\NodeRED_WAConversionNodeTest.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86\Release\NodeRED_WAConversionNodeTest.Form1.resources
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86\Release\NodeRED_WAConversionNodeTest.Properties.Resources.resources
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86\Release\NodeRED_WAConversionNodeTest.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\1015-NodeRED_WAConversionNodeTest\NodeRED_WAConversionNodeTest\obj\x86\Release\NodeRED_WAConversionNodeTest.exe

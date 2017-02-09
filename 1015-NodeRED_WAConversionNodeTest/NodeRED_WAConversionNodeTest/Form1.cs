@@ -254,6 +254,8 @@ namespace NodeRED_WAConversionNodeTest
                 api.ByXpath("//button[@type='button']").Click();        //刪除Sheet2
                 api.ByXpath("(//button[@type='button'])[4]").Click();   //確認刪除Sheet2
                 api.ByXpath("//a[@id='btn-deploy']/span").Click();      // deploy
+
+                PrintStep(sConversionNodeName[i - 1] + " Test");
             }
 
             return bTestResult;
