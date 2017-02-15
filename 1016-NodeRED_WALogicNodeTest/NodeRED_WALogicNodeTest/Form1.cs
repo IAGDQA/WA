@@ -225,11 +225,12 @@ namespace NodeRED_WALogicNodeTest
                 string sDebugMessageTopic = api.ByCss("#debug-content > div > span.debug-message-topic").GetText();
                 string sDebugMessagePayload = api.ByCss("#debug-content > div > span.debug-message-payload").GetText();
 
-                EventLog.AddLog(sLogicNodeName[i - 1] + " conversioin test");
-                EventLog.AddLog("Debug Message:");
+                EventLog.AddLog(sLogicNodeName[i - 1] + " logic test");
+                EventLog.AddLog("-------------Debug Message--------------");
                 EventLog.AddLog(sDebugMessageDate + " " + sDebugMessageName);
                 EventLog.AddLog(sDebugMessageTopic);
                 EventLog.AddLog(sDebugMessagePayload);
+                EventLog.AddLog("----------------------------------------");
                 string[] sType = sDebugMessageTopic.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries); // 切割文字抓取回傳type
 
                 if (sType[1] != sOutputType[i - 1])
