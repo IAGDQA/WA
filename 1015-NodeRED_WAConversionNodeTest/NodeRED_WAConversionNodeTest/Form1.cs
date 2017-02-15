@@ -226,10 +226,11 @@ namespace NodeRED_WAConversionNodeTest
                 string sDebugMessagePayload = api.ByCss("#debug-content > div > span.debug-message-payload").GetText();
 
                 EventLog.AddLog(sConversionNodeName[i - 1] + " conversioin test");
-                EventLog.AddLog("Debug Message:");
+                EventLog.AddLog("-------------Debug Message--------------");
                 EventLog.AddLog(sDebugMessageDate + " " + sDebugMessageName);
                 EventLog.AddLog(sDebugMessageTopic);
                 EventLog.AddLog(sDebugMessagePayload);
+                EventLog.AddLog("----------------------------------------");
                 string[] sType = sDebugMessageTopic.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries); // 切割文字抓取回傳type
 
                 if (sType[1] != sOutputType[i - 1])
