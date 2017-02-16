@@ -193,7 +193,21 @@ namespace NodeRED_WAIONodeTest
                  * */
                 SendKeys.SendWait("^{i}");  // import tag
                 Thread.Sleep(2000);
-                api.ById("clipboard-import").Enter(sNodeRED_Sample).Exe();
+
+                if (sNodeRED_Sample.Length > 700)   // 如果要寫入的字串太長 會出錯 故用關鍵字wires拆開字串並分別寫入
+                {
+                    string[] sNodeRED_SampleTemp = sNodeRED_Sample.Split(new string[] { "wires" }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int gg = 0; gg < sNodeRED_SampleTemp.Length; gg++)
+                    {
+                        if (gg == 0)
+                            api.ById("clipboard-import").Enter(sNodeRED_SampleTemp[gg]).Exe();
+                        else
+                            api.ById("clipboard-import").Enter("wires" + sNodeRED_SampleTemp[gg]).Exe();
+                    }
+                }
+                else
+                    api.ById("clipboard-import").Enter(sNodeRED_Sample).Exe();
+
                 api.ById("clipboard-dialog-ok").Click();    // click ok
 
                 api.ByXpath("//a[@id='btn-workspace-add-tab']/i").Click();  //新增Sheet3
