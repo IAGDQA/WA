@@ -83,7 +83,6 @@ namespace NodeRED_WAMathNodeTest
         long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
         {
             baseUrl = "http://" + sWebAccessIP;
-
             if (sBrowser == "Internet Explorer")
             {
                 EventLog.AddLog("Browser= Internet Explorer");
@@ -162,7 +161,7 @@ namespace NodeRED_WAMathNodeTest
             bool bTestResult = true;
             string[] sMathNodeName = { "FilterTagValue", "ABS", "ADD", "SUB", "MUL", "DIV", "EXP", "LN", "LOG", "MAX", "MIN", "SQRT", "COS", "SIN", "TAN" };
             string[] sOutputType = { "array", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number" };
-            string[] sOutputValue = { "[ \"AT_AI0050\", \"AT_AI0100\", \"AT_AI0150\", \"AT_AI0200\", \"AT_AI0250\" ]", "4.57", "0", "0", "-100", "1", "7.39", "0.69", "1", "4.58", "-4.58", "2", "1", "1", "1" };
+            string[] sOutputValue = { "\"AT_AI0050\", \"AT_AI0100\", \"AT_AI0200\", \"AT_AI0250\", \"AT_AI0150\"", "4.57", "0", "0", "-100", "1", "7.39", "0.69", "1", "4.58", "-4.58", "2", "1", "1", "1" };
 
             for (int i = 1; i <= sMathNodeName.Length; i++)
             {
@@ -254,11 +253,30 @@ namespace NodeRED_WAMathNodeTest
                     EventLog.AddLog("Correct type is: " + sOutputType[i - 1]);
                 }
 
-                if (sDebugMessagePayload != sOutputValue[i - 1])
+                if (sMathNodeName[i - 1] == "FilterTagValue")   // special case 先將預計要得到的值拆解 再分別去確認sDebugMessagePayload裡面有沒有包含
                 {
-                    bTestResult = false;
-                    EventLog.AddLog("Output value ERROR!!");
-                    EventLog.AddLog("Correct value is: " + sOutputValue[i - 1]);
+                    string[] ss = sOutputValue[i - 1].Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+
+                    bool bFilterDisp = true;
+
+                    for (int c = 0; c < ss.Length; c++)
+                        bFilterDisp = bFilterDisp && sDebugMessagePayload.Contains(ss[c]);
+
+                    if (!bFilterDisp)
+                    {
+                        bTestResult = false;
+                        EventLog.AddLog("Output value ERROR!!");
+                        EventLog.AddLog("Correct value should include the following: " + sOutputValue[i - 1]);
+                    }
+                }
+                else
+                {
+                    if (sDebugMessagePayload != sOutputValue[i - 1])
+                    {
+                        bTestResult = false;
+                        EventLog.AddLog("Output value ERROR!!");
+                        EventLog.AddLog("Correct value is: " + sOutputValue[i - 1]);
+                    }
                 }
 
                 //Step6: clear debug message
