@@ -1,0 +1,13 @@
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\NodeRED_WADashboardNodeTest.exe
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\NodeRED_WADashboardNodeTest.pdb
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\iATesterAPI.dll
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\WebDriver.dll
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\bin\Debug\WebDriver.Support.dll
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\obj\x86\Debug\NodeRED_WADashboardNodeTest.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\obj\x86\Debug\NodeRED_WADashboardNodeTest.Form1.resources
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\obj\x86\Debug\NodeRED_WADashboardNodeTest.Properties.Resources.resources
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\obj\x86\Debug\NodeRED_WADashboardNodeTest.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\obj\x86\Debug\NodeRED_WADashboardNodeTest.exe
+D:\DQA-Code\WA\NodeRED_WADashboardNodeTest\NodeRED_WADashboardNodeTest\obj\x86\Debug\NodeRED_WADashboardNodeTest.pdb

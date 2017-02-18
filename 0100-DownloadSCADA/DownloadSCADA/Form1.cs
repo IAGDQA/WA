@@ -176,6 +176,38 @@ namespace DownloadSCADA
             }
             api.ByName("submit").Enter("").Submit().Exe();
 
+            //Thread.Sleep(30000);
+            int iStartTime = System.Environment.TickCount;
+            int iEndTime;
+            string sDownloadResult = "";
+            do
+            {
+                sDownloadResult = api.ByXpath("/html/body/center/b/b/font[1]").GetText();   // retry 3次，一次5秒，共15秒
+                if (sDownloadResult != "")
+                    break;
+
+                iEndTime = System.Environment.TickCount;
+            } while (iEndTime-iStartTime <= 60000);
+
+            if (sDownloadResult == "Done" || sDownloadResult == "Primary SCADA Node restarted in Communication mode")
+            {
+                Thread.Sleep(2000);
+                PrintScreen("Download result", sTestLogFolder);
+                api.Close();
+                EventLog.AddLog("Download PASS!!");
+                EventLog.AddLog(string.Format("Download result message:{0} ", sDownloadResult));
+            }
+            else
+            {
+                Thread.Sleep(2000);
+                PrintScreen("Download result", sTestLogFolder);
+                api.Close();
+                EventLog.AddLog("Download FAIL!!");
+                EventLog.AddLog(string.Format("Result text: ", sDownloadResult));
+            }
+
+            api.SwitchToWinHandle(main);
+            /*
             EventLog.AddLog("Start to download and wait 100 seconds...");
             Thread.Sleep(100000);    // Wait 100s for Download finish
             EventLog.AddLog("It's been wait 100 seconds");
@@ -183,7 +215,7 @@ namespace DownloadSCADA
             api.Close();
             EventLog.AddLog("Close download window and switch to main window");
             api.SwitchToWinHandle(main);            // switch back to original window
-
+            */
             PrintStep("Download");
         }
 
