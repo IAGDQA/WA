@@ -348,7 +348,7 @@ namespace PlugandPlay_TagInfoSyncTest
                 EventLog.AddLog("<CloudPC> Get Acc_0100 point info");
                 SendCharToHandle(iEnterText_PointInfo, 100, "Acc_0100");
                 System.Threading.Thread.Sleep(1000);
-
+                
                 PrintScreen("PlugandPlay_TagInfoSyncTest_Acc_0100", sTestLogFolder);
                 for (int i = 1; i <= 10; i++)
                 {
@@ -702,11 +702,6 @@ namespace PlugandPlay_TagInfoSyncTest
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", WebAccessIP2.Text, sIniFilePath);
             }
-        }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
     }
