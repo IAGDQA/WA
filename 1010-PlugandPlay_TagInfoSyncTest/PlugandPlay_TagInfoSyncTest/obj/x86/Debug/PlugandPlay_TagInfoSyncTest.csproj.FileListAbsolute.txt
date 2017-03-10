@@ -36,3 +36,6 @@ D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\obj\
 D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\obj\x86\Debug\PlugandPlay_TagInfoSyncTest.Form1.resources
 D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\obj\x86\Debug\PlugandPlay_TagInfoSyncTest.Properties.Resources.resources
 D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\obj\x86\Debug\PlugandPlay_TagInfoSyncTest.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\bin\Debug\PlugandPlay_TagInfoSyncTest.exe.config
+D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\bin\Debug\WAWebServiceInterface.dll
+D:\DQA-Code\WA\1010-PlugandPlay_TagInfoSyncTest\PlugandPlay_TagInfoSyncTest\bin\Debug\Newtonsoft.Json.dll

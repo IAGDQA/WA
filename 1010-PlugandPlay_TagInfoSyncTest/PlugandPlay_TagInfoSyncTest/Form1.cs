@@ -12,14 +12,19 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using WAWebServiceInterface;
 
 namespace PlugandPlay_TagInfoSyncTest
 {
     public partial class Form1 : Form, iATester.iCom
     {
         IAdvSeleniumAPI api;
-        IAdvSeleniumAPI api2;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        WAWebServiceInterface.WAWebService waWebSvcG = null;
+        WAWebServiceInterface.WAWebService waWebSvcC = null;
+
+        WAGetValResponseObj G_AI_Value, G_AO_Value, G_DI_Value, G_DO_Value, G_OPCDA_Value, G_OPCUA_Value, G_Acc_Value, G_ConAna_Value, G_ConDis_Value, G_ConTxt_Value, G_Calc_Value, G_System_Value = null;
+        WAGetValResponseObj C_AI_Value, C_AO_Value, C_DI_Value, C_DO_Value, C_OPCDA_Value, C_OPCUA_Value, C_Acc_Value, C_ConAna_Value, C_ConDis_Value, C_ConTxt_Value, C_Calc_Value, C_System_Value = null;
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -85,8 +90,16 @@ namespace PlugandPlay_TagInfoSyncTest
             // Step1: Start the kernel of ground PC
             GroundPCStartKernel(sBrowser, sProjectName, sWebAccessIP, sTestLogFolder);
 
-            // Step2: Start the kernel of cloud PC and view and save tag info
-            ViewandSaveCloudTagInfo(sBrowser, sProjectName2, sWebAccessIP2, sTestLogFolder);
+            // Step2: Start the kernel of cloud PC 
+            CloudPCStartKernel(sBrowser, sProjectName2, sWebAccessIP2, sTestLogFolder);
+
+            // Step3: check the cloud and ground tag value
+            bool bTagCheckResult;
+            bool bGetTagInfoRes = GetTagInfo(sProjectName, sWebAccessIP, sProjectName2, sWebAccessIP2);
+            if (bGetTagInfoRes)
+                bTagCheckResult = CheckGroundandCloudTag();
+            else
+                bTagCheckResult = bGetTagInfoRes;
 
             bool bSeleniumResult = true;
             int iTotalSeleniumAction = dataGridView1.Rows.Count;
@@ -107,7 +120,7 @@ namespace PlugandPlay_TagInfoSyncTest
                 }
             }
 
-            if (bSeleniumResult)
+            if (bSeleniumResult && bTagCheckResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -121,7 +134,6 @@ namespace PlugandPlay_TagInfoSyncTest
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
             //return 0;
         }
 
@@ -155,334 +167,709 @@ namespace PlugandPlay_TagInfoSyncTest
             PrintStep(api, "<GroundPC> Quit browser");
         }
 
-        private void ViewandSaveCloudTagInfo(string sBrowser, string sProjectName, string sWebAccessIP, string sTestLogFolder)
+        private void CloudPCStartKernel(string sBrowser, string sProjectName, string sWebAccessIP, string sTestLogFolder)
         {
             if (sBrowser == "Internet Explorer")
             {
                 EventLog.AddLog("<CloudPC> Browser= Internet Explorer");
-                api2 = new AdvSeleniumAPI("IE", "");
+                api = new AdvSeleniumAPI("IE", "");
                 System.Threading.Thread.Sleep(1000);
             }
             else if (sBrowser == "Mozilla FireFox")
             {
                 EventLog.AddLog("<CloudPC> Browser= Mozilla FireFox");
-                api2 = new AdvSeleniumAPI("FireFox", "");
+                api = new AdvSeleniumAPI("FireFox", "");
                 System.Threading.Thread.Sleep(1000);
             }
-            EventLog.AddLog("<CloudPC> Capture the project manager page");
-            api2.LinkWebUI(baseUrl2 + "/broadWeb/bwconfig.asp?username=admin");
-            api2.ById("userField").Enter("").Submit().Exe();
-            PrintStep(api2, "<CloudPC> Login WebAccess");
-            
+
+            api.LinkWebUI(baseUrl2 + "/broadWeb/bwconfig.asp?username=admin");
+            api.ById("userField").Enter("").Submit().Exe();
+            PrintStep(api, "<CloudPC> Login WebAccess");
 
             // Configure project by project name
-            EventLog.AddLog("<CloudPC> Capture the configure project page");
-            api2.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep(api2, "<CloudPC> Configure project");
+            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
+            PrintStep(api, "<CloudPC> Configure project");
 
-            // Start kernel
-            EventLog.AddLog("<CloudPC> Start kernel");
-            StartNode(api2, sTestLogFolder);
+            EventLog.AddLog("<CloudPC> Start Kernel");
+            StartNode(api, sTestLogFolder);
 
-            Thread.Sleep(5000);
+            api.Quit();
+            PrintStep(api, "<CloudPC> Quit browser");
+        }
 
-            // Start view
-            EventLog.AddLog("<CloudPC> start view..");
-            api2.SwitchToCurWindow(0);
-            api2.SwitchToFrame("rightFrame", 0);
-            api2.ByXpath("//tr[2]/td/a/font").Click();
-            PrintStep(api2, "Start View");
+        private void GetCloudTagInfo()
+        {
+            EventLog.AddLog("Get cloud tag info");
+            /*
+            string user = "admin";
+            string pwd = "";
+            if (null == waWebSvcC) waWebSvcC = new WAWebService();
+            EventLog.AddLog("Send GetProjectList Request");
 
-            // Control browser
-            int iIE_Handl, iIE_Handl_2, iIE_Handl_3, iIE_Handl_4, iIE_Handl_5, iIE_Handl_6, iIE_Handl_7, iWA_MainPage = 0;
-            switch (slanguage)
+            if (waWebSvcC.Init(sWebAccessIP, "", user, pwd))
             {
-                case "ENG":
-                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : CTestSCADA - main:untitled");
-                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
-                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : CTestSCADA - Internet Explorer");
-                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
-                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
-                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
-                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
-                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
-                    break;
-                case "CHT":
-                    iIE_Handl = tpc.F_FindWindow("IEFrame", "節點 : CTestSCADA - main:untitled");
-                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
-                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "節點 : CTestSCADA - Internet Explorer");
-                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
-                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
-                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
-                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
-                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
-                    break;
-                case "CHS":
-                    iIE_Handl = tpc.F_FindWindow("IEFrame", "节点 : CTestSCADA - main:untitled"); // 注意是CTestSCADA而不是TestSCADA
-                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
-                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "节点 : CTestSCADA - Internet Explorer");  // 注意是CTestSCADA而不是TestSCADA
-                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
-                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
-                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
-                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
-                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
-                    break;
-                case "JPN":
-                    iIE_Handl = tpc.F_FindWindow("IEFrame", "ﾉｰﾄﾞ : CTestSCADA - main:untitled"); // 注意是CTestSCADA而不是TestSCADA
-                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
-                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "ﾉｰﾄﾞ : CTestSCADA - Internet Explorer");  // 注意是CTestSCADA而不是TestSCADA
-                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
-                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
-                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
-                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
-                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
-                    break;
-                case "KRN":
-                case "FRN":
-
-                default:
-                    iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : CTestSCADA - main:untitled");
-                    iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
-                    iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : CTestSCADA - Internet Explorer");
-                    iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
-                    iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
-                    iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
-                    iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
-                    iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
-                    break;
-            }
-            //int iIE_Handl = tpc.F_FindWindow("IEFrame", "Node : CTestSCADA - main:untitled");   // 注意是CTestSCADA而不是TestSCADA
-            //int iIE_Handl_2 = tpc.F_FindWindowEx(iIE_Handl, 0, "Frame Tab", "");
-            //int iIE_Handl_3 = tpc.F_FindWindowEx(iIE_Handl_2, 0, "TabWindowClass", "Node : CTestSCADA - Internet Explorer");    // 注意是CTestSCADA而不是TestSCADA
-            //int iIE_Handl_4 = tpc.F_FindWindowEx(iIE_Handl_3, 0, "Shell DocObject View", "");
-            //int iIE_Handl_5 = tpc.F_FindWindowEx(iIE_Handl_4, 0, "Internet Explorer_Server", "");
-            //int iIE_Handl_6 = tpc.F_FindWindowEx(iIE_Handl_5, 0, "AfxOleControl42s", "");
-            //int iIE_Handl_7 = tpc.F_FindWindowEx(iIE_Handl_6, 0, "AfxWnd42s", "");
-            //int iWA_MainPage = tpc.F_FindWindowEx(iIE_Handl_7, 0, "ActXBroadWinBwviewWClass", "Advantech View 001 - main:untitled");
-
-            if (iWA_MainPage > 0)
-            {
-                Thread.Sleep(5000);
-                tpc.F_PostMessage(iWA_MainPage, tpc.V_WM_KEYDOWN, tpc.V_VK_ESCAPE, 0);
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("waWebSvc.Init() Success");
             }
             else
-                EventLog.AddLog("Cannot get Start View WebAccess Main Page handle");
+                EventLog.AddLog("waWebSvc.Init() Fail");
+            
+            waWebSvcC.SetProject(sProjectName);      // set Project name first
+            */
 
-            // Login keyboard
-            //int iLoginKeyboard_Handle = FindWindow("#32770 (Dialog)", "Login");
-            EventLog.AddLog("<CloudPC> Login");
-            int iLoginKeyboard_Handle;
-            switch (slanguage)
+            // Get AI value
+            string[] sAITagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sAITagList[i - 1] = "AT_AI" + i.ToString("0000");
+            C_AI_Value = waWebSvcC.GetValueText(sAITagList, false);
+            //for (int i = 0; i < C_AI_Value.Result.Total; i++)
+            //{
+            //    string sName = C_AI_Value.Values[i].Name;
+            //    string sValues = C_AI_Value.Values[i].Value;
+            //    int iQuality = C_AI_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get AO value
+            string[] sAOTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sAOTagList[i - 1] = "AT_AO" + i.ToString("0000");
+            C_AO_Value = waWebSvcC.GetValueText(sAOTagList, false);
+            //for (int i = 0; i < C_AO_Value.Result.Total; i++)
+            //{
+            //    string sName = C_AO_Value.Values[i].Name;
+            //    string sValues = C_AO_Value.Values[i].Value;
+            //    int iQuality = C_AO_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+            
+            // Get DI value
+            string[] sDITagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sDITagList[i - 1] = "AT_DI" + i.ToString("0000");
+            C_DI_Value = waWebSvcC.GetValueText(sDITagList, false);
+            //for (int i = 0; i < C_DI_Value.Result.Total; i++)
+            //{
+            //    string sName = C_DI_Value.Values[i].Name;
+            //    string sValues = C_DI_Value.Values[i].Value;
+            //    int iQuality = C_DI_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get DO value
+            string[] sDOTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sDOTagList[i - 1] = "AT_DO" + i.ToString("0000");
+            C_DO_Value = waWebSvcC.GetValueText(sDOTagList, false);
+            //for (int i = 0; i < C_DO_Value.Result.Total; i++)
+            //{
+            //    string sName = C_DO_Value.Values[i].Name;
+            //    string sValues = C_DO_Value.Values[i].Value;
+            //    int iQuality = C_DO_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get OPCDA value
+            string[] sOPCDATagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sOPCDATagList[i - 1] = "OPCDA_" + i.ToString("0000");
+            C_OPCDA_Value = waWebSvcC.GetValueText(sOPCDATagList, false);
+            //for (int i = 0; i < C_OPCDA_Value.Result.Total; i++)
+            //{
+            //    string sName = C_OPCDA_Value.Values[i].Name;
+            //    string sValues = C_OPCDA_Value.Values[i].Value;
+            //    int iQuality = C_OPCDA_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get OPCUA value
+            string[] sOPCUATagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sOPCUATagList[i - 1] = "OPCUA_" + i.ToString("0000");
+            C_OPCUA_Value = waWebSvcC.GetValueText(sOPCUATagList, false);
+            //for (int i = 0; i < C_OPCUA_Value.Result.Total; i++)
+            //{
+            //    string sName = C_OPCUA_Value.Values[i].Name;
+            //    string sValues = C_OPCUA_Value.Values[i].Value;
+            //    int iQuality = C_OPCUA_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get Acc value
+            string[] sAccTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sAccTagList[i - 1] = "Acc_" + i.ToString("0000");
+            C_Acc_Value = waWebSvcC.GetValueText(sAccTagList, false);
+            //for (int i = 0; i < C_Acc_Value.Result.Total; i++)
+            //{
+            //    string sName = C_Acc_Value.Values[i].Name;
+            //    string sValues = C_Acc_Value.Values[i].Value;
+            //    int iQuality = C_Acc_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get ConAna value
+            string[] sConAnaTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sConAnaTagList[i - 1] = "ConAna_" + i.ToString("0000");
+            C_ConAna_Value = waWebSvcC.GetValueText(sConAnaTagList, false);
+            //for (int i = 0; i < C_ConAna_Value.Result.Total; i++)
+            //{
+            //    string sName = C_ConAna_Value.Values[i].Name;
+            //    string sValues = C_ConAna_Value.Values[i].Value;
+            //    int iQuality = C_ConAna_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get ConDis value
+            string[] sConDisTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sConDisTagList[i - 1] = "ConDis_" + i.ToString("0000");
+            C_ConDis_Value = waWebSvcC.GetValueText(sConDisTagList, false);
+            //for (int i = 0; i < C_ConDis_Value.Result.Total; i++)
+            //{
+            //    string sName = C_ConDis_Value.Values[i].Name;
+            //    string sValues = C_ConDis_Value.Values[i].Value;
+            //    int iQuality = C_ConDis_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get ConTxt value
+            string[] sConTxtTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sConTxtTagList[i - 1] = "ConTxt_" + i.ToString("0000");
+            C_ConTxt_Value = waWebSvcC.GetValueText(sConTxtTagList, true);   // set true for Text
+            //for (int i = 0; i < C_ConTxt_Value.Result.Total; i++)
+            //{
+            //    string sName = C_ConTxt_Value.Values[i].Name;
+            //    string sValues = C_ConTxt_Value.Values[i].Value;
+            //    int iQuality = C_ConTxt_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get Calculate value
+            string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
+            "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+
+            C_Calc_Value = waWebSvcC.GetValueText(sCalcTagList, false);
+            //for (int i = 0; i < C_Calc_Value.Result.Total; i++)
+            //{
+            //    string sName = C_Calc_Value.Values[i].Name;
+            //    string sValues = C_Calc_Value.Values[i].Value;
+            //    int iQuality = C_Calc_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get System value
+            string[] sSystemTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sSystemTagList[i - 1] = "SystemSec_" + i.ToString("0000");
+            C_System_Value = waWebSvcC.GetValueText(sSystemTagList, false);
+            //for (int i = 0; i < C_System_Value.Result.Total; i++)
+            //{
+            //    string sName = C_System_Value.Values[i].Name;
+            //    string sValues = C_System_Value.Values[i].Value;
+            //    int iQuality = C_System_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+            EventLog.AddLog("Get cloud tag info END");
+        }
+
+        private void GetGroundTagInfo()
+        {
+            EventLog.AddLog("Get ground tag info");
+            /*
+            string user = "admin";
+            string pwd = "";
+            if (null == waWebSvcG) waWebSvcG = new WAWebService();
+            EventLog.AddLog("Send GetProjectList Request");
+
+            if (waWebSvcG.Init(sWebAccessIP, "", user, pwd))
             {
-                case "ENG":
-                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
-                    break;
-                case "CHT":
-                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登入");
-                    break;
-                case "CHS":
-                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "登录");
-                    break;
-                case "JPN":
-                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "ﾛｸﾞｲﾝ");
-                    break;
-                case "KRN":
-                case "FRN":
-
-                default:
-                    iLoginKeyboard_Handle = tpc.F_FindWindow("#32770", "Login");
-                    break;
-            }
-            int iEnterText = tpc.F_FindWindowEx(iLoginKeyboard_Handle, 0, "Edit", "");
-            if (iEnterText > 0)
-            {
-                //tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'a', 0);
-                //System.Threading.Thread.Sleep(100);
-                //tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'd', 0); //d
-                //System.Threading.Thread.Sleep(100);
-                //tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'm', 0); //m
-                //System.Threading.Thread.Sleep(100);
-                //tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'i', 0); //i
-                //System.Threading.Thread.Sleep(100);
-                //tpc.F_PostMessage(iEnterText, tpc.V_WM_CHAR, 'n', 0); //n
-                //System.Threading.Thread.Sleep(100);
-                SendCharToHandle(iEnterText, 100, "admin");
-                tpc.F_PostMessage(iEnterText, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
-            }
-            else
-                EventLog.AddLog("Cannot get Login keyboard handle");
-
-            Thread.Sleep(1000);
-            SendKeys.SendWait("^{F5}");
-            Thread.Sleep(1000);
-
-            EventLog.AddLog("<CloudPC> Open Point Info window");
-            int iPointInfo_Handle;
-            switch (slanguage)
-            {
-                case "ENG":
-                    iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
-                    break;
-                case "CHT":
-                    iPointInfo_Handle = tpc.F_FindWindow("#32770", "點資訊");
-                    break;
-                case "CHS":
-                    iPointInfo_Handle = tpc.F_FindWindow("#32770", "点信息");
-                    break;
-                case "JPN":
-                    iPointInfo_Handle = tpc.F_FindWindow("#32770", "ﾎﾟｲﾝﾄ情報");
-                    break;
-                case "KRN":
-                case "FRN":
-
-                default:
-                    iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
-                    break;
-            }
-            //int iPointInfo_Handle = tpc.F_FindWindow("#32770", "Point Info");
-            int iEnterText_PointInfo = tpc.F_FindWindowEx(iPointInfo_Handle, 0, "Edit", "");
-            if (iEnterText_PointInfo > 0)
-            {
-                // Acc_0100
-                EventLog.AddLog("<CloudPC> Get Acc_0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "Acc_0100");
-                System.Threading.Thread.Sleep(1000);
-                
-                PrintScreen("PlugandPlay_TagInfoSyncTest_Acc_0100", sTestLogFolder);
-                for (int i = 1; i <= 10; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // AT_AI0100
-                EventLog.AddLog("<CloudPC> Get AT_AI0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "AT_AI0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_AT_AI0100", sTestLogFolder);
-                for (int i = 1; i <= 10; i++ )
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // AT_AO0100
-                EventLog.AddLog("<CloudPC> Get AT_AO0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "AT_AO0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_AT_AO0100", sTestLogFolder);
-                for (int i = 1; i <= 10; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // AT_DI0100
-                EventLog.AddLog("<CloudPC> Get AT_DI0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "AT_DI0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_AT_DI0100", sTestLogFolder);
-                for (int i = 1; i <= 10; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // AT_DO0100
-                EventLog.AddLog("<CloudPC> Get AT_DO0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "AT_DO0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_AT_DO0100", sTestLogFolder);
-                for (int i = 1; i <= 10; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // Calc_System
-                EventLog.AddLog("<CloudPC> Get Calc_System point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "Calc_System");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_Calc_System", sTestLogFolder);
-                for (int i = 1; i <= 15; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // ConAna_0100
-                EventLog.AddLog("<CloudPC> Get ConAna_0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "ConAna_0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_ConAna_0100", sTestLogFolder);
-                for (int i = 1; i <= 15; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // ConDis_0100
-                EventLog.AddLog("<CloudPC> Get ConDis_0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "ConDis_0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_ConDis_0100", sTestLogFolder);
-                for (int i = 1; i <= 15; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // OPCDA_0100
-                EventLog.AddLog("<CloudPC> Get OPCDA_0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "OPCDA_0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_OPCDA_0100", sTestLogFolder);
-                for (int i = 1; i <= 15; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // OPCUA_0100
-                EventLog.AddLog("<CloudPC> Get OPCUA_0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "OPCUA_0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_OPCUA_0100", sTestLogFolder);
-                for (int i = 1; i <= 15; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
-
-                // SystemSec_0100
-                EventLog.AddLog("<CloudPC> Get SystemSec_0100 point info");
-                SendCharToHandle(iEnterText_PointInfo, 100, "SystemSec_0100");
-                System.Threading.Thread.Sleep(1000);
-
-                PrintScreen("PlugandPlay_TagInfoSyncTest_SystemSec_0100", sTestLogFolder);
-                for (int i = 1; i <= 15; i++)
-                {
-                    tpc.F_PostMessage(iEnterText_PointInfo, tpc.V_WM_KEYDOWN, tpc.V_VK_BACK, 0);
-                    System.Threading.Thread.Sleep(100);
-                }
+                EventLog.AddLog("waWebSvc.Init() Success");
             }
             else
-                EventLog.AddLog("Cannot get EnterText_PointInfo handle");
+                EventLog.AddLog("waWebSvc.Init() Fail");
 
-            EventLog.AddLog("Exit Point Info window by press ESC key");
-            tpc.F_PostMessage(iPointInfo_Handle, tpc.V_WM_KEYDOWN, tpc.V_VK_ESCAPE, 0);
-            api2.Quit();
-            PrintStep(api2, "<CloudPC> Quit browser");
+            waWebSvcG.SetProject(sProjectName);      // set Project name first
+            */
+            // Get AI value
+            string[] sAITagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sAITagList[i - 1] = "AT_AI" + i.ToString("0000");
+            G_AI_Value = waWebSvcG.GetValueText(sAITagList, false);
+            //for (int i = 0; i < G_AI_Value.Result.Total; i++)
+            //{
+            //    string sName = G_AI_Value.Values[i].Name;
+            //    string sValues = G_AI_Value.Values[i].Value;
+            //    int iQuality = G_AI_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get AO value
+            string[] sAOTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sAOTagList[i - 1] = "AT_AO" + i.ToString("0000");
+            G_AO_Value = waWebSvcG.GetValueText(sAOTagList, false);
+            //for (int i = 0; i < G_AO_Value.Result.Total; i++)
+            //{
+            //    string sName = G_AO_Value.Values[i].Name;
+            //    string sValues = G_AO_Value.Values[i].Value;
+            //    int iQuality = G_AO_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get DI value
+            string[] sDITagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sDITagList[i - 1] = "AT_DI" + i.ToString("0000");
+            G_DI_Value = waWebSvcG.GetValueText(sDITagList, false);
+            //for (int i = 0; i < G_DI_Value.Result.Total; i++)
+            //{
+            //    string sName = G_DI_Value.Values[i].Name;
+            //    string sValues = G_DI_Value.Values[i].Value;
+            //    int iQuality = G_DI_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get DO value
+            string[] sDOTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sDOTagList[i - 1] = "AT_DO" + i.ToString("0000");
+            G_DO_Value = waWebSvcG.GetValueText(sDOTagList, false);
+            //for (int i = 0; i < G_DO_Value.Result.Total; i++)
+            //{
+            //    string sName = G_DO_Value.Values[i].Name;
+            //    string sValues = G_DO_Value.Values[i].Value;
+            //    int iQuality = G_DO_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get OPCDA value
+            string[] sOPCDATagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sOPCDATagList[i - 1] = "OPCDA_" + i.ToString("0000");
+            G_OPCDA_Value = waWebSvcG.GetValueText(sOPCDATagList, false);
+            //for (int i = 0; i < G_OPCDA_Value.Result.Total; i++)
+            //{
+            //    string sName = G_OPCDA_Value.Values[i].Name;
+            //    string sValues = G_OPCDA_Value.Values[i].Value;
+            //    int iQuality = G_OPCDA_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get OPCUA value
+            string[] sOPCUATagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sOPCUATagList[i - 1] = "OPCUA_" + i.ToString("0000");
+            G_OPCUA_Value = waWebSvcG.GetValueText(sOPCUATagList, false);
+            //for (int i = 0; i < G_OPCUA_Value.Result.Total; i++)
+            //{
+            //    string sName = G_OPCUA_Value.Values[i].Name;
+            //    string sValues = G_OPCUA_Value.Values[i].Value;
+            //    int iQuality = G_OPCUA_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get Acc value
+            string[] sAccTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sAccTagList[i - 1] = "Acc_" + i.ToString("0000");
+            G_Acc_Value = waWebSvcG.GetValueText(sAccTagList, false);
+            //for (int i = 0; i < G_Acc_Value.Result.Total; i++)
+            //{
+            //    string sName = G_Acc_Value.Values[i].Name;
+            //    string sValues = G_Acc_Value.Values[i].Value;
+            //    int iQuality = G_Acc_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get ConAna value
+            string[] sConAnaTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sConAnaTagList[i - 1] = "ConAna_" + i.ToString("0000");
+            G_ConAna_Value = waWebSvcG.GetValueText(sConAnaTagList, false);
+            //for (int i = 0; i < G_ConAna_Value.Result.Total; i++)
+            //{
+            //    string sName = G_ConAna_Value.Values[i].Name;
+            //    string sValues = G_ConAna_Value.Values[i].Value;
+            //    int iQuality = G_ConAna_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get ConDis value
+            string[] sConDisTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sConDisTagList[i - 1] = "ConDis_" + i.ToString("0000");
+            G_ConDis_Value = waWebSvcG.GetValueText(sConDisTagList, false);
+            //for (int i = 0; i < G_ConDis_Value.Result.Total; i++)
+            //{
+            //    string sName = G_ConDis_Value.Values[i].Name;
+            //    string sValues = G_ConDis_Value.Values[i].Value;
+            //    int iQuality = G_ConDis_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get ConTxt value
+            string[] sConTxtTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sConTxtTagList[i - 1] = "ConTxt_" + i.ToString("0000");
+            G_ConTxt_Value = waWebSvcG.GetValueText(sConTxtTagList, true);   // set true for Text
+            //for (int i = 0; i < G_ConTxt_Value.Result.Total; i++)
+            //{
+            //    string sName = G_ConTxt_Value.Values[i].Name;
+            //    string sValues = G_ConTxt_Value.Values[i].Value;
+            //    int iQuality = G_ConTxt_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get Calculate value
+            string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
+            "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+            G_Calc_Value = waWebSvcG.GetValueText(sCalcTagList, false);
+            //for (int i = 0; i < G_Calc_Value.Result.Total; i++)
+            //{
+            //    string sName = G_Calc_Value.Values[i].Name;
+            //    string sValues = G_Calc_Value.Values[i].Value;
+            //    int iQuality = G_Calc_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+
+            // Get System value
+            string[] sSystemTagList = new string[250];
+            for (int i = 1; i <= 250; i++)
+                sSystemTagList[i - 1] = "SystemSec_" + i.ToString("0000");
+            G_System_Value = waWebSvcG.GetValueText(sSystemTagList, false);
+            //for (int i = 0; i < G_System_Value.Result.Total; i++)
+            //{
+            //    string sName = G_System_Value.Values[i].Name;
+            //    string sValues = G_System_Value.Values[i].Value;
+            //    int iQuality = G_System_Value.Values[i].Quality;
+            //    EventLog.AddLog("TagName: " + sName + " TagValue: " + sValues + string.Format(" Quality: {0}", iQuality));
+            //}
+            EventLog.AddLog("Get ground tag info END");
+        }
+
+        private bool GetTagInfo(string sProjectName, string sWebAccessIP, string sProjectName2, string sWebAccessIP2)
+        {
+            string user = "admin";
+            string pwd = "";
+            bool bGetTagInfoResult;
+            if (null == waWebSvcC) waWebSvcC = new WAWebService();
+            if (null == waWebSvcG) waWebSvcG = new WAWebService();
+            
+            bool bInitGround = waWebSvcG.Init(sWebAccessIP, sProjectName, user, pwd);
+            bool bInitCloud = waWebSvcC.Init(sWebAccessIP2, sProjectName2, user, pwd);
+
+            if (!(bInitGround && bInitGround))
+            {
+                if(!bInitGround)
+                {
+                    EventLog.AddLog("Ground waWebSvc.Init() Fail!!");
+                    EventLog.AddLog("Error message: " + waWebSvcG.GetErrMsg());
+                }
+                if(!bInitCloud)
+                {
+                    EventLog.AddLog("Cloud waWebSvc.Init() Fail!!");
+                    EventLog.AddLog("Cloud error message: " + waWebSvcC.GetErrMsg());
+                }
+                bGetTagInfoResult = false;
+            }
+            else
+            {
+                EventLog.AddLog("Ground and Cloud waWebSvc.Init() Success");
+
+                // Start get ground and cloud tag value
+                EventLog.AddLog("Get ground and cloud tag info start!!");
+
+                // Get AI value
+                EventLog.AddLog("Get AI value..");
+                string[] sAITagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sAITagList[i - 1] = "AT_AI" + i.ToString("0000");
+                EventLog.AddLog("Get ground 250 AI tag start");
+                G_AI_Value = waWebSvcG.GetValueText(sAITagList, false);
+                EventLog.AddLog("Get ground 250 AI tag end");
+                EventLog.AddLog("Get cloud 250 AI tag start");
+                C_AI_Value = waWebSvcC.GetValueText(sAITagList, false);
+                EventLog.AddLog("Get cloud 250 AI tag end");
+
+                // Get AO value
+                EventLog.AddLog("Get AO value..");
+                string[] sAOTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sAOTagList[i - 1] = "AT_AO" + i.ToString("0000");
+                G_AO_Value = waWebSvcG.GetValueText(sAOTagList, false);
+                C_AO_Value = waWebSvcC.GetValueText(sAOTagList, false);
+
+                // Get DI value
+                EventLog.AddLog("Get DI value..");
+                string[] sDITagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sDITagList[i - 1] = "AT_DI" + i.ToString("0000");
+                G_DI_Value = waWebSvcG.GetValueText(sDITagList, false);
+                C_DI_Value = waWebSvcC.GetValueText(sDITagList, false);
+
+                // Get DO value
+                EventLog.AddLog("Get DO value..");
+                string[] sDOTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sDOTagList[i - 1] = "AT_DO" + i.ToString("0000");
+                G_DO_Value = waWebSvcG.GetValueText(sDOTagList, false);
+                C_DO_Value = waWebSvcC.GetValueText(sDOTagList, false);
+
+                // Get OPCDA value
+                EventLog.AddLog("Get OPCDA value..");
+                string[] sOPCDATagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sOPCDATagList[i - 1] = "OPCDA_" + i.ToString("0000");
+                G_OPCDA_Value = waWebSvcG.GetValueText(sOPCDATagList, false);
+                C_OPCDA_Value = waWebSvcC.GetValueText(sOPCDATagList, false);
+
+                // Get OPCUA value
+                EventLog.AddLog("Get OPCUA value..");
+                string[] sOPCUATagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sOPCUATagList[i - 1] = "OPCUA_" + i.ToString("0000");
+                G_OPCUA_Value = waWebSvcG.GetValueText(sOPCUATagList, false);
+                C_OPCUA_Value = waWebSvcC.GetValueText(sOPCUATagList, false);
+
+                // Get Acc value
+                EventLog.AddLog("Get Acc value..");
+                string[] sAccTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sAccTagList[i - 1] = "Acc_" + i.ToString("0000");
+                G_Acc_Value = waWebSvcG.GetValueText(sAccTagList, false);
+                C_Acc_Value = waWebSvcC.GetValueText(sAccTagList, false);
+
+                // Get ConAna value
+                EventLog.AddLog("Get ConAna value..");
+                string[] sConAnaTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sConAnaTagList[i - 1] = "ConAna_" + i.ToString("0000");
+                G_ConAna_Value = waWebSvcG.GetValueText(sConAnaTagList, false);
+                C_ConAna_Value = waWebSvcC.GetValueText(sConAnaTagList, false);
+
+                // Get ConDis value
+                EventLog.AddLog("Get ConDis value..");
+                string[] sConDisTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sConDisTagList[i - 1] = "ConDis_" + i.ToString("0000");
+                G_ConDis_Value = waWebSvcG.GetValueText(sConDisTagList, false);
+                C_ConDis_Value = waWebSvcC.GetValueText(sConDisTagList, false);
+
+                // Get ConTxt value
+                EventLog.AddLog("Get ConTxt value..");
+                string[] sConTxtTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sConTxtTagList[i - 1] = "ConTxt_" + i.ToString("0000");
+                G_ConTxt_Value = waWebSvcG.GetValueText(sConTxtTagList, true);   // set true for Text
+                C_ConTxt_Value = waWebSvcC.GetValueText(sConTxtTagList, true);   // set true for Text
+
+                // Get Calculate value
+                EventLog.AddLog("Get Calculate value..");
+                string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
+                                          "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+                G_Calc_Value = waWebSvcG.GetValueText(sCalcTagList, false);
+                C_Calc_Value = waWebSvcC.GetValueText(sCalcTagList, false);
+
+                // Get System value
+                EventLog.AddLog("Get System value..");
+                string[] sSystemTagList = new string[250];
+                for (int i = 1; i <= 250; i++)
+                    sSystemTagList[i - 1] = "SystemSec_" + i.ToString("0000");
+                G_System_Value = waWebSvcG.GetValueText(sSystemTagList, false);
+                C_System_Value = waWebSvcC.GetValueText(sSystemTagList, false);
+
+                EventLog.AddLog("Get ground and cloud tag info end!!");
+
+                bGetTagInfoResult = true;
+            }
+
+            return bGetTagInfoResult;
+        }
+
+        private bool CheckGroundandCloudTag()
+        {
+            EventLog.AddLog("Start check ground and cloud tag difference!!");
+            int iAnalogDiffSpec = 2;
+            EventLog.AddLog(string.Format("Difference spec of analog tag= {0}",iAnalogDiffSpec));
+
+            // Check AI value
+            EventLog.AddLog("Check AI value..");
+            bool bAI_Check = true;
+            for (int i = 0; i < C_AI_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_AI_Value.Values[i].Value) - Convert.ToDouble(G_AI_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_AI_Value.Values[i].Name, C_AI_Value.Values[i].Value, G_AI_Value.Values[i].Name, G_AI_Value.Values[i].Value, iAnalogDiffSpec));
+                    bAI_Check = false;
+                }
+            }
+
+            // Check AO value
+            EventLog.AddLog("Check AO value..");
+            bool bAO_Check = true;
+            for (int i = 0; i < C_AO_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_AO_Value.Values[i].Value) - Convert.ToDouble(G_AO_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_AO_Value.Values[i].Name, C_AO_Value.Values[i].Value, G_AO_Value.Values[i].Name, G_AO_Value.Values[i].Value, iAnalogDiffSpec));
+                    bAO_Check = false;
+                }
+            }
+
+            // Check DI value
+            EventLog.AddLog("Check DI value..");
+            bool bDI_Check = true;
+            for (int i = 0; i < C_DI_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_DI_Value.Values[i].Value) - Convert.ToDouble(G_DI_Value.Values[i].Value);
+                if (Math.Abs(dDiff) != 1 && Math.Abs(dDiff) != 0)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec(1 or 0)"
+                        , C_DI_Value.Values[i].Name, C_DI_Value.Values[i].Value, G_DI_Value.Values[i].Name, G_DI_Value.Values[i].Value));
+                    bDI_Check = false;
+                }
+            }
+
+            // Check DO value
+            EventLog.AddLog("Check DO value..");
+            bool bDO_Check = true;
+            for (int i = 0; i < C_DO_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_DO_Value.Values[i].Value) - Convert.ToDouble(G_DO_Value.Values[i].Value);
+                if (Math.Abs(dDiff) != 1 && Math.Abs(dDiff) != 0)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec(1 or 0)"
+                        , C_DO_Value.Values[i].Name, C_DO_Value.Values[i].Value, G_DO_Value.Values[i].Name, G_DO_Value.Values[i].Value));
+                    bDO_Check = false;
+                }
+            }
+
+            // Check OPCDA value
+            EventLog.AddLog("Check OPCDA value..");
+            bool bOPCDA_Check = true;
+            for (int i = 0; i < C_OPCDA_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_OPCDA_Value.Values[i].Value) - Convert.ToDouble(G_OPCDA_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_OPCDA_Value.Values[i].Name, C_OPCDA_Value.Values[i].Value, G_OPCDA_Value.Values[i].Name, G_OPCDA_Value.Values[i].Value, iAnalogDiffSpec));
+                    bOPCDA_Check = false;
+                }
+            }
+
+            // Check OPCUA value
+            EventLog.AddLog("Check OPCUA value..");
+            bool bOPCUA_Check = true;
+            for (int i = 0; i < C_OPCUA_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_OPCUA_Value.Values[i].Value) - Convert.ToDouble(G_OPCUA_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_OPCUA_Value.Values[i].Name, C_OPCUA_Value.Values[i].Value, G_OPCUA_Value.Values[i].Name, G_OPCUA_Value.Values[i].Value, iAnalogDiffSpec));
+                    bOPCUA_Check = false;
+                }
+            }
+
+            // Check Acc value
+            EventLog.AddLog("Check Acc value..");
+            bool bAcc_Check = true;
+            for (int i = 0; i < C_Acc_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_Acc_Value.Values[i].Value) - Convert.ToDouble(G_Acc_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_Acc_Value.Values[i].Name, C_Acc_Value.Values[i].Value, G_Acc_Value.Values[i].Name, G_Acc_Value.Values[i].Value, iAnalogDiffSpec));
+                    bAcc_Check = false;
+                }
+            }
+
+            // Check ConAna value
+            EventLog.AddLog("Check ConAna value..");
+            bool bConAna_Check = true;
+            for (int i = 0; i < C_ConAna_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_ConAna_Value.Values[i].Value) - Convert.ToDouble(G_ConAna_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_ConAna_Value.Values[i].Name, C_ConAna_Value.Values[i].Value, G_ConAna_Value.Values[i].Name, G_ConAna_Value.Values[i].Value, iAnalogDiffSpec));
+                    bConAna_Check = false;
+                }
+            }
+
+            // Check ConDis value
+            EventLog.AddLog("Check ConDis value..");
+            bool bConDis_Check = true;
+            for (int i = 0; i < C_ConDis_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_ConDis_Value.Values[i].Value) - Convert.ToDouble(G_ConDis_Value.Values[i].Value);
+                if (Math.Abs(dDiff) != 1 && Math.Abs(dDiff) != 0)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec(1 or 0)"
+                        , C_ConDis_Value.Values[i].Name, C_ConDis_Value.Values[i].Value, G_ConDis_Value.Values[i].Name, G_ConDis_Value.Values[i].Value));
+                    bConDis_Check = false;
+                }
+            }
+
+            // Check ConTxt value
+            EventLog.AddLog("Check ConTxt value..");
+            bool bConTxt_Check = true;
+            for (int i = 0; i < C_ConTxt_Value.Result.Total; i++)
+            {
+                if (C_ConTxt_Value.Values[i].Value != G_ConTxt_Value.Values[i].Value)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is not equal"
+                        , C_ConTxt_Value.Values[i].Name, C_ConTxt_Value.Values[i].Value, G_ConTxt_Value.Values[i].Name, G_ConTxt_Value.Values[i].Value));
+                    bConTxt_Check = false;
+                }
+            }
+
+            // Check Calculate value
+            EventLog.AddLog("Check Calculate value..");
+            bool bCalc_Check = true;
+            for (int i = 0; i < C_Calc_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_Calc_Value.Values[i].Value) - Convert.ToDouble(G_Calc_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_Calc_Value.Values[i].Name, C_Calc_Value.Values[i].Value, G_Calc_Value.Values[i].Name, G_Calc_Value.Values[i].Value, iAnalogDiffSpec));
+                    bCalc_Check = false;
+                }
+            }
+
+            // Check System value
+            EventLog.AddLog("Check System value..");
+            bool bSystem_Check = true;
+            for (int i = 0; i < C_System_Value.Result.Total; i++)
+            {
+                double dDiff = Convert.ToDouble(C_System_Value.Values[i].Value) - Convert.ToDouble(G_System_Value.Values[i].Value);
+                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                {
+                    EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
+                        , C_System_Value.Values[i].Name, C_System_Value.Values[i].Value, G_System_Value.Values[i].Name, G_System_Value.Values[i].Value, iAnalogDiffSpec));
+                    bSystem_Check = false;
+                }
+            }
+
+            bool bTotalResult = bAI_Check && bAO_Check && bDI_Check && bDO_Check && bOPCDA_Check && bOPCUA_Check 
+                && bAcc_Check && bConAna_Check && bConDis_Check && bConTxt_Check && bCalc_Check && bSystem_Check;
+
+            if (!bTotalResult)
+                EventLog.AddLog("Check ground and cloud tag difference FAILL!!");
+            else
+                EventLog.AddLog("Check ground and cloud tag difference PASS!!");
+
+            return bTotalResult;
         }
 
         private void SendCharToHandle(int iHandle, int iDelay, string sText)
