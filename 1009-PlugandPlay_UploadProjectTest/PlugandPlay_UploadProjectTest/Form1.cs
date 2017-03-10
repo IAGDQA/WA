@@ -185,12 +185,11 @@ namespace PlugandPlay_UploadProjectTest
             // Configure project by project name
             api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
             PrintStep(api, "<GroundPC> Configure project");
-
+            
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/node/nodePg.asp?') and contains(@href, 'action=node_property')]").Click();
-            //"/broadWeb/node/nodePg.asp?pos=node&amp;idbw=1&amp;name=TestSCADA&amp;action=node_property">
-
+            
             EventLog.AddLog("<GroundPC> Cloud Connection Settings");
             api.ByName("CLOUD_ENABLE").Click();
             Thread.Sleep(500);
@@ -206,17 +205,16 @@ namespace PlugandPlay_UploadProjectTest
             api.ByName("CLOUD_PASSWORD").Clear();
             api.ByName("CLOUD_PASSWORD").Enter("12345").Submit().Exe();
             PrintStep(api, "Cloud Connection Settings");
-
+            
             EventLog.AddLog("<GroundPC> Cloud White list setting");
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/WaCloudWhitelist/CloudWhitelist.asp?')]").Click();
-            //"/broadWeb/WaCloudWhitelist/CloudWhitelist.asp?nid=1&amp;name=TestSCADA"
 
             ////////////////////////////////// Cloud White list Setting //////////////////////////////////
             {   // AI/AO/DI/DO
                 EventLog.AddLog("<GroundPC> Modbus tag setting");
-                //api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+
                 switch (slanguage)
                 {
                     case "ENG":
@@ -242,7 +240,10 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
+                /*
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
                 
@@ -251,7 +252,7 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
-                
+                */
                 //api.ByXpath("//input[@value='Save']").Click();
                 switch (slanguage)
                 {
@@ -338,7 +339,10 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
+                /*
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
 
@@ -347,7 +351,7 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
-
+                */
                 switch (slanguage)
                 {
                     case "ENG":
@@ -403,7 +407,10 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
+                /*
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
 
@@ -412,7 +419,7 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
-
+                */
                 switch (slanguage)
                 {
                     case "ENG":
@@ -468,7 +475,10 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
+                /*
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
 
@@ -477,7 +487,7 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
-
+                */
                 switch (slanguage)
                 {
                     case "ENG":
@@ -533,6 +543,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
 
                 switch (slanguage)
                 {
@@ -589,7 +602,10 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
+                /*
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
 
@@ -598,7 +614,7 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
-
+                */
                 switch (slanguage)
                 {
                     case "ENG":
@@ -683,7 +699,10 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
-
+                api.ByName("SetDeadBandValue").Enter("0").Exe();
+                SendKeys.SendWait("{ENTER}");
+                Thread.Sleep(1000);
+                /*
                 api.ByName("SetDeadBand").Clear();
                 api.ByName("SetDeadBand").Enter("0").Exe();
 
@@ -692,7 +711,7 @@ namespace PlugandPlay_UploadProjectTest
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Clear();
                     api.ByXpath("(//input[@name='SetDeadBand'])[" + i + "]").Enter("0").Exe();
                 }
-
+                */
                 switch (slanguage)
                 {
                     case "ENG":
