@@ -85,7 +85,8 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             CloudPC_DeleteProject(sBrowser, sProjectName2, sWebAccessIP2, sTestLogFolder);
 
             // Step2: Ground PC view white list info
-            ViewandSaveGroundWhiteListInfo(sBrowser, sProjectName, sWebAccessIP, sTestLogFolder);
+            //ViewandSaveGroundWhiteListInfo(sBrowser, sProjectName, sWebAccessIP, sTestLogFolder);
+            bool bCheckDeletedTagInfoResult = CheckDeletedTagInfo(sBrowser, sProjectName, sWebAccessIP, sTestLogFolder);
 
             bool bSeleniumResult = true;
             int iTotalSeleniumAction = dataGridView1.Rows.Count;
@@ -106,7 +107,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 }
             }
 
-            if (bSeleniumResult)
+            if (bSeleniumResult && bCheckDeletedTagInfoResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -158,6 +159,200 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             PrintStep(api2, "<CloudPC> Quit browser");
         }
 
+        private bool CheckDeletedTagInfo(string sBrowser, string sProjectName, string sWebAccessIP, string sTestLogFolder)
+        {
+            if (sBrowser == "Internet Explorer")
+            {
+                EventLog.AddLog("<GroundPC> Browser= Internet Explorer");
+                api = new AdvSeleniumAPI("IE", "");
+                System.Threading.Thread.Sleep(1000);
+            }
+            else if (sBrowser == "Mozilla FireFox")
+            {
+                EventLog.AddLog("<GroundPC> Browser= Mozilla FireFox");
+                api = new AdvSeleniumAPI("FireFox", "");
+                System.Threading.Thread.Sleep(1000);
+            }
+            EventLog.AddLog("<GroundPC> Capture the project manager page");
+            api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
+            api.ById("userField").Enter("").Submit().Exe();
+            PrintStep(api, "<GroundPC> Login WebAccess");
+
+            // Configure project by project name
+            EventLog.AddLog("<GroundPC> Capture the configure project page");
+            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
+            PrintStep(api, "<GroundPC> Configure project");
+
+            EventLog.AddLog("<GroundPC> Cloud White list setting");
+            api.SwitchToCurWindow(0);
+            api.SwitchToFrame("rightFrame", 0);
+            api.ByXpath("//a[contains(@href, '/broadWeb/WaCloudWhitelist/CloudWhitelist.asp?')]").Click();
+            PrintStep(api, "<GroundPC> Check CloudWhitelist");
+
+            //// AI AO DI DO ////
+            EventLog.AddLog("Check AI AO DI DO deleted tag..");
+            api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+            Thread.Sleep(2000);
+            api.ByCss("img").Click();   // page1
+            Thread.Sleep(2000);
+
+            bool bTotalResult = true;
+
+            for (int i =1; i<=500; i++)
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check AI AO tag info");
+
+            api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 496; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除4個點AT_AI0004/AT_AO0004/AT_DI0004/AT_DO0004 所以剩496個tag
+            {                               //所以剩496個tag
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check DI DO tag info");
+
+            //// OPCDA ////
+            EventLog.AddLog("Check OPCDA deleted tag..");
+            api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+            Thread.Sleep(2000);
+            api.ByCss("img").Click();   // page1
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點OPCDA_0004 所以剩249個tag
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check OPCDA tag info");
+
+            //// OPCUA ////
+            EventLog.AddLog("Check OPCUA deleted tag..");
+            api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+            Thread.Sleep(2000);
+            api.ByCss("img").Click();   // page1
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點OPCUA_0004 所以剩249個tag
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check OPCUA tag info");
+
+            //// Acc ////
+            EventLog.AddLog("Check Acc deleted tag..");
+            api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點Acc_0004 所以剩249個tag
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check Acc tag info");
+
+            //// Calc ////
+            EventLog.AddLog("Check Calculate deleted tag..");
+            api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 136; i++)
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check Calculate tag info");
+
+            //// Const ////
+            EventLog.AddLog("Check Constant deleted tag..");
+            api.ById("tagTypes").SelectTxt("Const Point").Exe();
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 500; i++)
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check Const tag info(Page1)");
+
+            api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點ConAna_0004 所以剩249個tag
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check Const tag info(Page2)");
+
+            //// System ////
+            EventLog.AddLog("Check System deleted tag..");
+            api.ById("tagTypes").SelectTxt("System Point").Exe();
+            Thread.Sleep(2000);
+            for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點SystemSec_0004 所以剩249個tag
+            {
+                string sCheckbox = api.ByXpath(string.Format("//tr[{0}]/td[1]/input[1]", i)).GetAttr("checked");
+
+                if (sCheckbox == "true")
+                {
+                    string sTagNmae = api.ByXpath(string.Format("//tr[{0}]/td[2]", i)).GetText();
+                    EventLog.AddLog("<GroundPC> The deleted tag <" + sTagNmae + "> is not disable in cloud white list. Test fail!!");
+                    bTotalResult = false;
+                }
+            }
+            PrintStep(api, "<GroundPC> Check System tag info");
+
+            api.Quit();
+            PrintStep(api, "<GroundPC> Quit browser");
+
+            return bTotalResult;
+        }
+
         private void ViewandSaveGroundWhiteListInfo(string sBrowser, string sProjectName, string sWebAccessIP, string sTestLogFolder)
         {
             if (sBrowser == "Internet Explorer")
@@ -187,7 +382,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/WaCloudWhitelist/CloudWhitelist.asp?')]").Click();
             //"/broadWeb/WaCloudWhitelist/CloudWhitelist.asp?nid=1&amp;name=TestSCADA"
-
+            
             ////////////////////////////////// View Cloud White list Setting //////////////////////////////////
             {   // AI/AO/DI/DO
                 EventLog.AddLog("<GroundPC> Modbus tag setting");
@@ -195,6 +390,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 Thread.Sleep(2000);
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
+                
                 PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ModsimWhiteList_Page1", sTestLogFolder);
                 api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
                 Thread.Sleep(2000);
@@ -427,25 +623,6 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", WebAccessIP2.Text, sIniFilePath);
             }
-        }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
     }
