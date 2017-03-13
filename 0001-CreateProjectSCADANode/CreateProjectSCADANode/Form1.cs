@@ -257,14 +257,14 @@ namespace CreateProjectSCADANode
             api.ByName("AddressLong").Clear();
             api.ByName("AddressLong").Enter(sWebAccessIP).Exe();
 
-            //api.ByName("EMAIL_SERVER").Clear();                         //Outgoing Email (SMTP) Server
-            //api.ByName("EMAIL_SERVER").Enter("mail.advantech.com.tw").Exe();
-
+            api.ByName("EMAIL_SERVER").Clear();                         //Outgoing Email (SMTP) Server
+            api.ByName("EMAIL_SERVER").Enter("smtp.mail.yahoo.com").Exe();
+            api.ByName("EMAIL_PORT").Clear();
+            api.ByName("EMAIL_PORT").Enter("587").Exe();
             api.ByName("EMAIL_ADDRESS").Clear();
-            api.ByName("EMAIL_ADDRESS").Enter(sUserEmail).Exe();
-
-            //api.ByName("EMAIL_USER").Clear();                         //Email Account Name
-            //api.ByName("EMAIL_USER").Enter("aaron.huang").Exe();
+            api.ByName("EMAIL_ADDRESS").Enter("webaccess2016@yahoo.com").Exe();
+            api.ByName("EMAIL_USER").Clear();                         //Email Account Name
+            api.ByName("EMAIL_USER").Enter("webaccess2016").Exe();
 
             //api.ByXpath("input[@name='D_EMAIL_PASSWORD']").Clear();   // Email Password   // 目前有問題無法成功輸入
             //api.ByXpath("input[@name='D_EMAIL_PASSWORD']").Enter("123214").Exe();
@@ -273,10 +273,16 @@ namespace CreateProjectSCADANode
             //api.ByName("D_MAIL_PASSWORDB").Clear();
             //api.ByName("D_MAIL_PASSWORDB").Enter("xxxx").Exe();
             api.ByName("EMAIL_FROM").Clear();
-            api.ByName("EMAIL_FROM").Enter(sUserEmail).Exe();
+            api.ByName("EMAIL_FROM").Enter("webaccess2016@yahoo.com").Exe();
+            api.ByName("EMAIL_TO_SRPT").Clear();
+            api.ByName("EMAIL_TO_SRPT").Enter("webaccess2016@yahoo.com").Exe();
             api.ByName("EMAIL_TO").Clear();
-            api.ByName("EMAIL_TO").Enter(sUserEmail).Exe();
+            api.ByName("EMAIL_TO").Enter("webaccess2016@yahoo.com").Exe();
+            api.ByName("EMAIL_CC").Clear();
+            api.ByName("EMAIL_CC").Enter(sUserEmail).Exe();
+
             api.ByName("ALARM_LOG_TO_ODBC").Click();
+            api.ByName("CHANGE_LOG_TO_ODBC").Click();
             api.ByName("DATA_LOG_TO_ODBC").Click();
             api.ByName("DATA_LOG_USE_RTDB").Click();
             EventLog.AddLog("Enter some required info done and submit start");

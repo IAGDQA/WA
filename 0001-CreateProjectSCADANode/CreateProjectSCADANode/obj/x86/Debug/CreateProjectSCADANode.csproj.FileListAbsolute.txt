@@ -36,3 +36,4 @@ D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.csproj.GenerateResource.Cache
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.exe
 D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.pdb
+D:\DQA-Code\WA\0001-CreateProjectSCADANode\CreateProjectSCADANode\obj\x86\Debug\CreateProjectSCADANode.csprojResolveAssemblyReference.cache
