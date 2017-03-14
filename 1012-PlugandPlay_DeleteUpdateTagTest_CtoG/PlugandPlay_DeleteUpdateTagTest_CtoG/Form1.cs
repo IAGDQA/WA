@@ -154,11 +154,14 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             EventLog.AddLog("<CloudPC> Update AT_AI0007/AT_AO0007/AT_DI0007/AT_DO0007/OPCDA_0007/OPCUA_0007/Acc_0007/ConDis_0007/SystemSec_0007 tags start...");
             CloudPC_UpdateTag();
 
+            ReturnSCADAPage(api2);
+
             // Step2. Delete tag
             EventLog.AddLog("<CloudPC> Delete AT_AI0006/AT_AO0006/AT_DI0006/AT_DO0006/OPCDA_0006/OPCUA_0006/Acc_0006/ConAna_0006/SystemSec_0006 tags start...");
             CloudPC_DeleteTag();
 
             ReturnSCADAPage(api2);
+
             // Step3. Download project
             EventLog.AddLog("<CloudPC> Download...");
             StartDownload(api2, sTestLogFolder);
