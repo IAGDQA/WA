@@ -92,6 +92,9 @@ namespace PlugandPlay_UploadProjectTest
             // Step2: Set ground PC plug and play info and upload
             GroundPlugandPlaySetting(sBrowser, sProjectName, sProjectName2, sWebAccessIP, sWebAccessIP2, sTestLogFolder);
 
+            EventLog.AddLog("wait 30s for cloud PC processing uploaded project...");
+            Thread.Sleep(30000);    // wait for cloud processing uploaded project
+
             // Step3: View and save cloud PC if the project upload success
             ViewandSaveCloudProject(sBrowser, sProjectName2, sWebAccessIP2, sTestLogFolder);
 
