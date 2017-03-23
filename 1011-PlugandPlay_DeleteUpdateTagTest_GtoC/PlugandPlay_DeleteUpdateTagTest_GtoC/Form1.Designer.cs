@@ -127,7 +127,7 @@
             this.WebAccessIP.Name = "WebAccessIP";
             this.WebAccessIP.Size = new System.Drawing.Size(290, 22);
             this.WebAccessIP.TabIndex = 7;
-            this.WebAccessIP.Text = "172.18.3.62";
+            this.WebAccessIP.Text = "172.xx.xx.xx";
             // 
             // TestLogFolder
             // 
@@ -189,7 +189,7 @@
             this.WebAccessIP2.Name = "WebAccessIP2";
             this.WebAccessIP2.Size = new System.Drawing.Size(290, 22);
             this.WebAccessIP2.TabIndex = 10;
-            this.WebAccessIP2.Text = "172.18.3.65";
+            this.WebAccessIP2.Text = "172.xx.xx.xx";
             // 
             // label5
             // 
@@ -252,7 +252,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Advantech WebAccess Auto Test (PlugandPlay_DeleteUpdateTagTest <Ground to Cloud>)" +
-                "";
+    "";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

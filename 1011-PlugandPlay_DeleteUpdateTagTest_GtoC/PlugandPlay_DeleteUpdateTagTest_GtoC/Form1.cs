@@ -26,6 +26,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
         internal const int Max_Rows_Val = 65535;
         string baseUrl, baseUrl2;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -247,7 +248,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
             api.ByCss("span.e6").Click();   // delete
             string alertText = api.GetAlartTxt();
-            if (alertText == "Are you sure you want to delete these tags?")
+            if (alertText == "Are you sure you want to delete these tags?" || alertText == "Are you sure you want to delete these 4 tags?")
                 api.Accept();
 
             PrintStep(api, "<GroundPC> Delete AT_AI0004/AT_AO0004/AT_DI0004/AT_DO0004 tags");
@@ -264,7 +265,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
             api.ByCss("span.e6").Click();   // delete
             string alertText2 = api.GetAlartTxt();
-            if (alertText2 == "Are you sure you want to delete these tags?")
+            if (alertText2 == "Are you sure you want to delete these tags?" || alertText2 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
 
             PrintStep(api, "<GroundPC> Delete OPCDA_0004 tag");
@@ -281,7 +282,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
             api.ByCss("span.e6").Click();   // delete
             string alertText3 = api.GetAlartTxt();
-            if (alertText3 == "Are you sure you want to delete these tags?")
+            if (alertText3 == "Are you sure you want to delete these tags?" || alertText3 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
 
             PrintStep(api, "<GroundPC> Delete OPCUA_0004 tag");
@@ -296,9 +297,11 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.ByXpath("(//input[@name='tsel'])[4]").Click();      //Acc_0004
 
 
-            api.ByXpath("(//a[contains(text(),'Delete')])[4]").Click();   // delete
+            //api.ByXpath("(//a[contains(text(),'Delete')])[4]").Click();   // delete
+            api.ByXpath("//a[2]/font/b").Click();
             string alertText4 = api.GetAlartTxt();
-            if (alertText4 == "Delete this Accumulation Point(TagName=Acc_0004), are you sure? ")
+            //if (alertText4 == "Delete this Accumulation Point(TagName=Acc_0004), are you sure? ")
+            if (alertText4 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
 
             PrintStep(api, "<GroundPC> Delete Acc_0004 tag");
@@ -313,9 +316,11 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.ByXpath("(//input[@name='tsel'])[4]").Click();      //ConAna_0004
 
 
-            api.ByXpath("(//a[contains(text(),'Delete')])[4]").Click();   // delete
+            //api.ByXpath("(//a[contains(text(),'Delete')])[4]").Click();   // delete
+            api.ByXpath("//a[2]/font/b").Click();
             string alertText5 = api.GetAlartTxt();
-            if (alertText5 == "Delete this Constant Point(TagName=ConAna_0004), are you sure? ")
+            //if (alertText5 == "Delete this Constant Point(TagName=ConAna_0004), are you sure? ")
+            if (alertText5 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
 
             PrintStep(api, "<GroundPC> Delete ConAna_0004 tag");
@@ -330,9 +335,11 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.ByXpath("(//input[@name='tsel'])[4]").Click();      //SystemSec_0004
 
 
-            api.ByXpath("(//a[contains(text(),'Delete')])[4]").Click();   // delete
+            //api.ByXpath("(//a[contains(text(),'Delete')])[4]").Click();   // delete
+            api.ByXpath("//a[2]/font/b").Click();
             string alertText6 = api.GetAlartTxt();
-            if (alertText6 == "Delete this System Point(TagName=SystemSec_0004), are you sure? ")
+            //if (alertText6 == "Delete this System Point(TagName=SystemSec_0004), are you sure? ")
+            if (alertText6 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
 
             PrintStep(api, "<GroundPC> Delete SystemSec_0004 tag");
@@ -343,44 +350,6 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("leftFrame", 0);
-            /*
-            int iErrorCode = api.ByCss("a[name=\"tag5\"] > font.e5").Click();   //AT_AI0005     // 不能使用bycss 因為css的值好像是由建立tag的順序來設定 會亂掉
-            if (iErrorCode != (int)ErrorCode.SUCCESS)   // 展開左列 ModSim tag list
-            {
-                api.ByXpath("//td[2]/table/tbody/tr/td/table/tbody/tr/td/a/img").Click();
-                Thread.Sleep(2000);
-                api.ByCss("a[name=\"tag5\"] > font.e5").Click();
-            }
-
-            {
-                api.ByXpath("//a[contains(@href, '/broadWeb/tag/TagPg.asp?pos=tag') and contains(@href, 'action=tag_property')]").Click();
-                api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
-            }
-            Thread.Sleep(1500);
-            api.ByCss("a[name=\"tag10\"] > font.e5").Click(); //AT_AO0005
-            Thread.Sleep(1500);
-            api.ByCss("a[name=\"tag15\"] > font.e5").Click(); //AT_DI0005
-            Thread.Sleep(1500);
-            api.ByCss("a[name=\"tag20\"] > font.e5").Click(); //AT_DO0005
-            Thread.Sleep(1500);
-            */
-            /*
-            int iErrorCode = api.ByXpath("//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[5]/td/a/font").Click();   //AT_AI0005
-            if (iErrorCode != (int)ErrorCode.SUCCESS)   // 展開左列 ModSim tag list
-            {
-                api.ByXpath("//td[2]/table/tbody/tr/td/table/tbody/tr/td/a/img").Click();
-                Thread.Sleep(2000);
-                api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[5]/td/a/font").Click();
-            }
-
-            Thread.Sleep(1500);
-            api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[255]/td/a/font").Click(); //AT_AO0005
-            Thread.Sleep(1500);
-            api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[505]/td/a/font").Click(); //AT_DI0005
-            Thread.Sleep(1500);
-            api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[755]/td/a/font").Click(); //AT_DO0005
-            Thread.Sleep(1500);
-            */
 
             int iErrorCode = api.ByXpath("//tr[4]/td/a/font").Click();   //AT_AI0005
             if (iErrorCode != (int)ErrorCode.SUCCESS)   // 展開左列 ModSim tag list
@@ -429,7 +398,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             if (iErrorCode2 != (int)ErrorCode.SUCCESS)   // 展開左列 OPCDA tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find OPCDA_0005.. expand OPCDA tree list");
-                api.ByXpath("//td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/a/img").ClickAndWait(1500);
+                api.ByXpath("//td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/a/img").ClickAndWait(2000);
                 //api.ByCss("a[name=\"tag186\"] > font.e5").Click();
                 api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();
                 AnalogTagUpdateSetting("OPCDA_0005");
@@ -445,7 +414,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             if (iErrorCode3 != (int)ErrorCode.SUCCESS)   // 展開左列 OPCUA tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find OPCUA_0005.. expand OPCUA tree list");
-                api.ByXpath("//tr[3]/td/table/tbody/tr/td/a/img").ClickAndWait(1500);
+                api.ByXpath("//tr[3]/td/table/tbody/tr/td/a/img").ClickAndWait(2000);
                 //api.ByCss("a[name=\"tag191\"] > font.e5").Click();
                 api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();
                 AnalogTagUpdateSetting("OPCUA_0005");
@@ -456,7 +425,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             }
 
             Thread.Sleep(2000);
-            api.ByXpath("//table[2]/tbody/tr/td/a/img").ClickAndWait(1500); // 預設是關閉的 要展開他
+            api.ByXpath("//table[2]/tbody/tr/td/a/img").ClickAndWait(2000); // 預設是關閉的 要展開他
             int iErrorCode4 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table[2]/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();   //Acc_0005
             if (iErrorCode4 != (int)ErrorCode.SUCCESS)   // 展開左列 Acc Point tag list
             {
@@ -472,7 +441,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
 
             Thread.Sleep(2000);
-            api.ByXpath("//table[4]/tbody/tr/td/a/img").ClickAndWait(1500); // 預設是關閉的 要展開他
+            api.ByXpath("//table[4]/tbody/tr/td/a/img").ClickAndWait(2000); // 預設是關閉的 要展開他
             int iErrorCode5 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table[4]/tbody/tr/td/table/tbody/tr[254]/td/a/font").Click();   //ConDis_0005
             if (iErrorCode5 != (int)ErrorCode.SUCCESS)   // 展開左列 Calc Point tag list
             {
@@ -491,7 +460,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             if (iErrorCode6 != (int)ErrorCode.SUCCESS)   // 展開左列 System Point tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find SystemSec_0005.. expand System Point tree list");
-                api.ByXpath("//table[5]/tbody/tr/td/a/img").ClickAndWait(1000);
+                api.ByXpath("//table[5]/tbody/tr/td/a/img").ClickAndWait(2000);
                 api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table[5]/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();
                 AnalogTagUpdateSetting("SystemSec_0005");
             }
@@ -510,7 +479,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/tag/TagPg.asp?pos=tag') and contains(@href, 'action=tag_property')]").Click();
-            api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("AlarmStatus").SelectTxt("警報").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("AlarmStatus").SelectTxt("报警").Exe();
+                    break;
+                case "JPN":
+                    api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+            }
 
             Thread.Sleep(1500);
             api.ByName("Description").Clear();
@@ -542,7 +531,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/tag/TagPg.asp?pos=tag') and contains(@href, 'action=tag_property')]").Click();
-            api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("AlarmStatus").SelectTxt("警報").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("AlarmStatus").SelectTxt("报警").Exe();
+                    break;
+                case "JPN":
+                    api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+            }
 
             Thread.Sleep(1500);
             api.ByName("Description").Clear();
@@ -848,6 +857,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -858,10 +868,13 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
+
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
 
@@ -920,25 +933,6 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", WebAccessIP2.Text, sIniFilePath);
             }
-        }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
     }
