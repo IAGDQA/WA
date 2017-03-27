@@ -26,6 +26,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
         internal const int Max_Rows_Val = 65535;
         string baseUrl, baseUrl2;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -149,8 +150,34 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             // Confirm to delete porject
             string alertText = api2.GetAlartTxt();
-            if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
-                api2.Accept();
+            //if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
+            //    api2.Accept();
+            switch (slanguage)
+            {
+                case "ENG":
+                    if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
+                        api2.Accept();
+                    break;
+                case "CHT":
+                    if (alertText == "您確定要刪除這個工程(" + sProjectName + ")?")
+                        api2.Accept();
+                    break;
+                case "CHS":
+                    if (alertText == "您肯定要删除工程(" + sProjectName + ")吗?")
+                        api2.Accept();
+                    break;
+                case "JPN":
+                    if (alertText == "このﾌﾟﾛｼﾞｪｸﾄ (" + sProjectName + ") を削除してもよろしいですか?")
+                        api2.Accept();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
+                        api2.Accept();
+                    break;
+            }
             PrintStep(api2, "Delete "+ sProjectName + "Node");
 
             Thread.Sleep(10000);
@@ -191,7 +218,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// AI AO DI DO ////
             EventLog.AddLog("Check AI AO DI DO deleted tag..");
-            api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("通信埠3(tcpip)").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("通讯端口3(tcpip)").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
@@ -228,7 +275,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// OPCDA ////
             EventLog.AddLog("Check OPCDA deleted tag..");
-            api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("通信埠4(opc)").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("通讯端口4(opc)").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
@@ -247,7 +314,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// OPCUA ////
             EventLog.AddLog("Check OPCUA deleted tag..");
-            api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("通信埠5(tcpip)").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("通讯端口5(tcpip)").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
@@ -266,7 +353,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// Acc ////
             EventLog.AddLog("Check Acc deleted tag..");
-            api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("累算點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("累算点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點Acc_0004 所以剩249個tag
             {
@@ -283,7 +390,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// Calc ////
             EventLog.AddLog("Check Calculate deleted tag..");
-            api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("計算點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("计算点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Calc Point").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             for (int i = 1; i <= 136; i++)
             {
@@ -300,7 +427,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// Const ////
             EventLog.AddLog("Check Constant deleted tag..");
-            api.ById("tagTypes").SelectTxt("Const Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("常數點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("常数点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             for (int i = 1; i <= 500; i++)
             {
@@ -332,7 +479,27 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
             //// System ////
             EventLog.AddLog("Check System deleted tag..");
-            api.ById("tagTypes").SelectTxt("System Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("系統點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("系统点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點SystemSec_0004 所以剩249個tag
             {
@@ -551,6 +718,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -561,10 +729,13 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
+
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
 
