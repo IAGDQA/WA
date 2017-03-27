@@ -26,6 +26,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
         internal const int Max_Rows_Val = 65535;
         string baseUrl, baseUrl2;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -278,8 +279,32 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             api.ByXpath("//a[contains(@href, '/broadWeb/tag/deleteTag.asp') and contains(@href, 'action=delete_tag')]").Click();   // delete
 
             string alertText = api.GetAlartTxt();
-            if (alertText == "Delete this tag, are you sure?")
-                api.Accept();
+            switch (slanguage)
+            {
+                case "ENG":
+                    if (alertText == "Delete this tag, are you sure?")
+                        api.Accept();
+                    break;
+                case "CHT":
+                    if (alertText == "您確定要刪除這個測點?")
+                        api.Accept();
+                    break;
+                case "CHS":
+                    if (alertText == "您肯定要删除点吗?")
+                        api.Accept();
+                    break;
+                case "JPN":
+                    if (alertText == "このﾀｸﾞを削除してもよろしいですか?")
+                        api.Accept();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    if (alertText == "Delete this tag, are you sure?")
+                        api.Accept();
+                    break;
+            }
 
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("leftFrame", 0);
@@ -335,7 +360,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Ana_api.SwitchToCurWindow(0);
             Ana_api.SwitchToFrame("rightFrame", 0);
             Ana_api.ByXpath("//a[contains(@href, '/broadWeb/tag/TagPg.asp?pos=tag') and contains(@href, 'action=tag_property')]").Click();
-            Ana_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    Ana_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+                case "CHT":
+                    Ana_api.ByName("AlarmStatus").SelectTxt("警報").Exe();
+                    break;
+                case "CHS":
+                    Ana_api.ByName("AlarmStatus").SelectTxt("报警").Exe();
+                    break;
+                case "JPN":
+                    Ana_api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    Ana_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+            }
 
             Thread.Sleep(1500);
             Ana_api.ByName("HHPriority").SelectVal("8").Exe();
@@ -367,7 +412,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             Dis_api.SwitchToCurWindow(0);
             Dis_api.SwitchToFrame("rightFrame", 0);
             Dis_api.ByXpath("//a[contains(@href, '/broadWeb/tag/TagPg.asp?pos=tag') and contains(@href, 'action=tag_property')]").Click();
-            Dis_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    Dis_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+                case "CHT":
+                    Dis_api.ByName("AlarmStatus").SelectTxt("警報").Exe();
+                    break;
+                case "CHS":
+                    Dis_api.ByName("AlarmStatus").SelectTxt("报警").Exe();
+                    break;
+                case "JPN":
+                    Dis_api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    Dis_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
+                    break;
+            }
 
             Thread.Sleep(1500);
             Dis_api.ByName("AlarmPriority0").SelectVal("8").Exe();
@@ -408,7 +473,28 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/WaCloudWhitelist/CloudWhitelist.asp?')]").Click();
 
-            api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("通信埠3(tcpip)").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("通讯端口3(tcpip)").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
+            }
+
             Thread.Sleep(2000);
             api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
@@ -475,7 +561,28 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 PrintStep(api, "<GroundPC> Check AT_DO0006 info");
             }
 
-            api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("通信埠4(opc)").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("通讯端口4(opc)").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
+            }
+
             Thread.Sleep(2000);
             api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
@@ -494,7 +601,28 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 PrintStep(api, "<GroundPC> Check OPCDA_0006 info");
             }
 
-            api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("通信埠5(tcpip)").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("通讯端口5(tcpip)").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
+            }
+
             Thread.Sleep(2000);
             api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
@@ -513,7 +641,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 PrintStep(api, "<GroundPC> Check OPCUA_0006 info");
             }
 
-            api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("累算點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("累算点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Acc Point").Exe();
+                    break;
+            }
             //api.ByCss("img").Click();   // page1
             Thread.Sleep(2000);
             if (bTotalResult == true)
@@ -531,7 +679,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 PrintStep(api, "<GroundPC> Check Acc_0006 info");
             }
 
-            api.ById("tagTypes").SelectTxt("Const Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("常數點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("常数点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("Const Point").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
@@ -548,7 +716,27 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 PrintStep(api, "<GroundPC> Check ConDis_0006 info");
             }
 
-            api.ById("tagTypes").SelectTxt("System Point").Exe();
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
+                case "CHT":
+                    api.ById("tagTypes").SelectTxt("系統點").Exe();
+                    break;
+                case "CHS":
+                    api.ById("tagTypes").SelectTxt("系统点").Exe();
+                    break;
+                case "JPN":
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
+                case "KRN":
+                case "FRN":
+
+                default:
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
+            }
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
@@ -574,10 +762,10 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             api.SwitchToFrame("leftFrame", 0);
             
             api.ByXpath("//tr[6]/td/a/font").Click();      // AT_AI0007
-            bool bAICheck = AnalogTagCheck("AT_AI0007");
+            bool bAICheck = AnalogTagUpdateCheck("AT_AI0007");
 
             api.ByXpath("//tr[255]/td/a/font").Click();    // AT_AO0007
-            bool bAOCheck = AnalogTagCheck("AT_AO0007");
+            bool bAOCheck = AnalogTagUpdateCheck("AT_AO0007");
 
             api.ByXpath("//tr[504]/td/a/font").Click();    // AT_DI0007
             bool bDICheck = DiscreteTagUpdateCheck("AT_DI0007");
@@ -586,19 +774,19 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             bool bDOCheck = DiscreteTagUpdateCheck("AT_DO0007");
 
             api.ByXpath("//tr[2]/td/table/tbody/tr/td/table/tbody/tr[6]/td/a/font").Click();   // OPCDA_0007
-            bool bOPCDACheck = AnalogTagCheck("OPCDA_0007");
+            bool bOPCDACheck = AnalogTagUpdateCheck("OPCDA_0007");
 
             api.ByXpath("//tr[3]/td/table/tbody/tr/td/table/tbody/tr[6]/td/a/font").Click();   // OPCUA_0007
-            bool bOPCUACheck = AnalogTagCheck("OPCUA_0007");
+            bool bOPCUACheck = AnalogTagUpdateCheck("OPCUA_0007");
             
             api.ByXpath("//table[2]/tbody/tr/td/table/tbody/tr[6]/td/a/font").Click();   // Acc_0007
-            bool bAccCheck = AnalogTagCheck("Acc_0007");
+            bool bAccCheck = AnalogTagUpdateCheck("Acc_0007");
 
             api.ByXpath("//table[4]/tbody/tr/td/table/tbody/tr[256]/td/a/font").Click();   // ConDis_0007
             bool bConDisCheck = DiscreteTagUpdateCheck("ConDis_0007");
 
             api.ByXpath("//table[5]/tbody/tr/td/table/tbody/tr[6]/td/a/font").Click();   // SystemSec_0007
-            bool bSysCheck = AnalogTagCheck("SystemSec_0007");
+            bool bSysCheck = AnalogTagUpdateCheck("SystemSec_0007");
 
             if (bAccCheck && bAICheck && bAOCheck && bDICheck && bDOCheck && bConDisCheck && bOPCUACheck && bOPCDACheck && bSysCheck)
                 return true;
@@ -606,7 +794,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                 return false;
         }
 
-        private bool AnalogTagCheck(string sTagName)
+        private bool AnalogTagUpdateCheck(string sTagName)
         {
             EventLog.AddLog("<GroundPC> Update analog tag check: " + sTagName);
             Thread.Sleep(500);
@@ -940,6 +1128,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -950,10 +1139,13 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
+
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
 
