@@ -240,7 +240,7 @@ namespace PlugandPlay_UploadProjectTest
                         break;
                 }
                 api.ByCss("img").Click();   // page1
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
@@ -338,6 +338,7 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
                         break;
                 }
+                Thread.Sleep(2000);
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
@@ -406,8 +407,9 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
                         break;
                 }
+                Thread.Sleep(2000);
                 api.ByCss("img").Click();   // page1
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
