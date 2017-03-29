@@ -209,7 +209,7 @@ namespace ExcelInOut
 
             Excel.Worksheet Wsheet2 = (Excel.Worksheet)Wbook.Sheets["BwDiscrete"];
             //取得工作表的單元格
-            for (int i = 2; i <= 751; i++)
+            for (int i = 2; i <= 752; i++)
             {
                 Excel.Range aRangeChange = Wsheet2.get_Range("A" + i.ToString());
 
