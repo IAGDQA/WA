@@ -485,22 +485,35 @@ namespace CreateExcelReport
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
+            string sTomorrow = string.Format("{0:dd}", DateTime.Now.AddHours(8).AddDays(+1));
             int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            int iTomorrow = Int32.Parse(sTomorrow);
             string ssToday = string.Format("{0}", iToday);
-            string ssTomorrow = string.Format("{0}", iToday + 1);
+            string ssTomorrow = string.Format("{0}", iTomorrow);
             api.ByName("tStart").Click();
             Thread.Sleep(500);
             api.ByTxt(ssToday).Click();
             Thread.Sleep(500);
             api.ByXpath("(//button[@type='button'])[2]").Click();
 
-            api.ByName("tEnd").Click();
-            Thread.Sleep(500);
-            api.ByTxt(ssTomorrow).Click();
-            Thread.Sleep(500);
-            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
-            api.ByXpath("(//button[@type='button'])[2]").Click();
-
+            if (iTomorrow != 1)
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
+            else  // 跳頁
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
 
             api.ByName("interval").Clear();
             api.ByName("interval").Enter("1").Exe();
@@ -566,22 +579,36 @@ namespace CreateExcelReport
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
+            string sTomorrow = string.Format("{0:dd}", DateTime.Now.AddHours(8).AddDays(+1));
             int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            int iTomorrow = Int32.Parse(sTomorrow);
             string ssToday = string.Format("{0}", iToday);
-            string ssTomorrow = string.Format("{0}", iToday + 1);
+            string ssTomorrow = string.Format("{0}", iTomorrow);
             api.ByName("tStart").Click();
             Thread.Sleep(500);
             api.ByTxt(ssToday).Click();
             Thread.Sleep(500);
             api.ByXpath("(//button[@type='button'])[2]").Click();
 
-            api.ByName("tEnd").Click();
-            Thread.Sleep(500);
-            api.ByTxt(ssTomorrow).Click();
-            Thread.Sleep(500);
-            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
-            api.ByXpath("(//button[@type='button'])[2]").Click();
-
+            if (iTomorrow != 1)
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
+            else
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
 
             api.ByName("interval").Clear();
             api.ByName("interval").Enter("1").Exe();
@@ -644,21 +671,36 @@ namespace CreateExcelReport
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
+            string sTomorrow = string.Format("{0:dd}", DateTime.Now.AddHours(8).AddDays(+1));
             int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            int iTomorrow = Int32.Parse(sTomorrow);
             string ssToday = string.Format("{0}", iToday);
-            string ssTomorrow = string.Format("{0}", iToday + 1);
+            string ssTomorrow = string.Format("{0}", iTomorrow);
             api.ByName("tStart").Click();
             Thread.Sleep(500);
             api.ByTxt(ssToday).Click();
             Thread.Sleep(500);
             api.ByXpath("(//button[@type='button'])[2]").Click();
 
-            api.ByName("tEnd").Click();
-            Thread.Sleep(500);
-            api.ByTxt(ssTomorrow).Click();
-            Thread.Sleep(500);
-            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
-            api.ByXpath("(//button[@type='button'])[2]").Click();
+            if (iTomorrow != 1)
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
+            else
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
 
             // 湊到最大上限32個TAG
             string[] ReportTagName = { "AT_AI0001", "AT_AO0001", "AT_DI0001", "AT_DO0001", "Calc_ConAna", "Calc_ConDis", "ConDis_0001", "SystemSec_0001",
@@ -717,21 +759,36 @@ namespace CreateExcelReport
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
+            string sTomorrow = string.Format("{0:dd}", DateTime.Now.AddHours(8).AddDays(+1));
             int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            int iTomorrow = Int32.Parse(sTomorrow);
             string ssToday = string.Format("{0}", iToday);
-            string ssTomorrow = string.Format("{0}", iToday + 1);
+            string ssTomorrow = string.Format("{0}", iTomorrow);
             api.ByName("tStart").Click();
             Thread.Sleep(500);
             api.ByTxt(ssToday).Click();
             Thread.Sleep(500);
             api.ByXpath("(//button[@type='button'])[2]").Click();
 
-            api.ByName("tEnd").Click();
-            Thread.Sleep(500);
-            api.ByTxt(ssTomorrow).Click();
-            Thread.Sleep(500);
-            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
-            api.ByXpath("(//button[@type='button'])[2]").Click();
+            if (iTomorrow != 1)
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
+            else
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
 
             api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
             api.ByName("emailto").Clear();
@@ -771,21 +828,36 @@ namespace CreateExcelReport
 
             // set today as start/end date
             string sToday = string.Format("{0:dd}", DateTime.Now);
+            string sTomorrow = string.Format("{0:dd}", DateTime.Now.AddHours(8).AddDays(+1));
             int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+            int iTomorrow = Int32.Parse(sTomorrow);
             string ssToday = string.Format("{0}", iToday);
-            string ssTomorrow = string.Format("{0}", iToday + 1);
+            string ssTomorrow = string.Format("{0}", iTomorrow);
             api.ByName("tStart").Click();
             Thread.Sleep(500);
             api.ByTxt(ssToday).Click();
             Thread.Sleep(500);
             api.ByXpath("(//button[@type='button'])[2]").Click();
 
-            api.ByName("tEnd").Click();
-            Thread.Sleep(500);
-            api.ByTxt(ssTomorrow).Click();
-            Thread.Sleep(500);
-            //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
-            api.ByXpath("(//button[@type='button'])[2]").Click();
+            if (iTomorrow != 1)
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                //api.ByXpath("//button[@type='button']").Click();    //Click "Now" button
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
+            else
+            {
+                api.ByName("tEnd").Click();
+                Thread.Sleep(500);
+                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
+                Thread.Sleep(500);
+                api.ByTxt(ssTomorrow).Click();
+                Thread.Sleep(500);
+                api.ByXpath("(//button[@type='button'])[2]").Click();
+            }
 
             api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
             api.ByName("emailto").Clear();
