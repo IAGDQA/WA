@@ -123,7 +123,7 @@
             this.WebAccessIP.Name = "WebAccessIP";
             this.WebAccessIP.Size = new System.Drawing.Size(290, 22);
             this.WebAccessIP.TabIndex = 7;
-            this.WebAccessIP.Text = "172.18.xx.xx";
+            this.WebAccessIP.Text = "172.xx.xx.xx";
             // 
             // TestLogFolder
             // 
