@@ -347,9 +347,9 @@ namespace PlugandPlay_TagInfoSyncTest
             //}
 
             // Get Calculate value
-            string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
-            "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
-
+            //string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
+            //"Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+            string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna",  "Calc_System"};
             C_Calc_Value = waWebSvcC.GetValueText(sCalcTagList, false);
             //for (int i = 0; i < C_Calc_Value.Result.Total; i++)
             //{
@@ -523,8 +523,9 @@ namespace PlugandPlay_TagInfoSyncTest
             //}
 
             // Get Calculate value
-            string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
-            "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+            //string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
+            //"Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+            string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna",  "Calc_System"};
             G_Calc_Value = waWebSvcG.GetValueText(sCalcTagList, false);
             //for (int i = 0; i < G_Calc_Value.Result.Total; i++)
             //{
@@ -667,8 +668,9 @@ namespace PlugandPlay_TagInfoSyncTest
 
                 // Get Calculate value
                 EventLog.AddLog("Get Calculate value..");
-                string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
-                                          "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+                //string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO",
+                //                          "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna", "Calc_ConDis",  "Calc_System"};
+                string[] sCalcTagList = { "Calc_ModBusAI", "Calc_ModBusAO", "Calc_OPCDA", "Calc_OPCUA", "Calc_Acc", "Calc_ConAna",  "Calc_System"};
                 G_Calc_Value = waWebSvcG.GetValueText(sCalcTagList, false);
                 C_Calc_Value = waWebSvcC.GetValueText(sCalcTagList, false);
 
@@ -853,7 +855,9 @@ namespace PlugandPlay_TagInfoSyncTest
             for (int i = 0; i < C_System_Value.Result.Total; i++)
             {
                 double dDiff = Convert.ToDouble(C_System_Value.Values[i].Value) - Convert.ToDouble(G_System_Value.Values[i].Value);
-                if (Math.Abs(dDiff) > iAnalogDiffSpec)
+                if ((Math.Abs(dDiff) > iAnalogDiffSpec) && 
+                    (Math.Abs(dDiff) != 60-iAnalogDiffSpec) && 
+                    (Math.Abs(dDiff) != 60-iAnalogDiffSpec+1)) // 秒數會從59跳0 從0開始累加, 避免有58 vs 0或59 vs 0的情況 而誤判
                 {
                     EventLog.AddLog(string.Format("The difference of cloud value({0}={1}) and ground value({2}={3}) is out of spec({4})"
                         , C_System_Value.Values[i].Name, C_System_Value.Values[i].Value, G_System_Value.Values[i].Name, G_System_Value.Values[i].Value, iAnalogDiffSpec));
