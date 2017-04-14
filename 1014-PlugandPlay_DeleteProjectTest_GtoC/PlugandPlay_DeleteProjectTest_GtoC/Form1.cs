@@ -26,6 +26,7 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
         internal const int Max_Rows_Val = 65535;
         string baseUrl, baseUrl2;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -148,8 +149,37 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
 
             // Confirm to delete project
             string alertText = api.GetAlartTxt();
-            if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
-                api.Accept();
+            //if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
+            //    api.Accept();
+            switch (slanguage)
+            {
+                case "ENG":
+                    if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
+                        api.Accept();
+                    break;
+                case "CHT":
+                    if (alertText == "您確定要刪除這個工程(" + sProjectName + ")?")
+                        api.Accept();
+                    break;
+                case "CHS":
+                    if (alertText == "您肯定要删除工程(" + sProjectName + ")吗?")
+                        api.Accept();
+                    break;
+                case "JPN":
+                    if (alertText == "このﾌﾟﾛｼﾞｪｸﾄ (" + sProjectName + ") を削除してもよろしいですか?")
+                        api.Accept();
+                    break;
+                case "KRN":
+                    if (alertText == "이 프로젝트(" + sProjectName + ")를 삭제합니다. 계속하시겠습니까?")
+                        api.Accept();
+                    break;
+                case "FRN":
+
+                default:
+                    if (alertText == "Delete this project (" + sProjectName + "), are you sure?")
+                        api.Accept();
+                    break;
+            }
             PrintStep(api, "<GroundPC> Delete " + sProjectName + "Node");
 
             Thread.Sleep(10000);
@@ -278,6 +308,7 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -288,10 +319,13 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
+
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
 
@@ -350,25 +384,6 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
                 tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", WebAccessIP2.Text, sIniFilePath);
             }
-        }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
     }

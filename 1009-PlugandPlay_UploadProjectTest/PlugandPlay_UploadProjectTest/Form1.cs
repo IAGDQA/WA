@@ -233,6 +233,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("포트3(tcpip)").Exe();
+                        break;
                     case "FRN":
 
                     default:
@@ -272,6 +274,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -302,6 +306,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -332,6 +338,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("포트4(opc)").Exe();
+                        break;
                     case "FRN":
 
                     default:
@@ -371,6 +379,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -401,6 +411,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("포트5(tcpip)").Exe();
+                        break;
                     case "FRN":
 
                     default:
@@ -440,6 +452,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -470,6 +484,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Acc Point").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("누적 포인트").Exe();
+                        break;
                     case "FRN":
 
                     default:
@@ -508,6 +524,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -538,6 +556,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Calc Point").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("산출 포인트").Exe(); // 翻譯可能有問題 與acc一樣
+                        break;
                     case "FRN":
 
                     default:
@@ -567,6 +587,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -597,6 +619,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Const Point").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("상수 포인트").Exe();
+                        break;
                     case "FRN":
 
                     default:
@@ -635,6 +659,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -664,6 +690,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:
@@ -694,6 +722,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("System Point").Exe();
                         break;
                     case "KRN":
+                        api.ById("tagTypes").SelectTxt("시스템 포인트").Exe();
+                        break;
                     case "FRN":
 
                     default:
@@ -732,6 +762,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ByXpath("//input[@value='Save']").Click();
                         break;
                     case "KRN":
+                        api.ByXpath("//input[@value='저장']").Click();
+                        break;
                     case "FRN":
 
                     default:

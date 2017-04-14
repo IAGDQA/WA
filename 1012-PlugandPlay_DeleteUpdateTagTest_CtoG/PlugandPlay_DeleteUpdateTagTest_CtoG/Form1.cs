@@ -298,6 +298,9 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                         api.Accept();
                     break;
                 case "KRN":
+                    if (alertText == "이 태그를 삭제합니다. 계속하시겠습니까?")
+                        api.Accept();
+                    break;
                 case "FRN":
 
                 default:
@@ -375,6 +378,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     Ana_api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
                     break;
                 case "KRN":
+                    Ana_api.ByName("AlarmStatus").SelectTxt("알람").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -427,6 +432,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     Dis_api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
                     break;
                 case "KRN":
+                    Dis_api.ByName("AlarmStatus").SelectTxt("알람").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -488,6 +495,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
                     break;
                 case "KRN":
+                    api.ById("tagTypes").SelectTxt("포트3(tcpip)").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -576,6 +585,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
                     break;
                 case "KRN":
+                    api.ById("tagTypes").SelectTxt("포트4(opc)").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -616,6 +627,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
                     break;
                 case "KRN":
+                    api.ById("tagTypes").SelectTxt("포트5(tcpip)").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -656,6 +669,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("Acc Point").Exe();
                     break;
                 case "KRN":
+                    api.ById("tagTypes").SelectTxt("누적 포인트").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -694,6 +709,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("Const Point").Exe();
                     break;
                 case "KRN":
+                    api.ById("tagTypes").SelectTxt("상수 포인트").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -731,6 +748,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("System Point").Exe();
                     break;
                 case "KRN":
+                    api.ById("tagTypes").SelectTxt("시스템 포인트").Exe();
+                    break;
                 case "FRN":
 
                 default:

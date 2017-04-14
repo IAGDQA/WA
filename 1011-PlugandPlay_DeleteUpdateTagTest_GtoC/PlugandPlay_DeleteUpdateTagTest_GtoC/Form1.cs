@@ -494,6 +494,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
                     api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
                     break;
                 case "KRN":
+                    api.ByName("AlarmStatus").SelectTxt("알람").Exe();
+                    break;
                 case "FRN":
 
                 default:
@@ -546,6 +548,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
                     api.ByName("AlarmStatus").SelectTxt("ｱﾗｰﾑ").Exe();
                     break;
                 case "KRN":
+                    api.ByName("AlarmStatus").SelectTxt("알람").Exe();
+                    break;
                 case "FRN":
 
                 default:

@@ -92,6 +92,9 @@ namespace DeleteProjectNode
                         api.Accept();
                     break;
                 case "KRN":
+                    if (alertText == "이 프로젝트(" + sProjectName + ")를 삭제합니다. 계속하시겠습니까?")
+                        api.Accept();
+                    break;
                 case "FRN":
 
                 default:

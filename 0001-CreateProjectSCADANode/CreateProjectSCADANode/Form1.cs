@@ -237,6 +237,9 @@ namespace CreateProjectSCADANode
                         api.Accept();
                     break;
                 case "KRN":
+                    if (alertText == "새 프로젝트를 생성할까요? ( 프로젝트명 : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
                 case "FRN":
 
                 default:
