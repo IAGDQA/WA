@@ -373,6 +373,7 @@ namespace CreateProjectSCADANode
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Redundant Secondary PC", "NA", sDefaultIP3, 255, sFilePath);
             slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
+            comboBox_language.Text = slanguage;
             UserEmail.Text = sDefaultUserEmail.ToString();
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
