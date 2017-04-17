@@ -314,7 +314,7 @@ namespace View_and_Save_AlarmData
                     iAlarmGroup_Handle = tpc.F_FindWindow("#32770", "ｱﾗｰﾑ ｸﾞﾙｰﾌﾟ一覧");
                     break;
                 case "KRN":
-                    iAlarmGroup_Handle = tpc.F_FindWindow("#32770", "알람 그룹리스트");
+                    iAlarmGroup_Handle = tpc.F_FindWindow("#32770", "알람 그룹리스트 ");
                     break;
                 case "FRN":
 
