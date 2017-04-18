@@ -10,7 +10,7 @@ SETVAL "ConAna_00$i=%LOOPPLUS 1"
 SETVAL "ConDis_00$i=%REVERSE"
 }
 
-for {set i 100} {$i<=500} {incr i} {
+for {set i 100} {$i<=248} {incr i} {
 SETVAL "ConAna_0$i=%LOOPPLUS 1"
 SETVAL "ConDis_0$i=%REVERSE"
 }
