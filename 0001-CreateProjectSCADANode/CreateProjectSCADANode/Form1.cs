@@ -241,6 +241,9 @@ namespace CreateProjectSCADANode
                         api.Accept();
                     break;
                 case "FRN":
+                    if (alertText == "Voulez-vous créer un nouveau projet ( Nom projet : " + sProjectName + " )? ")
+                        api.Accept();
+                    break;
 
                 default:
                     if (alertText == "Do you want to create a new project ( Project Name : " + sProjectName + " )? ")

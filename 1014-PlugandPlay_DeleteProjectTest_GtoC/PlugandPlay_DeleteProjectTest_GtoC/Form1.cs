@@ -174,6 +174,9 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
                         api.Accept();
                     break;
                 case "FRN":
+                    if (alertText == "Supprimer ce projet (" + sProjectName + "), êtes-vous sûr ?")
+                        api.Accept();
+                    break;
 
                 default:
                     if (alertText == "Delete this project (" + sProjectName + "), are you sure?")

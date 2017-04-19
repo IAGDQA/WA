@@ -239,6 +239,8 @@ namespace CreateExcelReport
                         api.ByName("speTimeFmt").SelectTxt("일간 보고").Exe();
                         break;
                     case "FRN":
+                        api.ByName("speTimeFmt").SelectTxt("Rapport quotidien").Exe();
+                        break;
 
                     default:
                         api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
@@ -305,6 +307,8 @@ namespace CreateExcelReport
                         api.ByName("speTimeFmt").SelectTxt("일간 보고").Exe();
                         break;
                     case "FRN":
+                        api.ByName("speTimeFmt").SelectTxt("Rapport quotidien").Exe();
+                        break;
 
                     default:
                         api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
@@ -383,6 +387,8 @@ namespace CreateExcelReport
                         api.ByName("speTimeFmt").SelectTxt("일간 보고").Exe();
                         break;
                     case "FRN":
+                        api.ByName("speTimeFmt").SelectTxt("Rapport quotidien").Exe();
+                        break;
 
                     default:
                         api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
@@ -485,6 +491,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
                     break;
                 case "FRN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
 
                 default:
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
@@ -581,6 +589,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
                     break;
                 case "FRN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
 
                 default:
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
@@ -675,6 +685,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
                     break;
                 case "FRN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
 
                 default:
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
@@ -765,6 +777,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
                     break;
                 case "FRN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
 
                 default:
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
@@ -836,6 +850,8 @@ namespace CreateExcelReport
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
                     break;
                 case "FRN":
+                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
+                    break;
 
                 default:
                     api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();

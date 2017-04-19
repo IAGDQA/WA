@@ -302,6 +302,9 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                         api.Accept();
                     break;
                 case "FRN":
+                    if (alertText == "Supprimer ce point, êtes-vous sûr ?")
+                        api.Accept();
+                    break;
 
                 default:
                     if (alertText == "Delete this tag, are you sure?")
@@ -381,6 +384,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     Ana_api.ByName("AlarmStatus").SelectTxt("알람").Exe();
                     break;
                 case "FRN":
+                    Ana_api.ByName("AlarmStatus").SelectTxt("Alarme").Exe();
+                    break;
 
                 default:
                     Ana_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
@@ -435,6 +440,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     Dis_api.ByName("AlarmStatus").SelectTxt("알람").Exe();
                     break;
                 case "FRN":
+                    Dis_api.ByName("AlarmStatus").SelectTxt("Alarme").Exe();
+                    break;
 
                 default:
                     Dis_api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
@@ -498,6 +505,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("포트3(tcpip)").Exe();
                     break;
                 case "FRN":
+                    api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
+                    break;
 
                 default:
                     api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
@@ -588,6 +597,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("포트4(opc)").Exe();
                     break;
                 case "FRN":
+                    api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
+                    break;
 
                 default:
                     api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
@@ -630,6 +641,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("포트5(tcpip)").Exe();
                     break;
                 case "FRN":
+                    api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
+                    break;
 
                 default:
                     api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
@@ -672,6 +685,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("누적 포인트").Exe();
                     break;
                 case "FRN":
+                    api.ById("tagTypes").SelectTxt("Point d'accumul.").Exe();
+                    break;
 
                 default:
                     api.ById("tagTypes").SelectTxt("Acc Point").Exe();
@@ -712,6 +727,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("상수 포인트").Exe();
                     break;
                 case "FRN":
+                    api.ById("tagTypes").SelectTxt("Point const.").Exe();
+                    break;
 
                 default:
                     api.ById("tagTypes").SelectTxt("Const Point").Exe();
@@ -751,6 +768,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("시스템 포인트").Exe();
                     break;
                 case "FRN":
+                    api.ById("tagTypes").SelectTxt("System Point").Exe();
+                    break;
 
                 default:
                     api.ById("tagTypes").SelectTxt("System Point").Exe();

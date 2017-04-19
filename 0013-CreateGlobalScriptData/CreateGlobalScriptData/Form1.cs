@@ -227,6 +227,8 @@ namespace CreateGlobalScriptData
                     api.ByName("StatusSel_1").SelectTxt("가동").Exe();
                     break;
                 case "FRN":
+                    api.ByName("StatusSel_1").SelectTxt("Activer").Exe();
+                    break;
 
                 default:
                     api.ByName("StatusSel_1").SelectTxt("Enable").Exe();
@@ -257,6 +259,8 @@ namespace CreateGlobalScriptData
                     api.ByName("StatusSel_2").SelectTxt("가동").Exe();
                     break;
                 case "FRN":
+                    api.ByName("StatusSel_2").SelectTxt("Activer").Exe();
+                    break;
 
                 default:
                     api.ByName("StatusSel_2").SelectTxt("Enable").Exe();
@@ -285,6 +289,8 @@ namespace CreateGlobalScriptData
                     api.ByName("StatusSel_3").SelectTxt("가동").Exe();
                     break;
                 case "FRN":
+                    api.ByName("StatusSel_3").SelectTxt("Activer").Exe();
+                    break;
 
                 default:
                     api.ByName("StatusSel_3").SelectTxt("Enable").Exe();

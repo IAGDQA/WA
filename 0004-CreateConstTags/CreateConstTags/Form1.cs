@@ -191,6 +191,8 @@ namespace CreateConstTags
                     api.ByName("AlarmStatus").SelectTxt("알람").Exe();
                     break;
                 case "FRN":
+                    api.ByName("AlarmStatus").SelectTxt("Alarme").Exe();
+                    break;
 
                 default:
                     api.ByName("AlarmStatus").SelectTxt("Alarm").Exe();
