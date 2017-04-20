@@ -288,5 +288,11 @@ namespace ThirdPartyToolControl
         {
             return GetPrivateProfileString(sectionName, keyName, defaultReturnString, returnString, returnStringLength, filePath);
         }
+
+        public void F_KeybdEvent(int bVk, int bScan, uint dwFlags, int dwExtraInfo)
+        {
+            keybd_event((byte)bVk, (byte)bScan, dwFlags, dwExtraInfo);
+        }
+        
     }
 }
