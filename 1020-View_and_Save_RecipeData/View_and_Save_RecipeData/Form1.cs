@@ -25,14 +25,14 @@ namespace _View_and_Save_RecipeData
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
         string slanguage;
 
-        [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, IntPtr dwExtraInfo);
+        //[DllImport("user32.dll")]
+        //public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, IntPtr dwExtraInfo);
 
-        const byte Shift_key = 0x10;                    //鍵盤shift的虛擬掃描代碼
-        const byte VK_DOWN = 0x28;
-        const byte VK_RETURN = 0x0D;
-        const byte KEYEVENTF_EXTENDEDKEY = 0x01;
-        const byte KEYEVENTF_KEYUP = 0x0002;
+        //const byte Shift_key = 0x10;                    //鍵盤shift的虛擬掃描代碼
+        //const byte VK_DOWN = 0x28;
+        //const byte VK_RETURN = 0x0D;
+        //const byte KEYEVENTF_EXTENDEDKEY = 0x01;
+        //const byte KEYEVENTF_KEYUP = 0x0002;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -45,12 +45,12 @@ namespace _View_and_Save_RecipeData
         {
             //Add test code
             long lErrorCode = (long)ErrorCode.SUCCESS;
-            EventLog.AddLog("===View and Save RealTimeTrendData start===");
+            EventLog.AddLog("===View_and_Save_RecipeData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===View and Save RealTimeTrendData end===");
+            EventLog.AddLog("===View_and_Save_RecipeData end===");
 
             if (lErrorCode == 0)
             {
@@ -167,12 +167,12 @@ namespace _View_and_Save_RecipeData
         private void button1_Click(object sender, EventArgs e)
         {
             long lErrorCode = (long)ErrorCode.SUCCESS;
-            EventLog.AddLog("===View and Save RealTimeTrendData start===");
+            EventLog.AddLog("===View_and_Save_RecipeData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode=Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===View and Save RealTimeTrendData end===");
+            EventLog.AddLog("===View_and_Save_RecipeData end===");
         }
 
         long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
@@ -403,34 +403,34 @@ namespace _View_and_Save_RecipeData
             else
                 EventLog.AddLog("Cannot get Login keyboard handle");
 
-            int iRealTimeTrend_Handle;
+            int iRecipeList_Handle;
             switch (slanguage)
             {
                 case "ENG":
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "Recipe List");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "Recipe List");
                     break;
                 case "CHT":
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "配方列表");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "配方列表");
                     break;
                 case "CHS":
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "配方列表");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "配方列表");
                     break;
                 case "JPN":
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "ﾚｼﾋﾟ一覧");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "ﾚｼﾋﾟ一覧");
                     break;
                 case "KRN":
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "레시피 리스트");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "레시피 리스트");
                     break;
                 case "FRN":
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "Liste des recettes");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "Liste des recettes");
                     break;
 
                 default:
-                    iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "Recipe List");
+                    iRecipeList_Handle = tpc.F_FindWindow("#32770", "Recipe List");
                     break;
             }
-            //int iRealTimeTrend_Handle = tpc.F_FindWindow("#32770", "Realtime Trend List");
-            int iEnterText2 = tpc.F_FindWindowEx(iRealTimeTrend_Handle, 0, "Edit", "");
+            //int iRecipeList_Handle = tpc.F_FindWindow("#32770", "Recipe List");
+            int iEnterText2 = tpc.F_FindWindowEx(iRecipeList_Handle, 0, "Edit", "");
             if (iEnterText2 > 0)
                 tpc.F_PostMessage(iEnterText2, tpc.V_WM_KEYDOWN, tpc.V_VK_RETURN, 0);
             else
@@ -438,12 +438,15 @@ namespace _View_and_Save_RecipeData
 
             if (iWA_MainPage > 0)
             {
-                keybd_event(Shift_key, 0, KEYEVENTF_EXTENDEDKEY, (IntPtr)0);
+                tpc.F_KeybdEvent(tpc.V_VK_SHIFT, 0, tpc.V_KEYEVENTF_EXTENDEDKEY, 0);
                 tpc.F_PostMessage(iWA_MainPage, tpc.V_WM_KEYDOWN, tpc.V_VK_F1, 0);
                 System.Threading.Thread.Sleep(1000);
-                keybd_event(Shift_key, 0, KEYEVENTF_KEYUP, (IntPtr)0);
-                keybd_event(VK_DOWN, 0, KEYEVENTF_EXTENDEDKEY, (IntPtr)0);
-                keybd_event(VK_RETURN, 0, KEYEVENTF_EXTENDEDKEY, (IntPtr)0);
+                tpc.F_KeybdEvent(tpc.V_VK_SHIFT, 0, tpc.V_KEYEVENTF_KEYUP, 0);
+                System.Threading.Thread.Sleep(1000);
+                tpc.F_KeybdEvent(tpc.V_VK_DOWN, 0, tpc.V_KEYEVENTF_EXTENDEDKEY, 0);
+                System.Threading.Thread.Sleep(1000);
+                tpc.F_KeybdEvent(tpc.V_VK_RETURN, 0, tpc.V_KEYEVENTF_EXTENDEDKEY, 0);
+                System.Threading.Thread.Sleep(1000);
             }
             else
                 EventLog.AddLog("Cannot get Start View WebAccess Main Page handle");

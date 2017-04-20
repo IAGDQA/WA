@@ -257,7 +257,7 @@
             this.Controls.Add(this.Browser);
             this.Controls.Add(this.WebAccessIP);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Advantech WebAccess Auto Test ( CreateRecipe)";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

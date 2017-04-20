@@ -235,22 +235,32 @@ namespace CreateRecipe
             {
                 api.ByName("FileName").Clear();
                 api.ByName("FileName").Enter(Recipe_File_Name).Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("UnitName").Clear();
                 api.ByName("UnitName").Enter(Unit_Name).Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("RecipeName").Clear();
                 api.ByName("RecipeName").Enter(Recipe_Name).Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("ItemName_1").Clear();
                 api.ByName("ItemName_1").Enter("ItemName_1").Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("ItemName_2").Clear();
                 api.ByName("ItemName_2").Enter("ItemName_2").Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("TagName001").Clear();
                 api.ByName("TagName001").Enter("ConAna_0249").Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("TagName002").Clear();
                 api.ByName("TagName002").Enter("ConAna_0250").Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("PreValue_1").Clear();
                 api.ByName("PreValue_1").Enter(Value).Exe();
+                System.Threading.Thread.Sleep(1000);
                 api.ByName("PreValue_2").Clear();
                 api.ByName("PreValue_2").Enter(Value).Exe();
+                System.Threading.Thread.Sleep(1000);
+
                 int iSubmitResult = api.ByName("PreValue_3").Enter("").Submit().Exe();
                 if (iSubmitResult == 0)
                 {

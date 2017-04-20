@@ -205,7 +205,7 @@
             this.Controls.Add(this.Browser);
             this.Controls.Add(this.Result);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Advantech WebAccess Auto Test ( View_and_Save_RecipeData)";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
