@@ -1,0 +1,12 @@
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\View_and_Save_RecipeData.exe.config
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\View_and_Save_RecipeData.exe
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\AdvSeleniumAPI.dll
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\iATesterAPI.dll
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\ThirdPartyToolControl.dll
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\WebDriver.dll
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\bin\Release\WebDriver.Support.dll
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\obj\Release\View_and_Save_RecipeData.csprojResolveAssemblyReference.cache
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\obj\Release\_View_and_Save_RecipeData.Form1.resources
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\obj\Release\_View_and_Save_RecipeData.Properties.Resources.resources
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\obj\Release\View_and_Save_RecipeData.csproj.GenerateResource.Cache
+D:\DQA-Code\WA\1020-View_and_Save_RecipeData\View_and_Save_RecipeData\obj\Release\View_and_Save_RecipeData.exe
