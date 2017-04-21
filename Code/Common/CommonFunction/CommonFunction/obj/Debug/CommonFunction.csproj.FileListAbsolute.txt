@@ -1,5 +1,0 @@
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\bin\Debug\CommonFunction.dll
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\bin\Debug\CommonFunction.pdb
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\obj\Debug\CommonFunction.csprojResolveAssemblyReference.cache
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\obj\Debug\CommonFunction.dll
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\obj\Debug\CommonFunction.pdb

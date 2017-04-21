@@ -1,9 +1,0 @@
-for {set i 0} {$i<=9} {incr i} {
-SETVAL "ConDis_000$i=%LOOPPLUS 1"
-}
-for {set i 10} {$i<=99} {incr i} {
-SETVAL "ConDis_00$i=%LOOPPLUS 1"
-}
-for {set i 100} {$i<=500} {incr i} {
-SETVAL "ConDis_0$i=%LOOPPLUS 1"
-}

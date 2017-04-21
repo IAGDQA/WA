@@ -1,4 +1,0 @@
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\bin\Release\CommonFunction.dll
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\obj\Release\CommonFunction.dll
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\obj\Release\CommonFunction.csprojResolveAssemblyReference.cache
-D:\DQA-Code\GitLab\Code\Common\CommonFunction\CommonFunction\bin\Release\AdvSeleniumAPI.dll

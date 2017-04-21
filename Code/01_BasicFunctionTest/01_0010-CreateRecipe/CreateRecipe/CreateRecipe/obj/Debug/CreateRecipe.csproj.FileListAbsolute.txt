@@ -1,1 +1,0 @@
-D:\DQA-Code\WA\0020-CreateRecipe\CreateRecipe\CreateRecipe\bin\Debug\CreateRecipe.exe.config
