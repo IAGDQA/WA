@@ -131,7 +131,7 @@
             this.WebAccessIP.Name = "WebAccessIP";
             this.WebAccessIP.Size = new System.Drawing.Size(290, 22);
             this.WebAccessIP.TabIndex = 7;
-            this.WebAccessIP.Text = "172.18.xx.xx";
+            this.WebAccessIP.Text = "172.xx.xx.xx";
             // 
             // TestLogFolder
             // 
@@ -237,7 +237,7 @@
             this.textBox_CloudPC_IP.Name = "textBox_CloudPC_IP";
             this.textBox_CloudPC_IP.Size = new System.Drawing.Size(290, 22);
             this.textBox_CloudPC_IP.TabIndex = 15;
-            this.textBox_CloudPC_IP.Text = "172.18.xx.xx";
+            this.textBox_CloudPC_IP.Text = "172.xx.xx.xx";
             // 
             // textBox_BackupPC_IP
             // 
@@ -245,7 +245,7 @@
             this.textBox_BackupPC_IP.Name = "textBox_BackupPC_IP";
             this.textBox_BackupPC_IP.Size = new System.Drawing.Size(290, 22);
             this.textBox_BackupPC_IP.TabIndex = 16;
-            this.textBox_BackupPC_IP.Text = "172.18.xx.xx";
+            this.textBox_BackupPC_IP.Text = "172.xx.xx.xx";
             // 
             // label8
             // 

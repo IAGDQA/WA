@@ -11,6 +11,7 @@ using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using System.Runtime.InteropServices;
+using CommonFunction;
 
 namespace CreateProjectSCADANode
 {
@@ -18,6 +19,8 @@ namespace CreateProjectSCADANode
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -38,7 +41,7 @@ namespace CreateProjectSCADANode
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Project and SCADA node start (by iATester)===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
@@ -304,7 +307,7 @@ namespace CreateProjectSCADANode
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Project and SCADA node start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
