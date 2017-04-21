@@ -10,6 +10,7 @@ using System.Threading;
 using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace CreateModbusDeviceTags
 {
@@ -17,6 +18,8 @@ namespace CreateModbusDeviceTags
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -33,7 +36,7 @@ namespace CreateModbusDeviceTags
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Modebus Device Tags start (by iATester)===");
 
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
@@ -217,16 +220,16 @@ namespace CreateModbusDeviceTags
 
         private void CreateModbusTag()
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
 
-            if (lErrorCode == (long)ErrorCode.SUCCESS)
+            if (lErrorCode == 0)
             {
                 api.SwitchToCurWindow(0);
                 api.SwitchToFrame("leftFrame", 0);
                 api.ByXpath("//a[contains(@href, '/broadWeb/device/devPg.asp') and contains(@href, 'dname=ModSim')]").Click();
             }
 
-            if (lErrorCode == (long)ErrorCode.SUCCESS)
+            if (lErrorCode == 0)
             {
                 api.SwitchToCurWindow(0);
                 api.SwitchToFrame("rightFrame", 0);
@@ -281,6 +284,7 @@ namespace CreateModbusDeviceTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateModbusAITags error: " + ex.ToString());
                     i--;
                 }
 
@@ -301,6 +305,7 @@ namespace CreateModbusDeviceTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateModbusAOTags error: " + ex.ToString());
                     i--;
                 }
             }
@@ -320,6 +325,7 @@ namespace CreateModbusDeviceTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateModbusDITags error: " + ex.ToString());
                     i--;
                 }
             }
@@ -339,6 +345,7 @@ namespace CreateModbusDeviceTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateModbusDOTags error: " + ex.ToString());
                     i--;
                 }
             }
@@ -376,7 +383,7 @@ namespace CreateModbusDeviceTags
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Modbus Device Tags start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

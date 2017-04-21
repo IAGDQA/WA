@@ -13,6 +13,7 @@ using ThirdPartyToolControl;
 using iATester;
 using System.Reflection;
 using Excel = Microsoft.Office.Interop.Excel;
+using CommonFunction;
 
 namespace ExcelInOut
 {
@@ -20,6 +21,8 @@ namespace ExcelInOut
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -36,7 +39,7 @@ namespace ExcelInOut
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Excel in or out start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -349,7 +352,7 @@ namespace ExcelInOut
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Excel in or out start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

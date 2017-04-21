@@ -36,10 +36,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdvSeleniumAPI">
-      <HintPath>..\..\IncludeLibrary\AdvSeleniumAPI.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\AdvSeleniumAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="CommonFunction">
+      <HintPath>..\..\..\IncludeLibrary\CommonFunction.dll</HintPath>
     </Reference>
     <Reference Include="iATesterAPI">
-      <HintPath>..\..\IncludeLibrary\iATesterAPI.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\iATesterAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,13 +55,13 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="ThirdPartyToolControl">
-      <HintPath>..\..\IncludeLibrary\ThirdPartyToolControl.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\ThirdPartyToolControl.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver">
-      <HintPath>..\..\IncludeLibrary\WebDriver.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\WebDriver.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver.Support">
-      <HintPath>..\..\IncludeLibrary\WebDriver.Support.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\WebDriver.Support.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

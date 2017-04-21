@@ -10,6 +10,7 @@ using System.Threading;
 using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace CreateConstTags
 {
@@ -17,6 +18,8 @@ namespace CreateConstTags
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -34,7 +37,7 @@ namespace CreateConstTags
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Const Tags start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -216,6 +219,7 @@ namespace CreateConstTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateConstantTag error: " + ex.ToString());
                     i--;
                 }
             }
@@ -235,6 +239,7 @@ namespace CreateConstTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateConstantTag error: " + ex.ToString());
                     i--;
                 }
             }
@@ -254,6 +259,7 @@ namespace CreateConstTags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateConstantTag error: " + ex.ToString());
                     i--;
                 }
             }
@@ -293,7 +299,7 @@ namespace CreateConstTags
         
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Const Tags start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

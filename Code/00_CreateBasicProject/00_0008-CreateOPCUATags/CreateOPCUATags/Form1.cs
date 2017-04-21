@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace CreateOPCUATags
 {
@@ -19,6 +20,8 @@ namespace CreateOPCUATags
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -35,7 +38,7 @@ namespace CreateOPCUATags
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create OPC UA tags start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -177,7 +180,7 @@ namespace CreateOPCUATags
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create OPC UA tags start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
@@ -301,6 +304,7 @@ namespace CreateOPCUATags
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateUATags error: " + ex.ToString());
                     i--;
                 }
             }
