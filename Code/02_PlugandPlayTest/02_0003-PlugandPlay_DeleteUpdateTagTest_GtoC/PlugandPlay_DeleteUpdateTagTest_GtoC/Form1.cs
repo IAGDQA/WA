@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 {
@@ -20,6 +21,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
         IAdvSeleniumAPI api;
         IAdvSeleniumAPI api2;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -38,7 +41,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteUpdateTagTest_GtoC start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -160,7 +163,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             ReturnSCADAPage(api);
             // Step3. Download project
             EventLog.AddLog("<GroundPC> Download...");
-            StartDownload(api, sTestLogFolder);
+            wacf.Download(api);
 
             api.Quit();
             PrintStep(api, "<GroundPC> Quit browser");
@@ -352,7 +355,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.SwitchToFrame("leftFrame", 0);
 
             int iErrorCode = api.ByXpath("//tr[4]/td/a/font").Click();   //AT_AI0005
-            if (iErrorCode != (int)ErrorCode.SUCCESS)   // 展開左列 ModSim tag list
+            if (iErrorCode != 0)   // 展開左列 ModSim tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find AT_AI0005.. expand Modsim tree list");
                 api.ByXpath("//td[2]/table/tbody/tr/td/table/tbody/tr/td/a/img").Click();
@@ -395,7 +398,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
             //int iErrorCode2 = api.ByCss("a[name=\"tag186\"] > font.e5").Click();   //OPCDA_0005 
             int iErrorCode2 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();
-            if (iErrorCode2 != (int)ErrorCode.SUCCESS)   // 展開左列 OPCDA tag list
+            if (iErrorCode2 != 0)   // 展開左列 OPCDA tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find OPCDA_0005.. expand OPCDA tree list");
                 api.ByXpath("//td[2]/table/tbody/tr[2]/td/table/tbody/tr/td/a/img").ClickAndWait(2000);
@@ -411,7 +414,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             Thread.Sleep(2000);
             //int iErrorCode3 = api.ByCss("a[name=\"tag191\"] > font.e5").Click();   //OPCUA_0005
             int iErrorCode3 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table/tbody/tr[3]/td/table/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();
-            if (iErrorCode3 != (int)ErrorCode.SUCCESS)   // 展開左列 OPCUA tag list
+            if (iErrorCode3 != 0)   // 展開左列 OPCUA tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find OPCUA_0005.. expand OPCUA tree list");
                 api.ByXpath("//tr[3]/td/table/tbody/tr/td/a/img").ClickAndWait(2000);
@@ -427,7 +430,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             Thread.Sleep(2000);
             api.ByXpath("//table[2]/tbody/tr/td/a/img").ClickAndWait(2000); // 預設是關閉的 要展開他
             int iErrorCode4 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table[2]/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();   //Acc_0005
-            if (iErrorCode4 != (int)ErrorCode.SUCCESS)   // 展開左列 Acc Point tag list
+            if (iErrorCode4 != 0)   // 展開左列 Acc Point tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find Acc_0005.. expand Acc Point tree list");
                 api.ByXpath("//table[2]/tbody/tr/td/a/img").ClickAndWait(1500);
@@ -443,7 +446,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             Thread.Sleep(2000);
             api.ByXpath("//table[4]/tbody/tr/td/a/img").ClickAndWait(2000); // 預設是關閉的 要展開他
             int iErrorCode5 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table[4]/tbody/tr/td/table/tbody/tr[254]/td/a/font").Click();   //ConDis_0005
-            if (iErrorCode5 != (int)ErrorCode.SUCCESS)   // 展開左列 Calc Point tag list
+            if (iErrorCode5 != 0)   // 展開左列 Calc Point tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find ConDis_0005.. expand Const Point tree list");
                 api.ByXpath("//table[4]/tbody/tr/td/a/img").ClickAndWait(1500);
@@ -457,7 +460,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
             Thread.Sleep(2000);
             int iErrorCode6 = api.ByXpath(@"//table[@id='table1']/tbody/tr[2]/td[2]/table[5]/tbody/tr/td/table/tbody/tr[4]/td/a/font").Click();   //SystemSec_0005
-            if (iErrorCode6 != (int)ErrorCode.SUCCESS)   // 展開左列 System Point tag list
+            if (iErrorCode6 != 0)   // 展開左列 System Point tag list
             {
                 EventLog.AddLog("<GroundPC> Cannot find SystemSec_0005.. expand System Point tree list");
                 api.ByXpath("//table[5]/tbody/tr/td/a/img").ClickAndWait(2000);
@@ -734,58 +737,6 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             }
         }
 
-        private void StartDownload(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[3]/font").Click();    // "Download" click
-            Thread.Sleep(2000);
-            EventLog.AddLog("Find pop up download window handle");
-            string main; object subobj;                     // Find pop up download window handle
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            EventLog.AddLog("Start to download and wait 80 seconds...");
-            Thread.Sleep(80000);    // Wait 80s for Download finish
-            EventLog.AddLog("It's been wait 80 seconds");
-            PrintScreen("Download result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close download window and switch to main window");
-            api.SwitchToWinHandle(main);
-
-            PrintStep(api, "Download");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -853,7 +804,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteUpdateTagTest_GtoC start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

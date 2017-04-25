@@ -119,7 +119,7 @@
             this.ProjectName.Name = "ProjectName";
             this.ProjectName.Size = new System.Drawing.Size(100, 22);
             this.ProjectName.TabIndex = 6;
-            this.ProjectName.Text = "TestProject";
+            this.ProjectName.Text = "TestProjectGoGo";
             // 
             // WebAccessIP
             // 
@@ -189,7 +189,7 @@
             this.WebAccessIP2.Name = "WebAccessIP2";
             this.WebAccessIP2.Size = new System.Drawing.Size(290, 22);
             this.WebAccessIP2.TabIndex = 10;
-            this.WebAccessIP2.Text = "172.xx.xx.xx";
+            this.WebAccessIP2.Text = "172.yy.yy.yy";
             // 
             // label5
             // 

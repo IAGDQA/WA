@@ -13,6 +13,7 @@ using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
 using WAWebServiceInterface;
+using CommonFunction;
 
 namespace PlugandPlay_TagInfoSyncTest
 {
@@ -20,6 +21,9 @@ namespace PlugandPlay_TagInfoSyncTest
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
+
         WAWebServiceInterface.WAWebService waWebSvcG = null;
         WAWebServiceInterface.WAWebService waWebSvcC = null;
 
@@ -43,7 +47,7 @@ namespace PlugandPlay_TagInfoSyncTest
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_TagInfoSyncTest start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -161,7 +165,7 @@ namespace PlugandPlay_TagInfoSyncTest
             PrintStep(api, "<GroundPC> Configure project");
 
             EventLog.AddLog("<GroundPC> Start Kernel");
-            StartNode(api, sTestLogFolder);
+            wacf.StartKernel(api);
 
             api.Quit();
             PrintStep(api, "<GroundPC> Quit browser");
@@ -191,7 +195,7 @@ namespace PlugandPlay_TagInfoSyncTest
             PrintStep(api, "<CloudPC> Configure project");
 
             EventLog.AddLog("<CloudPC> Start Kernel");
-            StartNode(api, sTestLogFolder);
+            wacf.StartKernel(api);
 
             api.Quit();
             PrintStep(api, "<CloudPC> Quit browser");
@@ -886,58 +890,6 @@ namespace PlugandPlay_TagInfoSyncTest
             }
         }
 
-        private void StartNode(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[5]/font").Click();    // start kernel
-            Thread.Sleep(2000);
-            EventLog.AddLog("Find pop up StartNode window handle");
-            string main; object subobj;
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            EventLog.AddLog("Start node and wait 30 seconds...");
-            Thread.Sleep(30000);    // Wait 30s for start kernel finish
-            EventLog.AddLog("It's been wait 30 seconds");
-            PrintScreen("Start Node result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close start node window and switch to main window");
-            api.SwitchToWinHandle(main);        // switch back to original window
-
-            PrintStep(api, "Start Kernel");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -1005,7 +957,7 @@ namespace PlugandPlay_TagInfoSyncTest
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_TagInfoSyncTest start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

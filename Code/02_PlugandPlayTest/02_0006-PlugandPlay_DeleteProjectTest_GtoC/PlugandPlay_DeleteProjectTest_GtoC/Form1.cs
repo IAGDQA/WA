@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace PlugandPlay_DeleteProjectTest_GtoC
 {
@@ -20,6 +21,8 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
         IAdvSeleniumAPI api;
         IAdvSeleniumAPI api2;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -38,7 +41,7 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteProjectTest_GtoC start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -216,21 +219,10 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
             PrintStep(api2, "<CloudPC> Configure project");
 
             Thread.Sleep(5000);
-            PrintScreen("PlugandPlay_DeleteProjectTest_GtoC", sTestLogFolder);
+            EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_GtoC");
 
             api2.Quit();
             PrintStep(api2, "<CloudPC> Quit browser");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
@@ -299,7 +291,7 @@ namespace PlugandPlay_DeleteProjectTest_GtoC
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteProjectTest_GtoC start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

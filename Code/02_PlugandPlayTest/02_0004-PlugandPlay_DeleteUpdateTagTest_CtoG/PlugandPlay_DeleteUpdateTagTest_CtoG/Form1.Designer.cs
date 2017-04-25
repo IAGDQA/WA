@@ -119,7 +119,7 @@
             this.ProjectName.Name = "ProjectName";
             this.ProjectName.Size = new System.Drawing.Size(100, 22);
             this.ProjectName.TabIndex = 6;
-            this.ProjectName.Text = "TestProject";
+            this.ProjectName.Text = "TestProjectGoGo";
             // 
             // WebAccessIP
             // 

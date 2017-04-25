@@ -11,6 +11,7 @@ using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using System.IO;
+using CommonFunction;
 
 namespace NodeRED_WAMathNodeTest
 {
@@ -18,6 +19,8 @@ namespace NodeRED_WAMathNodeTest
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -34,7 +37,7 @@ namespace NodeRED_WAMathNodeTest
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===NodeRED_WAMathNode test start (by iATester)===");
 
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
@@ -344,7 +347,7 @@ namespace NodeRED_WAMathNodeTest
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===NodeRED_WAMathNode test start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

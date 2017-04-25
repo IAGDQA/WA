@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace PlugandPlay_UploadProjectTest
 {
@@ -20,6 +21,8 @@ namespace PlugandPlay_UploadProjectTest
         IAdvSeleniumAPI api;
         IAdvSeleniumAPI api2;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -38,7 +41,7 @@ namespace PlugandPlay_UploadProjectTest
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_UploadProjectTest start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -247,7 +250,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(2000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
                 /*
@@ -359,7 +364,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
                 /*
@@ -436,7 +443,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(2000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
                 /*
@@ -512,7 +521,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
                 /*
@@ -588,7 +599,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
 
@@ -655,7 +668,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
                 /*
@@ -764,7 +779,9 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
+                Thread.Sleep(500);
                 api.ByName("SetDeadBandValue").Enter("0").Exe();
+                Thread.Sleep(500);
                 SendKeys.SendWait("{ENTER}");
                 Thread.Sleep(1000);
                 /*
@@ -811,7 +828,7 @@ namespace PlugandPlay_UploadProjectTest
             ReturnSCADAPage(api);
 
             EventLog.AddLog("<GroundPC> Download...");
-            StartDownload(api, sTestLogFolder);
+            wacf.Download(api);
 
             api.Quit();
             PrintStep(api, "Quit browser");
@@ -836,69 +853,17 @@ namespace PlugandPlay_UploadProjectTest
             api2.ById("userField").Enter("").Submit().Exe();
             PrintStep(api2, "<CloudPC> Login WebAccess");
             Thread.Sleep(2000);
-            PrintScreen("PlugandPlay_UploadProjectTest_Project Manager Page", sTestLogFolder);
+            EventLog.PrintScreen("PlugandPlay_UploadProjectTest_Project Manager Page");
 
             // Configure project by project name
             EventLog.AddLog("<CloudPC> Capture the configure project page");
             api2.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
             PrintStep(api2, "<CloudPC> Configure project");
             Thread.Sleep(5000);
-            PrintScreen("PlugandPlay_UploadProjectTest_Configure project Page", sTestLogFolder);
+            EventLog.PrintScreen("PlugandPlay_UploadProjectTest_Configure project Page");
 
             api2.Quit();
             PrintStep(api2, "<CloudPC> Quit browser");
-        }
-
-        private void StartDownload(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[3]/font").Click();    // "Download" click
-            Thread.Sleep(2000);
-            EventLog.AddLog("Find pop up download window handle");
-            string main; object subobj;                     // Find pop up download window handle
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            EventLog.AddLog("Start to download and wait 80 seconds...");
-            Thread.Sleep(80000);    // Wait 80s for Download finish
-            EventLog.AddLog("It's been wait 80 seconds");
-            PrintScreen("Download result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close download window and switch to main window");
-            api.SwitchToWinHandle(main);
-
-            PrintStep(api, "Download");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
@@ -968,7 +933,7 @@ namespace PlugandPlay_UploadProjectTest
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_UploadProjectTest start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace PlugandPlay_DeleteProjectTest_CtoG
 {
@@ -20,6 +21,8 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
         IAdvSeleniumAPI api;
         IAdvSeleniumAPI api2;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -38,7 +41,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteProjectTest_CtoG start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -592,10 +595,10 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
                 
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ModsimWhiteList_Page1", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ModsimWhiteList_Page1");
                 api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ModsimWhiteList_Page2", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ModsimWhiteList_Page2");
             }
 
             // Port4(opc)
@@ -605,7 +608,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 Thread.Sleep(2000);
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_OPCDAWhiteList", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_OPCDAWhiteList");
             }
 
             // Port5(tcpip)
@@ -615,7 +618,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 Thread.Sleep(2000);
                 api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_OPCUAWhiteList", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_OPCUAWhiteList");
             }
 
             // Acc Point
@@ -624,7 +627,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 api.ById("tagTypes").SelectTxt("Acc Point").Exe();
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_AccWhiteList", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_AccWhiteList");
             }
 
             // Calc Point
@@ -633,7 +636,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 api.ById("tagTypes").SelectTxt("Calc Point").Exe();
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_CalcWhiteList", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_CalcWhiteList");
             }
 
             // Const Point
@@ -642,10 +645,10 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 api.ById("tagTypes").SelectTxt("Const Point").Exe();
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ConstWhiteList_Page1", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ConstWhiteList_Page1");
                 api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ConstWhiteList_Page2", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ConstWhiteList_Page2");
             }
 
             // System Point
@@ -654,24 +657,13 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 api.ById("tagTypes").SelectTxt("System Point").Exe();
                 //api.ByCss("img").Click();   // page1
                 Thread.Sleep(2000);
-                PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_SystemWhiteList", sTestLogFolder);
+                EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_SystemWhiteList");
             }
             ////////////////////////////////// View Cloud White list Setting //////////////////////////////////
             PrintStep(api, "ViewandSaveGroundWhitelistSetting");
 
             api.Quit();
             PrintStep(api, "<GroundPC> Quit browser");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
@@ -740,7 +732,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteProjectTest_CtoG start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PlugandPlay_TagInfoSyncTest</RootNamespace>
     <AssemblyName>PlugandPlay_TagInfoSyncTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -38,15 +38,20 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AdvSeleniumAPI">
-      <HintPath>..\..\IncludeLibrary\AdvSeleniumAPI.dll</HintPath>
+    <Reference Include="AdvSeleniumAPI, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IncludeLibrary\AdvSeleniumAPI.dll</HintPath>
     </Reference>
-    <Reference Include="iATesterAPI">
-      <HintPath>..\..\IncludeLibrary\iATesterAPI.dll</HintPath>
+    <Reference Include="CommonFunction">
+      <HintPath>..\..\..\IncludeLibrary\CommonFunction.dll</HintPath>
+    </Reference>
+    <Reference Include="iATesterAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IncludeLibrary\iATesterAPI.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\aaron.huang\Desktop\DLL\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,20 +63,21 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ThirdPartyToolControl">
-      <HintPath>..\..\IncludeLibrary\ThirdPartyToolControl.dll</HintPath>
+    <Reference Include="ThirdPartyToolControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\IncludeLibrary\ThirdPartyToolControl.dll</HintPath>
     </Reference>
     <Reference Include="WAWebServiceInterface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\IncludeLibrary\WAWebServiceInterface.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\WAWebServiceInterface.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver, Version=2.53.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\IncludeLibrary\WebDriver.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\WebDriver.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver.Support, Version=2.53.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\IncludeLibrary\WebDriver.Support.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\WebDriver.Support.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace PlugandPlay_DeleteUpdateTagTest_CtoG
 {
@@ -20,6 +21,8 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
         IAdvSeleniumAPI api;
         IAdvSeleniumAPI api2;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -38,7 +41,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteUpdateTagTest_CtoG start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -165,7 +168,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
 
             // Step3. Download project
             EventLog.AddLog("<CloudPC> Download...");
-            StartDownload(api2, sTestLogFolder);
+            wacf.Download(api2);
 
             api2.Quit();
             PrintStep(api2, "<CloudPC> Quit browser");
@@ -1036,58 +1039,6 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             }
         }
 
-        private void StartDownload(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[3]/font").Click();    // "Download" click
-            Thread.Sleep(2000);
-            EventLog.AddLog("Find pop up download window handle");
-            string main; object subobj;                     // Find pop up download window handle
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            EventLog.AddLog("Start to download and wait 80 seconds...");
-            Thread.Sleep(80000);    // Wait 80s for Download finish
-            EventLog.AddLog("It's been wait 80 seconds");
-            PrintScreen("Download result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close download window and switch to main window");
-            api.SwitchToWinHandle(main);
-
-            PrintStep(api, "Download");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -1154,7 +1105,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===PlugandPlay_DeleteUpdateTagTest_CtoG start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
