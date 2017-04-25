@@ -125,7 +125,7 @@ namespace ExcelInOut
             ExcuteExcelIn(sSourceFile);
             Thread.Sleep(5000);
             string fileNameTar_in = string.Format("ExcelIn_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            PrintScreen(fileNameTar_in, sTestLogFolder);
+            EventLog.PrintScreen(fileNameTar_in);
             PrintStep("Excel in");
 
             api.Refresh();
@@ -137,7 +137,7 @@ namespace ExcelInOut
             ExcuteExcelOut(sdestFile);
             Thread.Sleep(5000);
             string fileNameTar_out = string.Format("ExcelOut_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            PrintScreen(fileNameTar_out, sTestLogFolder);
+            EventLog.PrintScreen(fileNameTar_out);
             PrintStep("Excel out");
 
             api.Quit();
@@ -326,17 +326,6 @@ namespace ExcelInOut
             api.ByXpath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=export')]").Click();
             api.ByName("XlsName").Clear();
             api.ByName("XlsName").Enter(sdestFile).Submit().Exe();
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void ReturnSCADAPage()

@@ -10,6 +10,7 @@ using System.Threading;
 using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace StartKernel
 {
@@ -17,12 +18,14 @@ namespace StartKernel
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
-        bool bRedundancyTest = false;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -33,9 +36,8 @@ namespace StartKernel
 
         public void StartTest()
         {
-            bRedundancyTest = true;
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Start Kernel start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -106,8 +108,16 @@ namespace StartKernel
             api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
             PrintStep("Configure project");
 
-            StartNode(api, sTestLogFolder);
-            
+            try
+            {
+                EventLog.AddLog("start kernel");
+                wacf.StartKernel(api);
+            }
+            catch(Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+            }
+
             api.Quit();
             PrintStep("Quit browser");
 
@@ -148,58 +158,6 @@ namespace StartKernel
             //return 0;
         }
 
-        private void StartNode(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[5]/font").Click();    // start kernel
-            Thread.Sleep(2000);
-
-            EventLog.AddLog("Find pop up StartNode window handle");
-            string main; object subobj;
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            if (bRedundancyTest == true)
-            {
-                EventLog.AddLog("Start node and wait 100 seconds for redundancy test...");
-                Thread.Sleep(100000);    // Wait 100s for start kernel finish
-                EventLog.AddLog("It's been wait 100 seconds");
-            }
-            else
-            {
-                EventLog.AddLog("Start node and wait 30 seconds...");
-                Thread.Sleep(30000);    // Wait 30s for start kernel finish
-                EventLog.AddLog("It's been wait 30 seconds");
-            }
-
-            PrintScreen("Start Node result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close start node window and switch to main window");
-            api.SwitchToWinHandle(main);        // switch back to original window
-
-            PrintStep("Start Kernel");
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -216,17 +174,6 @@ namespace StartKernel
             this.dataGridView1.Update();
         }
 
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void ReturnSCADAPage()
         {
             api.SwitchToCurWindow(0);
@@ -237,7 +184,7 @@ namespace StartKernel
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Start Kernel start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

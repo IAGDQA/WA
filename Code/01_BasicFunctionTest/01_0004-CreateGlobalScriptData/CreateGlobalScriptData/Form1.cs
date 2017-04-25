@@ -11,6 +11,7 @@ using AdvWebUIAPI;
 using System.IO;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace CreateGlobalScriptData
 {
@@ -18,6 +19,9 @@ namespace CreateGlobalScriptData
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -35,7 +39,7 @@ namespace CreateGlobalScriptData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create global script data start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -111,11 +115,18 @@ namespace CreateGlobalScriptData
             // Configure project by project name
             api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
             PrintStep("Configure project");
-            
+
             //Step 0: Download
-            EventLog.AddLog("Download...");
-            StartDownload(api, sTestLogFolder);
-            
+            try
+            {
+                EventLog.AddLog("Download...");
+                wacf.Download(api);
+            }
+            catch(Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+            }
+
             //Step1: Copy "ConstTag_Set.scr" and "alm_set_ConAna_51.scr" and "alm_ack.scr" 
             //        to C:\WebAccess\Node\config\ProjectName\bgr  and  C:\WebAccess\Node\ProjectName\bgr
             {
@@ -313,67 +324,15 @@ namespace CreateGlobalScriptData
             EventLog.AddLog("ReturnSCADAPage ="+ i.ToString());
         }
 
-        private void StartDownload(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[3]/font").Click();    // "Download" click
-            Thread.Sleep(2000);
-            EventLog.AddLog("Find pop up download window handle");
-            string main; object subobj;                     // Find pop up download window handle
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            EventLog.AddLog("Start to download and wait 80 seconds...");
-            Thread.Sleep(80000);    // Wait 80s for Download finish
-            EventLog.AddLog("It's been wait 80 seconds");
-            PrintScreen("Download result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close download window and switch to main window");
-            api.SwitchToWinHandle(main);
-
-            PrintStep("Download");
-        }
-
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create global script data start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
             EventLog.AddLog("===Create global script data end===");
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void PrintStep(string sTestItem)

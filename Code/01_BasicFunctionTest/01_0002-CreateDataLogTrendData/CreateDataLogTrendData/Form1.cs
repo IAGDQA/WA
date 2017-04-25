@@ -10,6 +10,7 @@ using System.Threading;
 using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace CreateDataLogTrendData
 {
@@ -17,6 +18,8 @@ namespace CreateDataLogTrendData
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -33,7 +36,7 @@ namespace CreateDataLogTrendData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Data log trend data start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -256,6 +259,7 @@ namespace CreateDataLogTrendData
                 }
                 catch (Exception ex)
                 {
+                    EventLog.AddLog("CreateDataLogTrend error: " + ex.ToString());
                     i--;
                 }
             }
@@ -272,7 +276,7 @@ namespace CreateDataLogTrendData
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Data log trend data start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

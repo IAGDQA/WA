@@ -11,6 +11,7 @@ using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using System.Runtime.InteropServices;
+using CommonFunction;
 
 namespace CreateRecipe
 {
@@ -18,6 +19,8 @@ namespace CreateRecipe
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -37,7 +40,7 @@ namespace CreateRecipe
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Recipe start===");
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode = Form1_Load(WebAccessIP.Text, Browser.Text, Recipe_File_Name.Text, Unit_Name.Text, Recipe_Name.Text, Value.Text);
@@ -182,7 +185,7 @@ namespace CreateRecipe
 
         private void button1_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Recipe start===");
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode = Form1_Load(WebAccessIP.Text, Browser.Text, Recipe_File_Name.Text, Unit_Name.Text, Recipe_Name.Text, Value.Text);

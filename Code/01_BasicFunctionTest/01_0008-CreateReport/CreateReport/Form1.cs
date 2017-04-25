@@ -10,6 +10,7 @@ using System.Threading;
 using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace CreateReport
 {
@@ -17,6 +18,8 @@ namespace CreateReport
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -33,7 +36,7 @@ namespace CreateReport
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Report start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -107,7 +110,7 @@ namespace CreateReport
             Create_Report();
             PrintStep("Create Report");
 
-            PrintScreen("ReportTest", sTestLogFolder);
+            EventLog.PrintScreen("ReportTest");
             /*
             // copy ExcelReport_SelfDefined_DataLog_Excel_ex.xlsx to log path.
             //C:\inetpub\wwwroot\broadweb\WaExlViewer\report\TestProject_TestSCADA\ExcelReport_SelfDefined_DataLog_Excel
@@ -178,17 +181,6 @@ namespace CreateReport
                 dataGridView1.Rows.RemoveAt((dataGridView1.Rows.Count - 1));
             }
             this.dataGridView1.Update();
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
 
         private void Create_Report()
@@ -280,7 +272,7 @@ namespace CreateReport
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Create Report start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

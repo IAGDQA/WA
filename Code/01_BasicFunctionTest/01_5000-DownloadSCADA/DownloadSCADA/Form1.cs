@@ -10,6 +10,7 @@ using System.Threading;
 using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace DownloadSCADA
 {
@@ -17,6 +18,9 @@ namespace DownloadSCADA
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wacf = new cWACommonFunction();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -33,7 +37,7 @@ namespace DownloadSCADA
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Download SCADA start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -102,8 +106,15 @@ namespace DownloadSCADA
             api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
             PrintStep("Configure project");
 
-            EventLog.AddLog("Start Download...");
-            StartDownload(api, sTestLogFolder);
+            try
+            {
+                EventLog.AddLog("Start Download...");
+                wacf.Download(api);
+            }
+            catch(Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+            }
 
             api.Quit();
             PrintStep("Quit browser");
@@ -145,80 +156,6 @@ namespace DownloadSCADA
             //return 0;
         }
 
-        private void StartDownload(IAdvSeleniumAPI api, string sTestLogFolder)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//tr[2]/td/a[3]/font").Click();    // "Download" click
-            Thread.Sleep(2000);
-
-            EventLog.AddLog("Find pop up download window handle");
-            string main; object subobj;                     // Find pop up download window handle
-            api.GetWinHandle(out main, out subobj);
-            IEnumerator<String> windowIterator = (IEnumerator<String>)subobj;
-
-            List<string> items = new List<string>();
-            while (windowIterator.MoveNext())
-                items.Add(windowIterator.Current);
-
-            EventLog.AddLog("Main window handle= " + main);
-            EventLog.AddLog("Window handle list items[0]= " + items[0]);
-            EventLog.AddLog("Window handle list items[1]= " + items[1]);
-            if (main != items[1])
-            {
-                EventLog.AddLog("Switch to items[1]");
-                api.SwitchToWinHandle(items[1]);
-            }
-            else
-            {
-                EventLog.AddLog("Switch to items[0]");
-                api.SwitchToWinHandle(items[0]);
-            }
-            api.ByName("submit").Enter("").Submit().Exe();
-
-            //Thread.Sleep(30000);
-            int iStartTime = System.Environment.TickCount;
-            int iEndTime;
-            string sDownloadResult = "";
-            do
-            {
-                sDownloadResult = api.ByXpath("/html/body/center/b/b/font[1]").GetText();   // retry 3次，一次5秒，共15秒
-                if (sDownloadResult != "")
-                    break;
-
-                iEndTime = System.Environment.TickCount;
-            } while (iEndTime-iStartTime <= 60000);
-
-            if (sDownloadResult == "Done" || sDownloadResult == "Primary SCADA Node restarted in Communication mode")
-            {
-                Thread.Sleep(2000);
-                PrintScreen("Download result", sTestLogFolder);
-                api.Close();
-                EventLog.AddLog("Download PASS!!");
-                EventLog.AddLog(string.Format("Download result message:{0} ", sDownloadResult));
-            }
-            else
-            {
-                Thread.Sleep(2000);
-                PrintScreen("Download result", sTestLogFolder);
-                api.Close();
-                EventLog.AddLog("Download FAIL!!");
-                EventLog.AddLog(string.Format("Result text: ", sDownloadResult));
-            }
-
-            api.SwitchToWinHandle(main);
-            /*
-            EventLog.AddLog("Start to download and wait 100 seconds...");
-            Thread.Sleep(100000);    // Wait 100s for Download finish
-            EventLog.AddLog("It's been wait 100 seconds");
-            PrintScreen("Download result", sTestLogFolder);
-            api.Close();
-            EventLog.AddLog("Close download window and switch to main window");
-            api.SwitchToWinHandle(main);            // switch back to original window
-            */
-            PrintStep("Download");
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -235,17 +172,6 @@ namespace DownloadSCADA
             this.dataGridView1.Update();
         }
 
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void ReturnSCADAPage()
         {
             api.SwitchToCurWindow(0);
@@ -256,7 +182,7 @@ namespace DownloadSCADA
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===Download SCADA start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

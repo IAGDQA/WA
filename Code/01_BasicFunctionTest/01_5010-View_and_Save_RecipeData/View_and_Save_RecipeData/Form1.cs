@@ -11,6 +11,7 @@ using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using System.Runtime.InteropServices;
+using CommonFunction;
 
 namespace _View_and_Save_RecipeData
 {
@@ -18,6 +19,8 @@ namespace _View_and_Save_RecipeData
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
+
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
         internal const int Max_Rows_Val = 65535;
@@ -44,7 +47,7 @@ namespace _View_and_Save_RecipeData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View_and_Save_RecipeData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
@@ -166,7 +169,7 @@ namespace _View_and_Save_RecipeData
 
         private void button1_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View_and_Save_RecipeData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
@@ -208,7 +211,7 @@ namespace _View_and_Save_RecipeData
 
             EventLog.AddLog("Start wait 10s...");
             System.Threading.Thread.Sleep(10000);   // wait 10s for data output
-            PrintScreen("RecipeData", sTestLogFolder);
+            EventLog.PrintScreen("RecipeData");
 
             api.Quit();
             PrintStep("Quit browser");
@@ -490,17 +493,6 @@ namespace _View_and_Save_RecipeData
 
                 m_DataGridViewCtrlAddDataRow(dgvRow);
             }
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
         }
     }
 }

@@ -222,7 +222,7 @@
             this.WebAccessIP.Name = "WebAccessIP";
             this.WebAccessIP.Size = new System.Drawing.Size(246, 22);
             this.WebAccessIP.TabIndex = 42;
-            this.WebAccessIP.Text = "172.16.12.138";
+            this.WebAccessIP.Text = "172.xx.xx.xx";
             // 
             // button1
             // 

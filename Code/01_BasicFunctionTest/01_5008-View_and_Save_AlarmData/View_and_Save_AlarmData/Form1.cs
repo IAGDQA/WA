@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace View_and_Save_AlarmData
 {
@@ -19,6 +20,7 @@ namespace View_and_Save_AlarmData
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -37,7 +39,7 @@ namespace View_and_Save_AlarmData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save AlarmData start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -303,7 +305,7 @@ namespace View_and_Save_AlarmData
             EventLog.AddLog("Send F5 to show alarm summary");
             tpc.F_PostMessage(iWA_MainPage, tpc.V_WM_KEYDOWN, tpc.V_VK_F5, 0);
             System.Threading.Thread.Sleep(2000);
-            PrintScreen("AlarmSummary", sTestLogFolder);
+            EventLog.PrintScreen("AlarmSummary");
 
             EventLog.AddLog("Send F6 to show alarm group data");
             tpc.F_PostMessage(iWA_MainPage, tpc.V_WM_KEYDOWN, tpc.V_VK_F6, 0);
@@ -342,18 +344,7 @@ namespace View_and_Save_AlarmData
             else
                 EventLog.AddLog("Cannot get Alarm Group List handle");
             Thread.Sleep(3000);
-            PrintScreen("AlarmGroupData", sTestLogFolder);
-        }
-
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
+            EventLog.PrintScreen("AlarmGroupData");
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
@@ -423,7 +414,7 @@ namespace View_and_Save_AlarmData
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save AlarmData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

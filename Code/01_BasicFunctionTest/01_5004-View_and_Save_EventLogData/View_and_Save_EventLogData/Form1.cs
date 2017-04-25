@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace View_and_Save_EventLogData
 {
@@ -19,6 +20,7 @@ namespace View_and_Save_EventLogData
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -36,7 +38,7 @@ namespace View_and_Save_EventLogData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save Event Log start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -122,7 +124,7 @@ namespace View_and_Save_EventLogData
             
             // print screen
             string fileNameTar = string.Format("EventLogData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            PrintScreen(fileNameTar, sTestLogFolder);
+            EventLog.PrintScreen(fileNameTar);
 
             EventLog.AddLog("Save data to excel");
             SaveDatatoExcel(sProjectName, sTestLogFolder);
@@ -238,17 +240,6 @@ namespace View_and_Save_EventLogData
     
         }
 
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -316,7 +307,7 @@ namespace View_and_Save_EventLogData
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save Event Log start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

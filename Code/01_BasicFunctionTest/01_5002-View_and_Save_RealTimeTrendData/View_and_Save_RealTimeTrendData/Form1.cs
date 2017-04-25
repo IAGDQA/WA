@@ -39,7 +39,7 @@ namespace View_and_Save_RealTimeTrendData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save RealTimeTrendData start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -343,18 +343,7 @@ namespace View_and_Save_RealTimeTrendData
             else
                 EventLog.AddLog("Cannot get Realtime Trend List handle");
         }
-        /*
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height); 
-            Graphics g = Graphics.FromImage(myImage); 
-            g.CopyFromScreen(new Point(0,0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height)); 
-            IntPtr dc1 = g.GetHdc(); 
-            g.ReleaseHdc(dc1); 
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_hhmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-        */
+
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -422,8 +411,7 @@ namespace View_and_Save_RealTimeTrendData
 
         private void Start_Click(object sender, EventArgs e)
         {
-            EventLog.PrintScreen("test");
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save RealTimeTrendData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);

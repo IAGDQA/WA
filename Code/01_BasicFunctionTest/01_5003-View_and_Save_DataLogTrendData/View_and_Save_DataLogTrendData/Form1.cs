@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
 
 namespace View_and_Save_DataLogTrendData
 {
@@ -19,6 +20,7 @@ namespace View_and_Save_DataLogTrendData
     {
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cEventLog EventLog = new cEventLog();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -37,7 +39,7 @@ namespace View_and_Save_DataLogTrendData
         public void StartTest()
         {
             //Add test code
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save DataLogTrendData start (by iATester)===");
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
@@ -366,37 +368,37 @@ namespace View_and_Save_DataLogTrendData
                 SendKeys.SendWait("{F4}"); // Right most
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step1", sInterval[iInterval-1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step1", sInterval[iInterval-1]));
 
                 SendKeys.SendWait("{F2}"); // Left
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Left_Step2", sInterval[iInterval - 1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Left_Step2", sInterval[iInterval - 1]));
 
                 SendKeys.SendWait("{F2}"); // Left
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step3", sInterval[iInterval - 1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step3", sInterval[iInterval - 1]));
 
                 SendKeys.SendWait("{F3}"); // Right
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step4", sInterval[iInterval - 1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step4", sInterval[iInterval - 1]));
 
                 SendKeys.SendWait("{F3}"); // Right
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step5", sInterval[iInterval - 1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step5", sInterval[iInterval - 1]));
 
                 SendKeys.SendWait("{F1}"); // Left most
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_LeftMost_Step6", sInterval[iInterval - 1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_LeftMost_Step6", sInterval[iInterval - 1]));
 
                 SendKeys.SendWait("{F4}"); // Right most
                 Thread.Sleep(4000);
 
-                PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step7", sInterval[iInterval - 1]), sTestLogFolder);
+                EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step7", sInterval[iInterval - 1]));
 
                 Thread.Sleep(1000);
                 SendKeys.SendWait("^{F5}"); // quick key of PointInfo window
@@ -573,37 +575,37 @@ namespace View_and_Save_DataLogTrendData
                     SendKeys.SendWait("{F4}"); // Right most
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step1", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step1", sInterval[iInterval - 1]));
 
                     SendKeys.SendWait("{F2}"); // Left
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Left_Step2", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Left_Step2", sInterval[iInterval - 1]));
 
                     SendKeys.SendWait("{F2}"); // Left
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step3", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step3", sInterval[iInterval - 1]));
 
                     SendKeys.SendWait("{F3}"); // Right
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step4", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step4", sInterval[iInterval - 1]));
 
                     SendKeys.SendWait("{F3}"); // Right
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step5", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_Right_Step5", sInterval[iInterval - 1]));
 
                     SendKeys.SendWait("{F1}"); // Left most
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_LeftMost_Step6", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_LeftMost_Step6", sInterval[iInterval - 1]));
 
                     SendKeys.SendWait("{F4}"); // Right most
                     Thread.Sleep(4000);
 
-                    PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step7", sInterval[iInterval - 1]), sTestLogFolder);
+                    EventLog.PrintScreen(string.Format("DataLogTrend_Interval_{0}_RightMost_Step7", sInterval[iInterval - 1]));
                 }
 
                 /*
@@ -781,17 +783,6 @@ namespace View_and_Save_DataLogTrendData
             }
         }
 
-        private void PrintScreen(string sFileName, string sFilePath)
-        {
-            Bitmap myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics g = Graphics.FromImage(myImage);
-            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-            IntPtr dc1 = g.GetHdc();
-            g.ReleaseHdc(dc1);
-            //myImage.Save(@"c:\screen0.jpg");
-            myImage.Save(string.Format("{0}\\{1}_{2:yyyyMMdd_HHmmss}.jpg", sFilePath, sFileName, DateTime.Now));
-        }
-
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -859,7 +850,7 @@ namespace View_and_Save_DataLogTrendData
 
         private void Start_Click(object sender, EventArgs e)
         {
-            long lErrorCode = (long)ErrorCode.SUCCESS;
+            long lErrorCode = 0;
             EventLog.AddLog("===View and Save DataLogTrendData start===");
             CheckifIniFileChange();
             EventLog.AddLog("Project= " + ProjectName.Text);
