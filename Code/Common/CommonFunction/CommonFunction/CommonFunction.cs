@@ -15,7 +15,7 @@ namespace CommonFunction
     {
         cEventLog EventLog = new cEventLog();
 
-        public void StartDownload(IAdvSeleniumAPI api)
+        public void Download(IAdvSeleniumAPI api)
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
@@ -54,7 +54,7 @@ namespace CommonFunction
             api.SwitchToWinHandle(main);
         }
 
-        private void StartKernel(IAdvSeleniumAPI api)
+        public void StartKernel(IAdvSeleniumAPI api)
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
@@ -93,7 +93,7 @@ namespace CommonFunction
             api.SwitchToWinHandle(main);        // switch back to original window
         }
 
-        private void StopKernel(IAdvSeleniumAPI api)
+        public void StopKernel(IAdvSeleniumAPI api)
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
@@ -150,7 +150,7 @@ namespace CommonFunction
             api.SwitchToWinHandle(main);        // switch back to original window
         }
 
-        private void StopKernel(IAdvSeleniumAPI api, bool bRedundancyTest)
+        public void StopKernel(IAdvSeleniumAPI api, bool bRedundancyTest)
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
