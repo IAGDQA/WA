@@ -112,9 +112,9 @@ namespace View_and_Save_RealTimeTrendData
             EventLog.AddLog("Start real time log trend");
             StartViewRealTimeTrend();
 
-            EventLog.AddLog("Start wait 120s...");
-            System.Threading.Thread.Sleep(120000);   // wait 180s for data output
-            //PrintScreen("RealTimeData", sTestLogFolder);
+            EventLog.AddLog("Start wait 180s...");
+            System.Threading.Thread.Sleep(180000);   // wait 180s for data output
+            EventLog.PrintScreen("RealTimeData");
 
             api.Quit();
             PrintStep("Quit browser");

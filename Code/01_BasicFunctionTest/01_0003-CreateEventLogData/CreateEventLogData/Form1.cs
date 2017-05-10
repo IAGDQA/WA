@@ -25,6 +25,7 @@ namespace CreateEventLogData
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -104,8 +105,8 @@ namespace CreateEventLogData
             //Create Data Log Trend
             EventLog.AddLog("Create Event Log Data...");
             //ReturnSCADAPage();
-            CreateEventLogData();
-            PrintStep("Create Event Log Data");
+            CreateEventLogData(sProjectName);
+            //PrintStep("Create Event Log Data");
             EventLog.AddLog("Create Event Log Data Done!");
 
             api.Quit();
@@ -164,54 +165,107 @@ namespace CreateEventLogData
             this.dataGridView1.Update();
         }
 
-        private void CreateEventLogData()
+        private void CreateEventLogData(string sProjectName)
         {
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("rightFrame", 0);
             
             api.ByXpath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]").Click();
             api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]").Click();
+            
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("EventTypeSel").SelectTxt("事件測點 == 參考值").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("EventTypeSel").SelectTxt("事件点 == 参考值").Exe();
+                    break;
+                case "JPN":
+                    api.ByName("EventTypeSel").SelectTxt("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値").Exe();
+                    break;
+                case "KRN":
+                    api.ByName("EventTypeSel").SelectTxt("이벤트 태그 == Reference Value").Exe();
+                    break;
+                case "FRN":
+                    api.ByName("EventTypeSel").SelectTxt("Repère d'Evénement == Valeur de Référence").Exe();
+                    break;
+
+                default:
+                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
+                    break;
+            }
 
             api.ByName("EventLogName").Clear();
-            api.ByName("EventLogName").Enter("EventLogTest").Exe();
+            api.ByName("EventLogName").Enter("EventLog_" + sProjectName).Exe();
             api.ByName("EventTag").Clear();
-            api.ByName("EventTag").Enter("AT_AI0010").Exe();
+            api.ByName("EventTag").Enter("ConAna_0241").Exe();
             api.ByName("EventRefVal").Clear();
-            api.ByName("EventRefVal").Enter("10").Exe();
+            api.ByName("EventRefVal").Enter("51").Exe();
+            PrintStep("Set Event Log trigger event");
 
             api.ByName("EventLogTag").Click();
 
+            api.ByName("ChSel").SelectVal("240").Exe();
+            Thread.Sleep(2000);
+            api.Accept();
+            Thread.Sleep(1000);
 
             for (int i = 1; i <=9 ; i++)
             {
                 try
                 {
-                    api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("AT_AI000{0}", i)).Exe();
+                    api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_000{0}", i)).Exe();
                 }
                 catch (Exception ex)
                 {
-                    EventLog.AddLog("CreateEventLogData error: " + ex.ToString());
+                    EventLog.AddLog("CreateEventLogData 1~9 error: " + ex.ToString());
                     i--;
                 }
             }
+            PrintStep("Create 1~9  tags to log");
+            EventLog.AddLog("Create 1~9  tags to log");
 
-            for (int i = 10; i <= 20; i++)
+            for (int i = 10; i <= 99; i++)
             {
                 try
                 {
-                    if (i == 20)
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("AT_AI00{0}", i+1)).Submit().Exe();
-                    else
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("AT_AI00{0}", i+1)).Exe();
+                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_00{0}", i)).Exe();
                 }
                 catch (Exception ex)
                 {
-                    EventLog.AddLog("CreateEventLogData error: " + ex.ToString());
+                    EventLog.AddLog("CreateEventLogData 10~99 error: " + ex.ToString());
                     i--;
                 }
             }
+            PrintStep("Create 10~99  tags to log");
+            EventLog.AddLog("Create 10~99  tags to log");
 
+            for (int i = 100; i <= 240; i++)
+            {
+                try
+                {
+                    if (i == 240)
+                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_0{0}", i)).Submit().Exe();
+                    else
+                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_0{0}", i)).Exe();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog("CreateEventLogData 100~240 error: " + ex.ToString());
+                    i--;
+                }
+            }
+            PrintStep("Create 100~240 tags to log");
+            EventLog.AddLog("Create 100~240  tags to log");
+
+            Thread.Sleep(1000);
+            
             api.ByName("EventRefVal").Enter("").Submit().Exe();
+            Thread.Sleep(1000);
         }
 
         private void ReturnSCADAPage()
@@ -276,6 +330,7 @@ namespace CreateEventLogData
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -286,10 +341,12 @@ namespace CreateEventLogData
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
         }

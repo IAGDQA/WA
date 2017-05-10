@@ -98,45 +98,16 @@ namespace View_and_Save_ODBCData
             api.ById("userField").Enter("").Submit().Exe();
             PrintStep("Login WebAccess");
 
-            EventLog.AddLog("Go to Analog Tag log setting page");
-            api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp') and contains(@href, 'pos=analog')]").Click();
+            EventLog.AddLog("Check analog tag data...");
+            bool bAnaChk = AnalogTagDataCheck(sProjectName);
 
-            // select project name
-            EventLog.AddLog("select project name");
-            api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
-            Thread.Sleep(3000);
+            EventLog.AddLog("Check discrete tag data...");
+            bool bDisChk = DiscreteTagDataCheck(sProjectName);
 
-            // set today as start date
-            string sToday = string.Format("{0:dd}", DateTime.Now);
-            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
-            string ssToday = string.Format("{0}", iToday);
-            api.ByName("DateStart").Click();
-            Thread.Sleep(1000);
-            api.ByTxt(ssToday).Click();
-            Thread.Sleep(1000);
-            EventLog.AddLog("select start date to today: " + ssToday);
-
-            // select one tag to get ODBC data
-            EventLog.AddLog("select AT_AI0009 to get ODBC data");
-            api.ById("alltags").Click();
-            api.ById("TagNameSel").SelectTxt("AT_AI0009").Exe();
-            api.ById("addtag").Click();
-            api.ById("TagNameSelResult").SelectTxt("AT_AI0009").Exe();
-
-            Thread.Sleep(1000);
-            api.ByName("PageSizeSel").Enter("").Submit().Exe();
-            PrintStep("Set and get ODBC tag data");
-            EventLog.AddLog("Get ODBC data");
-
-            Thread.Sleep(10000); // wait to get ODBC data
-
-            // print screen
-            string fileNameTar = string.Format("ODBCData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            EventLog.PrintScreen(fileNameTar);
-
+            /*
             EventLog.AddLog("Save data to excel");
             SaveDatatoExcel(sProjectName, sTestLogFolder);
-
+            */
             api.Quit();
             PrintStep("Quit browser");
 
@@ -159,7 +130,7 @@ namespace View_and_Save_ODBCData
                 }
             }
 
-            if (bSeleniumResult)
+            if (bSeleniumResult && bAnaChk && bDisChk)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -175,6 +146,230 @@ namespace View_and_Save_ODBCData
             }
 
             //return 0;
+        }
+
+        private bool AnalogTagDataCheck(string sProjectName)
+        {
+            bool bCheckAnalogTag = true;
+            string[] ToBeTestTag = { "Acc_0007", "AT_AI0007", "AT_AO0007", "Calc_OPCDA", "ConAna_0007", "OPCDA_0007", "OPCUA_0007", "SystemSec_0007" };
+
+            for (int i = 0; i < ToBeTestTag.Length; i++)
+            {
+                EventLog.AddLog("Go to Analog Tag log setting page");
+                api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp') and contains(@href, 'pos=analog')]").Click();
+
+                // select project name
+                EventLog.AddLog("select project name");
+                api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
+                Thread.Sleep(3000);
+
+                // set today as start date
+                //string sToday = string.Format("{0:dd}", DateTime.Now);
+                //int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+                //string ssToday = string.Format("{0}", iToday);
+                string sToday = DateTime.Now.ToString("%d");
+                api.ByName("DateStart").Click();
+                Thread.Sleep(1000);
+                api.ByTxt(sToday).Click();
+                Thread.Sleep(1000);
+                EventLog.AddLog("select start date to today: " + sToday);
+
+                // select one tag to get ODBC data
+                EventLog.AddLog("select " + ToBeTestTag[i] + " to get ODBC data");
+                api.ById("alltags").Click();
+                api.ById("TagNameSel").SelectTxt(ToBeTestTag[i]).Exe();
+                api.ById("addtag").Click();
+                api.ById("TagNameSelResult").SelectTxt(ToBeTestTag[i]).Exe();
+
+                Thread.Sleep(1000);
+                api.ByName("PageSizeSel").Enter("").Submit().Exe();
+                PrintStep("Set and get analog ODBC tag data");
+                EventLog.AddLog("Get " + ToBeTestTag[i] + " ODBC data");
+
+                Thread.Sleep(10000); // wait to get ODBC data
+
+                bool bRes = bCheckRecordTime(ToBeTestTag[i]);
+                if (bRes == false)
+                    bCheckAnalogTag = false;
+
+                // print screen
+                EventLog.PrintScreen(ToBeTestTag[i] + "_ODBCData");
+
+                api.ByXpath("//*[@id=\"div1\"]/table/tbody/tr[1]/td[3]/a[5]/font").Click();     //return to homepage
+            }
+
+            return bCheckAnalogTag;
+        }
+
+        private bool bCheckRecordTime(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkTime = true;
+
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[3]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[3]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[3]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[2]").GetText();
+                string sRecordTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[2]").GetText();
+                string sRecordTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[2]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record time(Before): " + sRecordTimeBefore);
+                EventLog.AddLog(sTagName + " ODBC record time(Now): " + sRecordTime);
+                EventLog.AddLog(sTagName + " ODBC record time(After): " + sRecordTimeAfter);
+
+                string[] sBefore_tmp = sRecordTimeBefore.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sNow_tmp = sRecordTime.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sAfter_tmp = sRecordTimeAfter.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                if (sRecordTimeBefore != "" && sRecordTime != "" && sRecordTimeAfter != "")
+                {
+                    if (Int32.Parse(sNow_tmp[1]) - Int32.Parse(sBefore_tmp[1]) == 2 &&      // 確認是否2分鐘寫ODBC一次
+                        Int32.Parse(sAfter_tmp[1]) - Int32.Parse(sNow_tmp[1]) == 2)
+                    {
+                        EventLog.AddLog(sTagName + " Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[1]) - Int32.Parse(sBefore_tmp[1]) == -58 &&      // 58-0-2
+                        Int32.Parse(sAfter_tmp[1]) - Int32.Parse(sNow_tmp[1]) == 2)
+                    {
+                        EventLog.AddLog(sTagName + " Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[1]) - Int32.Parse(sBefore_tmp[1]) == 2 &&      // 56-58-0
+                        Int32.Parse(sAfter_tmp[1]) - Int32.Parse(sNow_tmp[1]) == -58)
+                    {
+                        EventLog.AddLog(sTagName + " Record time interval check PASS!!");
+                    }
+                    else
+                    {
+                        bChkTime = false;
+                        EventLog.AddLog(sTagName + " Record time interval check FAIL!!");
+                    }
+                }
+                else
+                {
+                    bChkTime = false;
+                    EventLog.AddLog(sTagName + "Record time interval check FAIL!!");
+                }
+            }
+
+            return bChkTagName && bChkTime;
+        }   // for analog tag
+
+        private bool DiscreteTagDataCheck(string sProjectName)
+        {
+            bool bCheckDiscreteTag = true;
+            string[] ToBeTestTag = { "AT_DI0007", "AT_DO0007" };
+
+            for (int i = 0; i < ToBeTestTag.Length; i++)
+            {
+                EventLog.AddLog("Go to Discrete Tag log setting page");
+                api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp') and contains(@href, 'pos=discrete')]").Click();
+
+                // select project name
+                EventLog.AddLog("select project name");
+                api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
+                Thread.Sleep(3000);
+
+                // set today as start date
+                //string sToday = string.Format("{0:dd}", DateTime.Now);
+                //int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
+                //string ssToday = string.Format("{0}", iToday);
+                string sToday = DateTime.Now.ToString("%d");
+                api.ByName("DateStart").Click();
+                Thread.Sleep(1000);
+                api.ByTxt(sToday).Click();
+                Thread.Sleep(1000);
+                EventLog.AddLog("select start date to today: " + sToday);
+
+                // set start/end time   // 由於離散點是資料有變化則會記錄一次 資料量很大 故設定時間為現在時間往前1分鐘
+                string sTimeEnd = DateTime.Now.ToString("HH:mm:ss");
+                string sTimeStart = DateTime.Now.AddMinutes(-1).ToString("HH:mm:ss");
+                api.ByName("TimeStart").Clear();
+                api.ByName("TimeStart").Enter(sTimeStart).Exe(); //HHmmss
+                api.ByName("TimeEnd").Clear();
+                api.ByName("TimeEnd").Enter(sTimeEnd).Exe();
+                
+                // select one tag to get ODBC data
+                EventLog.AddLog("select " + ToBeTestTag[i] + " to get ODBC data");
+                api.ById("alltags").Click();
+                api.ById("TagNameSel").SelectTxt(ToBeTestTag[i]).Exe();
+                api.ById("addtag").Click();
+                api.ById("TagNameSelResult").SelectTxt(ToBeTestTag[i]).Exe();
+
+                Thread.Sleep(1000);
+                api.ByName("PageSizeSel").Enter("").Submit().Exe();
+                PrintStep("Set and get discrete ODBC tag data");
+                EventLog.AddLog("Get " + ToBeTestTag[i] + " ODBC data");
+
+                Thread.Sleep(10000); // wait to get ODBC data
+
+                bool bRes = bCheckRecordValue(ToBeTestTag[i]);
+                if (bRes == false)
+                    bCheckDiscreteTag = false;
+
+                // print screen
+                EventLog.PrintScreen(ToBeTestTag[i] + "_ODBCData");
+
+                api.ByXpath("//*[@id=\"div1\"]/table/tbody/tr[1]/td[3]/a[5]/font").Click();     //return to homepage
+            }
+            return bCheckDiscreteTag;
+        }
+
+        private bool bCheckRecordValue(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[3]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[3]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[3]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[5]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[5]").GetText();
+                string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[5]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                if (sRecordValueBefore != "" && sRecordValue != "" && sRecordValueAfter != "")
+                {
+                    if (Math.Abs(Convert.ToDouble(sRecordValue) - Convert.ToDouble(sRecordValueBefore)) == 1 &&
+                        Math.Abs(Convert.ToDouble(sRecordValueAfter) - Convert.ToDouble(sRecordValue)) == 1)
+                    {
+                        EventLog.AddLog(sTagName + " Record value interval check PASS!!");
+                    }
+                    else
+                    {
+                        bChkValue = false;
+                        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
+                    }
+                }
+                else
+                {
+                    bChkValue = false;
+                    EventLog.AddLog(sTagName + "Record value interval check FAIL!!");
+                }
+            }
+
+            return bChkTagName && bChkValue;
         }
 
         private void SaveDatatoExcel(string sProject, string sTestLogFolder)
@@ -380,25 +575,5 @@ namespace View_and_Save_ODBCData
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
             }
         }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
     }
 }

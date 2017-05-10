@@ -27,6 +27,7 @@ namespace View_and_Save_AlarmLog
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string slanguage;
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -97,37 +98,11 @@ namespace View_and_Save_AlarmLog
             api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
             api.ById("userField").Enter("").Submit().Exe();
             PrintStep("Login WebAccess");
-
-            EventLog.AddLog("Go to alarm log page");
-            api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp?pos=alarm')]").Click();
-
-            // select project name
-            EventLog.AddLog("select project name");
-            api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
-            Thread.Sleep(3000);
-
-            // set today as start date
-            string sToday = string.Format("{0:dd}", DateTime.Now);
-            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
-            string ssToday = string.Format("{0}", iToday);
-            api.ByName("DateStart").Click();
-            Thread.Sleep(1000);
-            api.ByTxt(ssToday).Click();
-            Thread.Sleep(1000);
-            EventLog.AddLog("select start date to today: " + ssToday);
-
-            api.ByName("PageSizeSel").Enter("").Submit().Exe();
-            PrintStep("Set and get Alarm Log data");
-            EventLog.AddLog("Get Alarm Log data");
-
-            Thread.Sleep(10000); // wait to get alarm data
-
-            // print screen
-            string fileNameTar = string.Format("AlarmLogData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            EventLog.PrintScreen(fileNameTar);
-
+            /*
             EventLog.AddLog("Save data to excel");
             SaveDatatoExcel(sProjectName, sTestLogFolder);
+            */
+            bool bAlmCheck = bAlarmLogCheck(sProjectName);
 
             Thread.Sleep(500);
             api.Quit();
@@ -152,7 +127,7 @@ namespace View_and_Save_AlarmLog
                 }
             }
 
-            if (bSeleniumResult)
+            if (bSeleniumResult && bAlmCheck)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -168,6 +143,503 @@ namespace View_and_Save_AlarmLog
             }
 
             //return 0;
+        }
+
+        private bool bAlarmLogCheck(string sProjectName)
+        {
+            bool bCheckAlarm = true;
+            //string[] ToBeTestTag = { "AT_AI0001", "AT_AO0001", "AT_DI0001", "AT_DO0001", "Calc_ConAna", "Calc_ConDis", "ConAna_0001", "ConDis_0001", "SystemSec_0001" };
+            string[] ToBeTestTag = { "Calc_ConAna", "SystemSec_0001", "AT_AO0001", "AT_AI0001", "ConDis_0001", "ConAna_0001", "ConAna_0125", "ConAna_0250" };
+            
+            for (int i = 0; i < ToBeTestTag.Length; i++)
+            {
+                EventLog.AddLog("Go to Alarm log setting page");
+                api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp') and contains(@href, 'pos=alarm')]").Click();
+
+                // select project name
+                EventLog.AddLog("select project name");
+                api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
+                Thread.Sleep(3000);
+
+                // set today as start date
+                string sToday = DateTime.Now.ToString("%d");
+                api.ByName("DateStart").Click();
+                Thread.Sleep(1000);
+                api.ByTxt(sToday).Click();
+                Thread.Sleep(1000);
+                EventLog.AddLog("select start date to today: " + sToday);
+
+                // select one tag to get ODBC data
+                EventLog.AddLog("select " + ToBeTestTag[i] + " to get ODBC data");
+                api.ById("alltags").Click();
+
+                api.ById("TagNameSel").SelectTxt(ToBeTestTag[i]).Exe();
+
+                api.ById("addtag").Click();
+                api.ById("TagNameSelResult").SelectTxt(ToBeTestTag[i]).Exe();
+
+                Thread.Sleep(1000);
+                api.ByName("PageSizeSel").Enter("").Submit().Exe();
+                PrintStep("Set and get " + ToBeTestTag[i] + " alarm ODBC tag data");
+                EventLog.AddLog("Get " + ToBeTestTag[i] + " ODBC data");
+
+                Thread.Sleep(5000); // wait to get ODBC data
+
+                api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[3]/a").Click();    // click time to sort data
+                Thread.Sleep(5000);
+                //api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[4]/a").Click();    // click tagname to sort data
+                //Thread.Sleep(5000);
+
+                bool bRes_ConAna = true;
+                if (ToBeTestTag[i] == "ConAna_0001" || ToBeTestTag[i] == "ConAna_0125" || ToBeTestTag[i] == "ConAna_0250")
+                    bRes_ConAna = bCheckConAnaRecordAlarm(ToBeTestTag[i]);
+
+                bool bRes_ConDis = true;
+                if (ToBeTestTag[i] == "ConDis_0001")
+                    bRes_ConDis = bCheckConDisRecordAlarm(ToBeTestTag[i]);
+
+                bool bRes_AI = true;
+                if (ToBeTestTag[i] == "AT_AI0001")
+                    bRes_AI = bCheckAIRecordAlarm(ToBeTestTag[i]);
+
+                bool bRes_AO = true;
+                if (ToBeTestTag[i] == "AT_AO0001")
+                    bRes_AO = bCheckAORecordAlarm(ToBeTestTag[i]);
+
+                bool bRes_Sys = true;
+                if (ToBeTestTag[i] == "SystemSec_0001")
+                    bRes_Sys = bCheckSysRecordAlarm(ToBeTestTag[i]);
+
+                bool bRes_Calc = true;
+                if (ToBeTestTag[i] == "Calc_ConAna")
+                    bRes_Calc = bCheckCalcRecordAlarm(ToBeTestTag[i]);
+
+                if ((bRes_ConAna && bRes_AI && bRes_AO && bRes_Sys && bRes_Calc) == false)
+                {
+                    bCheckAlarm = false;
+                    break;
+                }
+                // print screen
+                EventLog.PrintScreen(ToBeTestTag[i] + "_AlarmLogData");
+
+                api.ByXpath("//*[@id=\"div1\"]/table/tbody/tr[1]/td[3]/a[5]/font").Click();     //return to homepage
+            }
+
+            return bCheckAlarm;
+        }
+
+        private bool bCheckAIRecordAlarm(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            /////////////////////////////////////////////////////
+            // ConAna_0001
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[4]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[4]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[4]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[6]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[6]").GetText();
+                string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[6]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                string sKeyWord = "";
+                switch (slanguage)
+                {
+                    case "ENG":
+                        sKeyWord = sTagName+ " - High-High Alarm";
+                        break;
+                    case "CHT":
+                        sKeyWord = sTagName + " - 最高 警報";
+                        break;
+                    case "CHS":
+                        sKeyWord = sTagName + " - 最高 报警";
+                        break;
+                    case "JPN":
+                        sKeyWord = sTagName + " - High-High アラーム";
+                        break;
+                    case "KRN":
+                        sKeyWord = sTagName + " - HH 알람";
+                        break;
+                    case "FRN":
+                        sKeyWord = sTagName + " - Haute-Hau Alarme";
+                        break;
+
+                    default:
+                        sKeyWord = sTagName + " - High-High Alarm";
+                        break;
+                }
+
+                if (!sRecordValueBefore.Contains(sKeyWord))
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm FAIL!!");
+                    bChkValue = false;
+                }
+                else
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm PASS!!");
+                }
+            }
+            PrintStep("CheckAIRecordAlarm");
+            return bChkTagName && bChkValue;
+        }
+
+        private bool bCheckAORecordAlarm(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            /////////////////////////////////////////////////////
+            // ConAna_0001
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[4]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[4]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[4]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[6]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[6]").GetText();
+                string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[6]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                string sKeyWord = "";
+                switch (slanguage)
+                {
+                    case "ENG":
+                        sKeyWord = sTagName + " - Low-Low Alarm";
+                        break;
+                    case "CHT":
+                        sKeyWord = sTagName + " - 最低 警報";
+                        break;
+                    case "CHS":
+                        sKeyWord = sTagName + " - 最低 报警";
+                        break;
+                    case "JPN":
+                        sKeyWord = sTagName + " - Low-Low アラーム";
+                        break;
+                    case "KRN":
+                        sKeyWord = sTagName + " - LL 알람";
+                        break;
+                    case "FRN":
+                        sKeyWord = sTagName + " - Basse-Bas Alarme";
+                        break;
+
+                    default:
+                        sKeyWord = sTagName + " - Low-Low Alarm";
+                        break;
+                }
+
+                if (!sRecordValueBefore.Contains(sKeyWord))
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm FAIL!!");
+                    bChkValue = false;
+                }
+                else
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm PASS!!");
+                }
+            }
+            PrintStep("CheckAORecordAlarm");
+            return bChkTagName && bChkValue;
+        }
+
+        private bool bCheckSysRecordAlarm(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            /////////////////////////////////////////////////////
+            // ConAna_0001
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[4]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[4]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[4]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[6]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[6]").GetText();
+                string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[6]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                string sKeyWord = "";
+                switch (slanguage)
+                {
+                    case "ENG":
+                        sKeyWord = sTagName + " - High Alarm (59)";
+                        break;
+                    case "CHT":
+                        sKeyWord = sTagName + " - 高的 警報 (59)";
+                        break;
+                    case "CHS":
+                        sKeyWord = sTagName + " - 高 报警 (59)";
+                        break;
+                    case "JPN":
+                        sKeyWord = sTagName + " - High アラーム (59)";
+                        break;
+                    case "KRN":
+                        sKeyWord = sTagName + " - H 알람 (59)";
+                        break;
+                    case "FRN":
+                        sKeyWord = sTagName + " - Haute Alarme (59)";
+                        break;
+
+                    default:
+                        sKeyWord = sTagName + " - High Alarm (59)";
+                        break;
+                }
+
+                if (!sRecordValueBefore.Contains(sKeyWord))
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm FAIL!!");
+                    bChkValue = false;
+                }
+                else
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm PASS!!");
+                }
+            }
+            PrintStep("CheckSysRecordAlarm");
+            return bChkTagName && bChkValue;
+        }
+
+        private bool bCheckCalcRecordAlarm(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            /////////////////////////////////////////////////////
+            // ConAna_0001
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[4]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[4]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[4]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[6]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[6]").GetText();
+                string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[6]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                string sKeyWord = "";
+                switch (slanguage)
+                {
+                    case "ENG":
+                        sKeyWord = sTagName + " - Low Alarm";
+                        break;
+                    case "CHT":
+                        sKeyWord = sTagName + " - 低的 警報";
+                        break;
+                    case "CHS":
+                        sKeyWord = sTagName + " - 低 报警";
+                        break;
+                    case "JPN":
+                        sKeyWord = sTagName + " - Low アラーム";
+                        break;
+                    case "KRN":
+                        sKeyWord = sTagName + " - L 알람";
+                        break;
+                    case "FRN":
+                        sKeyWord = sTagName + " - Bas Alarme";
+                        break;
+
+                    default:
+                        sKeyWord = sTagName + " - Low Alarm";
+                        break;
+                }
+
+                if (!sRecordValueBefore.Contains(sKeyWord))
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm FAIL!!");
+                    bChkValue = false;
+                }
+                else
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm PASS!!");
+                }
+            }
+            PrintStep("CheckCalcRecordAlarm");
+            return bChkTagName && bChkValue;
+        }
+
+        private bool bCheckConAnaRecordAlarm(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            /////////////////////////////////////////////////////
+            // ConAna_0001
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[4]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[4]").GetText();
+            string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[4]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName && sRecordTagNameAfter != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+            
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[6]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[6]").GetText();
+                string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[6]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                string sKeyWord = "";
+                switch (slanguage)
+                {
+                    case "ENG":
+                        sKeyWord = sTagName + " - RoC Alarm (51.00)";
+                        break;
+                    case "CHT":
+                        sKeyWord = sTagName + " - 變化率 警報 (51.00)";
+                        break;
+                    case "CHS":
+                        sKeyWord = sTagName + " - 变化率 报警 (51.00)";
+                        break;
+                    case "JPN":
+                        sKeyWord = sTagName + " - RoC アラーム (51.00)";
+                        break;
+                    case "KRN":
+                        sKeyWord = sTagName + " - RoC 알람 (51.00)";
+                        break;
+                    case "FRN":
+                        sKeyWord = sTagName + " - RoC Alarme (51.00)";
+                        break;
+
+                    default:
+                        sKeyWord = sTagName + " - RoC Alarm (51.00)";
+                        break;
+                }
+
+                if (sRecordValueBefore != (sKeyWord))
+                {
+                    EventLog.AddLog("Check "+ sTagName +" tag alarm FAIL!!");
+                    bChkValue = false;
+                }
+                else
+                {
+                    EventLog.AddLog("Check "+ sTagName +" tag alarm PASS!!");
+                }
+            }
+            PrintStep("CheckConAnaRecordAlarm");
+            return bChkTagName && bChkValue;
+        }
+
+        private bool bCheckConDisRecordAlarm(string sTagName)
+        {
+            bool bChkTagName = true;
+            bool bChkValue = true;
+
+            /////////////////////////////////////////////////////
+            // ConAna_0001
+            string sRecordTagNameBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[4]").GetText();
+            string sRecordTagName = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[4]").GetText();
+            //string sRecordTagNameAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[4]").GetText();
+            EventLog.AddLog(sTagName + " ODBC record TagName(Before): " + sRecordTagNameBefore);
+            EventLog.AddLog(sTagName + " ODBC record TagName(Now): " + sRecordTagName);
+            //EventLog.AddLog(sTagName + " ODBC record TagName(After): " + sRecordTagNameAfter);
+            if (sRecordTagNameBefore != sTagName && sRecordTagName != sTagName)
+            {
+                bChkTagName = false;
+                EventLog.AddLog(sTagName + " Record TagName check FAIL!!");
+            }
+
+            if (bChkTagName)
+            {
+                string sRecordValueBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[6]").GetText();
+                string sRecordValue = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[6]").GetText();
+                //string sRecordValueAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[6]").GetText();
+                EventLog.AddLog(sTagName + " ODBC record value(Before): " + sRecordValueBefore);
+                EventLog.AddLog(sTagName + " ODBC record value(Now): " + sRecordValue);
+                //EventLog.AddLog(sTagName + " ODBC record value(After): " + sRecordValueAfter);
+
+                string sKeyWord = "";
+                switch (slanguage)
+                {
+                    case "ENG":
+                        sKeyWord = sTagName + " - Discrete Alarm (1)";
+                        break;
+                    case "CHT":
+                        sKeyWord = sTagName + " - 數位量 警報 (1)";
+                        break;
+                    case "CHS":
+                        sKeyWord = sTagName + " - 数字量 报警 (1)";
+                        break;
+                    case "JPN":
+                        sKeyWord = sTagName + " - アラーム (1)";
+                        break;
+                    case "KRN":
+                        sKeyWord = sTagName + " - Discrete 알람 (1)";
+                        break;
+                    case "FRN":
+                        sKeyWord = sTagName + " - Discret Alarme (1)";
+                        break;
+
+                    default:
+                        sKeyWord = sTagName + " - Discrete Alarm (1)";
+                        break;
+                }
+
+                if (sRecordValueBefore != (sKeyWord))
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm FAIL!!");
+                    bChkValue = false;
+                }
+                else
+                {
+                    EventLog.AddLog("Check " + sTagName + " tag alarm PASS!!");
+                }
+            }
+            PrintStep("CheckConDisRecordAlarm");
+            return bChkTagName && bChkValue;
         }
 
         private void SaveDatatoExcel(string sProject, string sTestLogFolder)
@@ -317,6 +789,7 @@ namespace View_and_Save_AlarmLog
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
@@ -327,10 +800,12 @@ namespace View_and_Save_AlarmLog
             tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
             tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
             */
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
             tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
             ProjectName.Text = sDefaultProjectName1.ToString();
             WebAccessIP.Text = sDefaultIP1.ToString();
         }
