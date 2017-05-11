@@ -188,6 +188,11 @@ namespace View_and_Save_ODBCData
 
                 Thread.Sleep(10000); // wait to get ODBC data
 
+                api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[2]/a").Click();    // click time to sort data
+                Thread.Sleep(10000);
+                //api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[3]/a").Click();    // click tagname to sort data
+                //Thread.Sleep(5000);
+
                 bool bRes = bCheckRecordTime(ToBeTestTag[i]);
                 if (bRes == false)
                     bCheckAnalogTag = false;

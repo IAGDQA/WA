@@ -191,6 +191,11 @@ namespace View_and_Save_EventLogData
             else
                 EventLog.AddLog("Event record date check PASS!!");
 
+            api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[2]/a").Click();    // click time to sort data
+            Thread.Sleep(10000);
+            //api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[3]/a").Click();    // click tagname to sort data
+            //Thread.Sleep(10000);
+
             if (bCheckEventLogData) // 確認記錄事件的名稱是否前1秒後1秒
             {
                 string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[2]").GetText();
