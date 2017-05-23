@@ -121,9 +121,10 @@ namespace ExcelInOut
 
             EventLog.AddLog("Set project name to excel file");
             SetExcelProjectName(sProjectName, sSourceFile);
+            EventLog.AddLog("Set project name to excel file done!");
 
             ExcuteExcelIn(sSourceFile);
-            Thread.Sleep(5000);
+            Thread.Sleep(20000);
             string fileNameTar_in = string.Format("ExcelIn_{0:yyyyMMdd_hhmmss}", DateTime.Now);
             EventLog.PrintScreen(fileNameTar_in);
             PrintStep("Excel in");
@@ -135,7 +136,7 @@ namespace ExcelInOut
             EventLog.AddLog("Excel out...");
             string sdestFile = sTestLogFolder + string.Format("\\bwTagExport_{0:yyyyMMdd_hhmmss}", DateTime.Now);
             ExcuteExcelOut(sdestFile);
-            Thread.Sleep(5000);
+            Thread.Sleep(20000);
             string fileNameTar_out = string.Format("ExcelOut_{0:yyyyMMdd_hhmmss}", DateTime.Now);
             EventLog.PrintScreen(fileNameTar_out);
             PrintStep("Excel out");
@@ -194,12 +195,14 @@ namespace ExcelInOut
             //取得欲寫入的檔案路徑
             string strPath = sSourceFile + ".XLS";
             Excel.Workbook Wbook = App.Workbooks.Open(strPath);
+            EventLog.AddLog("Get original excel file path: " + strPath);
 
             //將欲修改的檔案屬性設為非唯讀(Normal)，若寫入檔案為唯讀，則會無法寫入
+            EventLog.AddLog("Set the file attribute to readable type");
             System.IO.FileInfo xlsAttribute = new FileInfo(strPath);
             xlsAttribute.Attributes = FileAttributes.Normal;
 
-
+            EventLog.AddLog("Set BwAnalog..");
             Excel.Worksheet Wsheet = (Excel.Worksheet)Wbook.Sheets["BwAnalog"];
             //取得工作表的單元格
             for (int i = 2; i <= 1501; i++)
@@ -210,6 +213,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwDiscrete..");
             Excel.Worksheet Wsheet2 = (Excel.Worksheet)Wbook.Sheets["BwDiscrete"];
             //取得工作表的單元格
             for (int i = 2; i <= 752; i++)
@@ -220,6 +224,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwText..");
             Excel.Worksheet Wsheet3 = (Excel.Worksheet)Wbook.Sheets["BwText"];
             //取得工作表的單元格
             for (int i = 2; i <= 251; i++)
@@ -230,6 +235,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwCalcAnalog..");
             Excel.Worksheet Wsheet4 = (Excel.Worksheet)Wbook.Sheets["BwCalcAnalog"];
             //取得工作表的單元格
             for (int i = 2; i <= 92; i++)
@@ -240,6 +246,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwCalcDiscrete..");
             Excel.Worksheet Wsheet5 = (Excel.Worksheet)Wbook.Sheets["BwCalcDiscrete"];
             //取得工作表的單元格
             for (int i = 2; i <= 46; i++)
@@ -250,6 +257,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwAcc..");
             Excel.Worksheet Wsheet6 = (Excel.Worksheet)Wbook.Sheets["BwAcc"];
             //取得工作表的單元格
             for (int i = 2; i <= 251; i++)
@@ -260,6 +268,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwAlarmAnalog..");
             Excel.Worksheet Wsheet7 = (Excel.Worksheet)Wbook.Sheets["BwAlarmAnalog"];
             //取得工作表的單元格
             for (int i = 2; i <= 255; i++)
@@ -270,6 +279,7 @@ namespace ExcelInOut
                 aRangeChange.Value2 = sProjectName;
             }
 
+            EventLog.AddLog("Set BwAlarmDiscrete..");
             Excel.Worksheet Wsheet8 = (Excel.Worksheet)Wbook.Sheets["BwAlarmDiscrete"];
             //取得工作表的單元格
             for (int i = 2; i <= 5; i++)
@@ -286,12 +296,15 @@ namespace ExcelInOut
 
             //保存工作表，因為禁止彈出儲存提示框，所以需在此儲存，否則寫入的資料會無法儲存
             Wbook.Save();
+            EventLog.AddLog("Save");
 
             //關閉EXCEL
             Wbook.Close();
+            EventLog.AddLog("Close");
 
             //離開應用程式
             App.Quit();
+            EventLog.AddLog("Quit");
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)

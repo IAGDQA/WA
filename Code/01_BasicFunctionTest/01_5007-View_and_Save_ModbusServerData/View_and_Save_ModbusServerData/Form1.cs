@@ -81,7 +81,13 @@ namespace View_and_Save_ModbusServerData
         {
             //string sCurrentFilePath = Directory.GetCurrentDirectory();
             string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
-            
+
+            //ModSca1_AutoTest
+            string sourceFile = sCurrentFilePath + "\\ModScan\\ModSca1_AutoTest";
+            string destFile = sCurrentFilePath + "\\ModSca1_AutoTest";
+            EventLog.AddLog("copy " + sourceFile + " to " + destFile);
+            System.IO.File.Copy(sourceFile, destFile, true);
+
             Process pModScan = new Process();
             // FileName 是要執行的檔案
             EventLog.AddLog("Open ModScan32.exe and load ModSca1_AutoTest setting file");
@@ -284,25 +290,5 @@ namespace View_and_Save_ModbusServerData
                 tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
             }
         }
-
-        private void ProjectName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void WebAccessIP_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TestLogFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Browser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
     }
 }
