@@ -169,20 +169,21 @@ namespace CreateMap
             api.SwitchToFrame("rightFrame", 0);
             
             api.ByXpath("//a[contains(@href, '/broadWeb/gmap/gmapcreate.asp')]").Click();
+            System.Threading.Thread.Sleep(2000);
 
             //TestGoogleMap/BaiduMap
             EventLog.AddLog("Click 'New Baidu Map' test");
-            api.ByXpath("//a[contains(text(),'New Baidu Map')]").ClickAndWait(1000);
+            api.ByXpath("//a[contains(@href, '/broadWeb/bmap/bmapcreate.asp?')]").ClickAndWait(1000);
             EventLog.PrintScreen("CreateMapTest_BiaduMap");
 
             EventLog.AddLog("Click 'New Google Map' test");
-            api.ByXpath("//a[contains(text(),'New Google Map')]").ClickAndWait(1000);
+            api.ByXpath("//a[contains(@href, '/broadWeb/gmap/gmapcreate.asp?')]").ClickAndWait(1000);
             EventLog.PrintScreen("CreateMapTest_GoogleMap");
             PrintStep("Google&Baidu Map click test");
 
             //Excel-In sample map
             EventLog.AddLog("Excel in sample map");
-            api.ByXpath("//a[contains(text(),'Excel-In')]").Click();
+            api.ByXpath("//a[contains(@href, 'gmaptoJsPg1.asp?pos=import')]").Click();
             string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
             string sourceSampleFile = sCurrentFilePath + "\\MapSample\\MapSample.xls";
             string destWApath = @"C:\Inetpub\wwwroot\broadweb\gmap\MapSample.xls";
@@ -197,7 +198,7 @@ namespace CreateMap
             //Options
             EventLog.AddLog("Options setting...");
             EventLog.AddLog("Marker title font set");
-            api.ByXpath("//a[contains(text(),'Options')]").Click();
+            api.ByXpath("(//a[contains(@href, '#')])[4]").Click();
             System.Threading.Thread.Sleep(1000);
             api.ByXpath("(//input[@name='aa'])[2]").Click();
             System.Threading.Thread.Sleep(500);
@@ -237,13 +238,13 @@ namespace CreateMap
             api.ById("ee").Enter("FF00EE").Exe();   //Title Color = Purple
             System.Threading.Thread.Sleep(500);
 
-            api.ByXpath("//input[@value='OK']").Click();
+            api.ByXpath("//div[@id='opt']/div[27]/input").Click();
             System.Threading.Thread.Sleep(500);
             PrintStep("Marker Label Font");
 
             //Save
             EventLog.AddLog("Save map");
-            api.ByXpath("//a[contains(text(),'Save')]").Click();
+            api.ByXpath("(//a[contains(@href, '#')])[2]").Click();
             System.Threading.Thread.Sleep(1000);
             SendKeys.SendWait("{ENTER}");
             System.Threading.Thread.Sleep(1000);
@@ -253,7 +254,7 @@ namespace CreateMap
 
             //Excel-Out
             EventLog.AddLog("Excel out modified map");
-            api.ByXpath("//a[contains(text(),'Excel-Out')]").Click();
+            api.ByXpath("//a[contains(@href, 'gmaptoJsPg1.asp?pos=export')]").Click();
             api.ByName("chk").Click();
             api.ByName("dataFileName").Clear();
             api.ByName("dataFileName").Enter("gmap_"+ DateTime.Now.ToString("yyyyMMdd")).Submit().Exe();
@@ -275,7 +276,7 @@ namespace CreateMap
 
             //Delete
             EventLog.AddLog("Delete map");
-            api.ByXpath("//a[contains(text(),'Delete')]").Click();
+            api.ByXpath("(//a[contains(@href, '#')])[3]").Click();
             System.Threading.Thread.Sleep(1000);
             api.Accept();
             System.Threading.Thread.Sleep(1000);
