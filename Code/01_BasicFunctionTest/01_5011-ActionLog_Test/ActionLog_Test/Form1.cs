@@ -254,16 +254,15 @@ namespace ActionLog_Test
 
                 if (sTagName == "ConDis_0007")
                 {
-                    if (sRecordValue1 != (sTagName + " 0 1") ||
-                        sRecordValue2 != (sTagName + " 1 0") ||
-                        sRecordValue3 != (sTagName + " 0 1"))
+                    if ((sRecordValue1 == (sTagName + " 0 1") && sRecordValue2 == (sTagName + " 1 0") && sRecordValue3 == (sTagName + " 0 1")) ||
+                        (sRecordValue1 == (sTagName + " 1 0") && sRecordValue2 == (sTagName + " 0 1") && sRecordValue3 == (sTagName + " 1 0")))
                     {
-                        bChkValue = false;
-                        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
+                        EventLog.AddLog(sTagName + " Record value interval check PASS!!");
                     }
                     else
                     {
-                        EventLog.AddLog(sTagName + " Record value interval check PASS!!");
+                        bChkValue = false;
+                        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
                     }
                 }
 
