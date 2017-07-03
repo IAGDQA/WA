@@ -179,17 +179,24 @@ namespace View_and_Save_EventLogData
         {
             bool bCheckEventLogData = true;
             string sDate = DateTime.Now.ToString("yyyy/M/d");
+            string sDate2 = DateTime.Now.ToString("yyyy-M-d");
+            string sDate3 = DateTime.Now.ToString("yyyy-MM-dd");
+
             string sEventRecordDate = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[1]/font").GetText();
 
             EventLog.AddLog("Event record date: " + sEventRecordDate);
             EventLog.AddLog("Today is: " + sDate);
-            if (sDate != sEventRecordDate)
+            EventLog.AddLog("Today is: " + sDate2);
+            EventLog.AddLog("Today is: " + sDate3);
+            if ( (sDate == sEventRecordDate) || (sDate2 == sEventRecordDate) || (sDate3 == sEventRecordDate) )
+            {
+                EventLog.AddLog("Event record date check PASS!!");
+            }
+            else
             {
                 EventLog.AddLog("Event record date check FAIL!!");
                 bCheckEventLogData = false;
             }
-            else
-                EventLog.AddLog("Event record date check PASS!!");
 
             api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[2]/a").Click();    // click time to sort data
             Thread.Sleep(10000);
