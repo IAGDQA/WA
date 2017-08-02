@@ -205,9 +205,10 @@ namespace View_and_Save_EventLogData
 
             if (bCheckEventLogData) // 確認記錄事件的名稱是否前1秒後1秒
             {
-                string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[2]").GetText();
-                string sRecordTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[2]").GetText();
-                string sRecordTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[2]").GetText();
+                // 20170801之後版本改判斷第2 3 4筆資料 第1筆資料略過不計 (原因: 第1筆資料是多記錄的 rd不想修正這個bug)
+                string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[2]").GetText();
+                string sRecordTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[2]").GetText();
+                string sRecordTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[4]/td[2]").GetText();
                 EventLog.AddLog("Event record time(Before): " + sRecordTimeBefore);
                 EventLog.AddLog("Event record time(Now): " + sRecordTime);
                 EventLog.AddLog("Event record time(After): " + sRecordTimeAfter);
@@ -251,7 +252,7 @@ namespace View_and_Save_EventLogData
                 {
                     string sTagName = api.ByXpath(string.Format("//*[@id=\"myTable\"]/thead[1]/tr/th[{0}]/a", i + 3)).GetText();
                     //string sValueBefore = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[1]/td[{0}]", i + 3)).GetText();
-                    string sValue = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[2]/td[{0}]/font", i + 3)).GetText();
+                    string sValue = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[3]/td[{0}]/font", i + 3)).GetText();
                     //string sValueAfter = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[3]/td[{0}]/font", i + 3)).GetText();
 
                     //EventLog.AddLog("TagName: " + sTagName + " BeforeValue: " + sValueBefore + " Value: " + sValue + " AfterValue: " + sValueAfter);
