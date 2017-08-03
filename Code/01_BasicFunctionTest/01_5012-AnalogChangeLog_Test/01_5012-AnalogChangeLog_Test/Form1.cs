@@ -108,8 +108,11 @@ namespace AnalogChangeLog_Test
             try
             {
                 driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                Thread.Sleep(1000);
                 driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                Thread.Sleep(1000);
                 driver.FindElement(By.Id("userField")).Submit();
+                Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
@@ -300,8 +303,9 @@ namespace AnalogChangeLog_Test
             for (int i = 0; i < ToBeTestTag.Length; i++)
             {
                 EventLog.AddLog("Go to setting page");
+                Thread.Sleep(1000);
                 driver.FindElement(By.CssSelector("a[href*='/broadWeb/syslog/LogPg.asp?pos=anachglog&ms=1']")).Click();
-
+                Thread.Sleep(1000);
                 // select project name
                 EventLog.AddLog("select project name");
                 new SelectElement(driver.FindElement(By.Name("ProjNameSel"))).SelectByText(sProjectName);
