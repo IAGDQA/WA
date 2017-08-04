@@ -181,6 +181,7 @@ namespace View_and_Save_EventLogData
             string sDate = DateTime.Now.ToString("yyyy/M/d");
             string sDate2 = DateTime.Now.ToString("yyyy-M-d");
             string sDate3 = DateTime.Now.ToString("yyyy-MM-dd");
+            string sDate4 = DateTime.Now.ToString("dd/MM/yyyy");    // FRN
 
             string sEventRecordDate = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[1]/font").GetText();
 
@@ -188,7 +189,8 @@ namespace View_and_Save_EventLogData
             EventLog.AddLog("Today is: " + sDate);
             EventLog.AddLog("Today is: " + sDate2);
             EventLog.AddLog("Today is: " + sDate3);
-            if ( (sDate == sEventRecordDate) || (sDate2 == sEventRecordDate) || (sDate3 == sEventRecordDate) )
+            EventLog.AddLog("Today is: " + sDate4);
+            if ( (sDate == sEventRecordDate) || (sDate2 == sEventRecordDate) || (sDate3 == sEventRecordDate) || (sDate4 == sEventRecordDate))
             {
                 EventLog.AddLog("Event record date check PASS!!");
             }
