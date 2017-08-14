@@ -205,7 +205,7 @@ namespace ExcelInOut
             EventLog.AddLog("Set BwAnalog..");
             Excel.Worksheet Wsheet = (Excel.Worksheet)Wbook.Sheets["BwAnalog"];
             //取得工作表的單元格
-            for (int i = 2; i <= 1501; i++)
+            for (int i = 2; i <= 1502; i++)
             {
                 Excel.Range aRangeChange = Wsheet.get_Range("A" + i.ToString());
 
