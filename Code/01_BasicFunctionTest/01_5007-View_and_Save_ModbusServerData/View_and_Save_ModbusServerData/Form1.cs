@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
+//using AdvWebUIAPI;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ThirdPartyToolControl;
@@ -79,12 +79,14 @@ namespace View_and_Save_ModbusServerData
 
         long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
         {
-            //string sCurrentFilePath = Directory.GetCurrentDirectory();
+            string sExePath = Directory.GetCurrentDirectory();  // 如果是用iATester執行初始exe 也是指到iATester執行檔位置 
+                                                                // 如果是用初始exe檔直接執行 則是指到初始exe檔執行位置
             string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
+            //sCurrentFilePath無論用什麼執行 就是指到初始exe檔執行位置
 
             //ModSca1_AutoTest
             string sourceFile = sCurrentFilePath + "\\ModScan\\ModSca1_AutoTest";
-            string destFile = sCurrentFilePath + "\\ModSca1_AutoTest";
+            string destFile = sExePath + "\\ModSca1_AutoTest";
             EventLog.AddLog("copy " + sourceFile + " to " + destFile);
             System.IO.File.Copy(sourceFile, destFile, true);
 
@@ -98,7 +100,23 @@ namespace View_and_Save_ModbusServerData
             Thread.Sleep(500);
             SendKeys.SendWait("o");    // save
             Thread.Sleep(1000);
-            SendKeys.SendWait("ModSca1_AutoTest");
+
+            // load ModSca1_AutoTest file
+            EventLog.AddLog("Find ModSca1_AutoTest file to load");
+            int iModScanOpen = tpc.F_FindWindow("#32770", "Open");
+            int iComboxEx32 = tpc.F_FindWindowEx(iModScanOpen, 0, "ComboBoxEx32", "");
+            int iCombox = tpc.F_FindWindowEx(iComboxEx32, 0, "ComboBox", "");
+            int iEdit = tpc.F_FindWindowEx(iCombox, 0, "Edit", "");
+            if (iEdit > 0)
+            {
+                tpc.F_SendMessage(iEdit, tpc.V_WM_SETTEXT, 0, "ModSca1_AutoTest");
+                Thread.Sleep(2000);
+            }
+            else
+            {
+                EventLog.AddLog("Cannot get iModScanOpenEdit handle");
+            }
+            
             Thread.Sleep(500);
             SendKeys.SendWait("{ENTER}");
             Thread.Sleep(500);
