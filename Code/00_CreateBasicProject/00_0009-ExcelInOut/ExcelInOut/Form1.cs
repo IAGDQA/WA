@@ -124,7 +124,7 @@ namespace ExcelInOut
             EventLog.AddLog("Set project name to excel file done!");
 
             ExcuteExcelIn(sSourceFile);
-            Thread.Sleep(20000);
+            //Thread.Sleep(20000);
             string fileNameTar_in = string.Format("ExcelIn_{0:yyyyMMdd_hhmmss}", DateTime.Now);
             EventLog.PrintScreen(fileNameTar_in);
             PrintStep("Excel in");
@@ -136,7 +136,7 @@ namespace ExcelInOut
             EventLog.AddLog("Excel out...");
             string sdestFile = sTestLogFolder + string.Format("\\bwTagExport_{0:yyyyMMdd_hhmmss}", DateTime.Now);
             ExcuteExcelOut(sdestFile);
-            Thread.Sleep(20000);
+            //Thread.Sleep(20000);
             string fileNameTar_out = string.Format("ExcelOut_{0:yyyyMMdd_hhmmss}", DateTime.Now);
             EventLog.PrintScreen(fileNameTar_out);
             PrintStep("Excel out");
@@ -205,89 +205,145 @@ namespace ExcelInOut
             EventLog.AddLog("Set BwAnalog..");
             Excel.Worksheet Wsheet = (Excel.Worksheet)Wbook.Sheets["BwAnalog"];
             //取得工作表的單元格
-            for (int i = 2; i <= 1502; i++)
+            for (int i = 2; i <= 9999; i++) // 1502
             {
                 Excel.Range aRangeChange = Wsheet.get_Range("A" + i.ToString());
-
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i-2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwDiscrete..");
             Excel.Worksheet Wsheet2 = (Excel.Worksheet)Wbook.Sheets["BwDiscrete"];
             //取得工作表的單元格
-            for (int i = 2; i <= 752; i++)
+            for (int i = 2; i <= 9999; i++)  //752
             {
                 Excel.Range aRangeChange = Wsheet2.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwText..");
             Excel.Worksheet Wsheet3 = (Excel.Worksheet)Wbook.Sheets["BwText"];
             //取得工作表的單元格
-            for (int i = 2; i <= 251; i++)
+            for (int i = 2; i <= 9999; i++)  //251
             {
                 Excel.Range aRangeChange = Wsheet3.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwCalcAnalog..");
             Excel.Worksheet Wsheet4 = (Excel.Worksheet)Wbook.Sheets["BwCalcAnalog"];
             //取得工作表的單元格
-            for (int i = 2; i <= 92; i++)
+            for (int i = 2; i <= 9999; i++)   // 92
             {
                 Excel.Range aRangeChange = Wsheet4.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwCalcDiscrete..");
             Excel.Worksheet Wsheet5 = (Excel.Worksheet)Wbook.Sheets["BwCalcDiscrete"];
             //取得工作表的單元格
-            for (int i = 2; i <= 46; i++)
+            for (int i = 2; i <= 9999; i++)   // 46
             {
                 Excel.Range aRangeChange = Wsheet5.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwAcc..");
             Excel.Worksheet Wsheet6 = (Excel.Worksheet)Wbook.Sheets["BwAcc"];
             //取得工作表的單元格
-            for (int i = 2; i <= 251; i++)
+            for (int i = 2; i <= 9999; i++)  // 251
             {
                 Excel.Range aRangeChange = Wsheet6.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwAlarmAnalog..");
             Excel.Worksheet Wsheet7 = (Excel.Worksheet)Wbook.Sheets["BwAlarmAnalog"];
             //取得工作表的單元格
-            for (int i = 2; i <= 255; i++)
+            for (int i = 2; i <= 9999; i++)  //255
             {
                 Excel.Range aRangeChange = Wsheet7.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             EventLog.AddLog("Set BwAlarmDiscrete..");
             Excel.Worksheet Wsheet8 = (Excel.Worksheet)Wbook.Sheets["BwAlarmDiscrete"];
             //取得工作表的單元格
-            for (int i = 2; i <= 5; i++)
+            for (int i = 2; i <= 9999; i++)    // 5
             {
                 Excel.Range aRangeChange = Wsheet8.get_Range("A" + i.ToString());
 
-                //在工作表的特定儲存格，設定內容
-                aRangeChange.Value2 = sProjectName;
+                if (aRangeChange.Value2 == "**********")
+                {
+                    EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
+                    break;
+                }
+                else
+                {
+                    aRangeChange.Value2 = sProjectName; //在工作表的特定儲存格，設定內容
+                }
             }
 
             //設置禁止彈出保存和覆蓋的詢問提示框
@@ -329,7 +385,15 @@ namespace ExcelInOut
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=import')]").Click();
             api.ByName("XlsName").Clear();
-            api.ByName("XlsName").Enter(sSourceFile).Submit().Exe();
+            try
+            {
+                api.ByName("XlsName").Enter(sSourceFile).Submit().Exe();
+            }
+            catch(Exception ex)
+            {
+                EventLog.AddLog("selenium sumbit excel in action time out");
+                EventLog.AddLog(ex.ToString());
+            }
         }
 
         private void ExcuteExcelOut(string sdestFile)
@@ -338,7 +402,16 @@ namespace ExcelInOut
             api.SwitchToFrame("rightFrame", 0);
             api.ByXpath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=export')]").Click();
             api.ByName("XlsName").Clear();
-            api.ByName("XlsName").Enter(sdestFile).Submit().Exe();
+
+            try
+            {
+                api.ByName("XlsName").Enter(sdestFile).Submit().Exe();
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog("selenium sumbit excel out action time out");
+                EventLog.AddLog(ex.ToString());
+            }
         }
 
         private void ReturnSCADAPage()
