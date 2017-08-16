@@ -145,12 +145,18 @@ namespace CreateGlobalScriptData
                 string destFile3_1 = string.Format("C:\\WebAccess\\Node\\config\\{0}_TestSCADA\\bgr\\alm_ack.scr", sProjectName);
                 string destFile3_2 = string.Format("C:\\WebAccess\\Node\\{0}_TestSCADA\\bgr\\alm_ack.scr", sProjectName);
 
+                string sourceFile4 = sCurrentFilePath + "\\GlobalScriptSample\\ConstTxt_Set.scr";
+                string destFile4_1 = string.Format("C:\\WebAccess\\Node\\config\\{0}_TestSCADA\\bgr\\ConstTxt_Set.scr", sProjectName);
+                string destFile4_2 = string.Format("C:\\WebAccess\\Node\\{0}_TestSCADA\\bgr\\ConstTxt_Set.scr", sProjectName);
+
                 System.IO.File.Copy(sourceFile1, destFile1_1, true);
                 System.IO.File.Copy(sourceFile1, destFile1_2, true);
                 System.IO.File.Copy(sourceFile2, destFile2_1, true);
                 System.IO.File.Copy(sourceFile2, destFile2_2, true);
                 System.IO.File.Copy(sourceFile3, destFile3_1, true);
                 System.IO.File.Copy(sourceFile3, destFile3_2, true);
+                System.IO.File.Copy(sourceFile4, destFile4_1, true);
+                System.IO.File.Copy(sourceFile4, destFile4_2, true);
             }
             
             //Step2: Set global script
@@ -310,7 +316,36 @@ namespace CreateGlobalScriptData
             api.ByName("RunScript_3").Clear();
             api.ByName("RunScript_3").Enter("alm_ack.scr").Exe();
             api.ByName("RunInterval_3").Clear();
-            api.ByName("RunInterval_3").Enter("2400").Submit().Exe();   // 2400 = 60s
+            api.ByName("RunInterval_3").Enter("2400").Exe();   // 2400 = 60s
+
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("StatusSel_4").SelectTxt("Enable").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("StatusSel_4").SelectTxt("啟用").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("StatusSel_4").SelectTxt("允许").Exe();
+                    break;
+                case "JPN":
+                    api.ByName("StatusSel_4").SelectTxt("稼動").Exe();
+                    break;
+                case "KRN":
+                    api.ByName("StatusSel_4").SelectTxt("가동").Exe();
+                    break;
+                case "FRN":
+                    api.ByName("StatusSel_4").SelectTxt("Activer").Exe();
+                    break;
+
+                default:
+                    api.ByName("StatusSel_4").SelectTxt("Enable").Exe();
+                    break;
+            }
+            api.ByName("StopScript_4").Clear();
+            api.ByName("StopScript_4").Enter("ConstTxt_Set.scr").Submit().Exe();
+
         }
 
         private void ReturnSCADAPage()
