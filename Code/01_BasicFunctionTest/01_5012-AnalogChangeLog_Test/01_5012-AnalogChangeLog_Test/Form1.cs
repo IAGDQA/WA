@@ -387,12 +387,9 @@ namespace AnalogChangeLog_Test
 
                 if (IsNumeric(sRecordValue1) && IsNumeric(sRecordValue2) && IsNumeric(sRecordValue3))
                 {
-
-                    if (sTagName == "SystemSec_0011")
+                    if (Double.Parse(sRecordValue1) != Double.Parse(sRecordValue2))
                     {
-                        if (((Double.Parse(sRecordValue1) >= 0) && (Double.Parse(sRecordValue1) <= 59)) &&
-                            ((Double.Parse(sRecordValue2) >= 0) && (Double.Parse(sRecordValue2) <= 59)) &&
-                            ((Double.Parse(sRecordValue3) >= 0) && (Double.Parse(sRecordValue3) <= 59)))
+                        if (Double.Parse(sRecordValue2) != Double.Parse(sRecordValue3))
                         {
                             EventLog.AddLog(sTagName + " Record value interval check PASS!!");
                         }
@@ -404,17 +401,39 @@ namespace AnalogChangeLog_Test
                     }
                     else
                     {
-                        if ((Double.Parse(sRecordValue1) < Double.Parse(sRecordValue2)) && 
-                            (Double.Parse(sRecordValue2) < Double.Parse(sRecordValue3)))
-                        {
-                            EventLog.AddLog(sTagName + " Record value interval check PASS!!");
-                        }
-                        else
-                        {
-                            bChkValue = false;
-                            EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
-                        }
+                        bChkValue = false;
+                        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
                     }
+
+                    
+
+                    //if (sTagName == "SystemSec_0011")
+                    //{
+                    //    if (((Double.Parse(sRecordValue1) >= 0) && (Double.Parse(sRecordValue1) <= 59)) &&
+                    //        ((Double.Parse(sRecordValue2) >= 0) && (Double.Parse(sRecordValue2) <= 59)) &&
+                    //        ((Double.Parse(sRecordValue3) >= 0) && (Double.Parse(sRecordValue3) <= 59)))
+                    //    {
+                    //        EventLog.AddLog(sTagName + " Record value interval check PASS!!");
+                    //    }
+                    //    else
+                    //    {
+                    //        bChkValue = false;
+                    //        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    if ((Double.Parse(sRecordValue1) < Double.Parse(sRecordValue2)) && 
+                    //        (Double.Parse(sRecordValue2) < Double.Parse(sRecordValue3)))
+                    //    {
+                    //        EventLog.AddLog(sTagName + " Record value interval check PASS!!");
+                    //    }
+                    //    else
+                    //    {
+                    //        bChkValue = false;
+                    //        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
+                    //    }
+                    //}
                 }
                 else
                 {
