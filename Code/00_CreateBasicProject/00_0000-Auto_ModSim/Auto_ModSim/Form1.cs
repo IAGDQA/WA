@@ -254,6 +254,8 @@ namespace Auto_ModSim
         long Form1_Load()
         {
             cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+            string[] file_name = { "CoilStatus_250_Sync_20160331", "HoldingRegister_250_Sync_20160401", "InputRegister_250_Sync_20160331", "InputStatus_250_Sync_20160401" };
+
             try
             {
                 Process[] processes = Process.GetProcessesByName("ModSim32");
@@ -272,6 +274,19 @@ namespace Auto_ModSim
                 string destDirName=@"c:\ModSim";
                 bool copySubDirs = true;
                 DirectoryCopy(str + sourceDirName, destDirName, copySubDirs);
+
+                string sExePath = Directory.GetCurrentDirectory();  // 如果是用iATester執行初始exe 也是指到iATester執行檔位置 
+                                                                    // 如果是用初始exe檔直接執行 則是指到初始exe檔執行位置
+                string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
+                //sCurrentFilePath無論用什麼執行 就是指到初始exe檔執行位置
+                for(int i=0; i< file_name.Length;i++)
+                {
+                    string sourceFile = sCurrentFilePath + "\\ModSim\\" + file_name[i];
+                    string destFile = sExePath + "\\"+ file_name[i];
+                    EventLog.AddLog("copy " + sourceFile + " to " + destFile);
+                    System.IO.File.Copy(sourceFile , destFile , true);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -320,7 +335,6 @@ namespace Auto_ModSim
 
                 EventLog.AddLog("Load script");
 
-                string[] file_name = { "CoilStatus_250_Sync_20160331", "HoldingRegister_250_Sync_20160401", "InputRegister_250_Sync_20160331", "InputStatus_250_Sync_20160401" };
                 //string[] file_name = { "CoilStatus_250_Sync_20160331" };
 
                 for (int i = 0; i < file_name.Length; i++)
