@@ -107,15 +107,12 @@ namespace View_and_Save_EventLogData
             Thread.Sleep(3000);
 
             // set today as start date
-            string sToday = string.Format("{0:dd}", DateTime.Now);
-            int iToday = Int32.Parse(sToday);   // 為了讓讀出來的日期去掉第一個零 ex: "06" -> "6"
-            string ssToday = string.Format("{0}", iToday);
-
+            string sToday = DateTime.Now.ToString("%d");
             api.ByName("DateStart").Click();
             Thread.Sleep(1000);
-            api.ByTxt(ssToday).Click();
+            api.ByTxt(sToday).Click();
             Thread.Sleep(1000);
-            EventLog.AddLog("select start date to today: " + ssToday);
+            EventLog.AddLog("select start date to today: " + sToday);
 
             api.ByName("PageSizeSel").Enter("").Submit().Exe();
             PrintStep("Set and get Event Log data");
@@ -179,26 +176,26 @@ namespace View_and_Save_EventLogData
         {
             bool bCheckEventLogData = true;
             string sDate = DateTime.Now.ToString("yyyy/M/d");
-            string sDate2 = DateTime.Now.ToString("yyyy-M-d");
-            string sDate3 = DateTime.Now.ToString("yyyy-MM-dd");
-            string sDate4 = DateTime.Now.ToString("dd/MM/yyyy");    // FRN
+            //string sDate2 = DateTime.Now.ToString("yyyy-M-d");
+            //string sDate3 = DateTime.Now.ToString("yyyy-MM-dd");
+            //string sDate4 = DateTime.Now.ToString("dd/MM/yyyy");    // FRN
 
             string sEventRecordDate = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[1]/font").GetText();
 
             EventLog.AddLog("Event record date: " + sEventRecordDate);
             EventLog.AddLog("Today is: " + sDate);
-            EventLog.AddLog("Today is: " + sDate2);
-            EventLog.AddLog("Today is: " + sDate3);
-            EventLog.AddLog("Today is: " + sDate4);
-            if ( (sDate == sEventRecordDate) || (sDate2 == sEventRecordDate) || (sDate3 == sEventRecordDate) || (sDate4 == sEventRecordDate))
-            {
-                EventLog.AddLog("Event record date check PASS!!");
-            }
-            else
-            {
-                EventLog.AddLog("Event record date check FAIL!!");
-                bCheckEventLogData = false;
-            }
+            //EventLog.AddLog("Today is: " + sDate2);
+            //EventLog.AddLog("Today is: " + sDate3);
+            //EventLog.AddLog("Today is: " + sDate4);
+            //if ( (sDate == sEventRecordDate) || (sDate2 == sEventRecordDate) || (sDate3 == sEventRecordDate) || (sDate4 == sEventRecordDate))
+            //{
+            //    EventLog.AddLog("Event record date check PASS!!");
+            //}
+            //else
+            //{
+            //    EventLog.AddLog("Event record date check FAIL!!");
+            //    bCheckEventLogData = false;
+            //}
 
             api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[2]/a").Click();    // click time to sort data
             Thread.Sleep(10000);
@@ -210,6 +207,9 @@ namespace View_and_Save_EventLogData
                 string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[2]").GetText();
                 string sRecordTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[2]").GetText();
                 string sRecordTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[2]").GetText();
+                string sRecordTimeMSBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[3]").GetText();
+                string sRecordMSTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[3]").GetText();
+                string sRecordMSTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[3]").GetText();
                 EventLog.AddLog("Event record time(Before): " + sRecordTimeBefore);
                 EventLog.AddLog("Event record time(Now): " + sRecordTime);
                 EventLog.AddLog("Event record time(After): " + sRecordTimeAfter);
@@ -233,6 +233,34 @@ namespace View_and_Save_EventLogData
                         Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == -59)
                     {
                         EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 0)       // 前後值相等的情況
+                    {
+                        EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
+                        EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
+                        if (Int32.Parse(sRecordTimeMSBefore) - Int32.Parse(sRecordMSTime) > 900)
+                        {
+                            EventLog.AddLog("Record time interval check PASS!!");
+                        }
+                        else
+                        {
+                            bCheckEventLogData = false;
+                            EventLog.AddLog("Record time interval check FAIL!!");
+                        }
+                    }
+                    else if(Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 0) // 前後值相等的情況
+                    {
+                        EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
+                        EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
+                        if (Int32.Parse(sRecordMSTime) - Int32.Parse(sRecordMSTimeAfter) > 900)
+                        {
+                            EventLog.AddLog("Record time interval check PASS!!");
+                        }
+                        else
+                        {
+                            bCheckEventLogData = false;
+                            EventLog.AddLog("Record time interval check FAIL!!");
+                        }
                     }
                     else
                     {
