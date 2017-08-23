@@ -1,0 +1,21 @@
+if {[GETVAL zSysMode] == 1} then {
+
+for {set i 0} {$i<=9} {incr i} {
+SETVAL "ConAna_000$i=%LOOPPLUS 1"
+SETVAL "ConDis_000$i=%REVERSE"
+}
+
+for {set i 10} {$i<=99} {incr i} {
+SETVAL "ConAna_00$i=%LOOPPLUS 1"
+SETVAL "ConDis_00$i=%REVERSE"
+}
+
+for {set i 100} {$i<=248} {incr i} {
+SETVAL "ConAna_0$i=%LOOPPLUS 1"
+}
+
+for {set i 100} {$i<=250} {incr i} {
+SETVAL "ConDis_0$i=%REVERSE"
+}
+
+}

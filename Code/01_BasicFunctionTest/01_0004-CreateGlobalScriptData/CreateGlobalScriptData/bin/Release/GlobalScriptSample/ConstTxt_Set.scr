@@ -1,0 +1,13 @@
+if {[GETVAL zSysMode] == 1} then {
+
+for {set i 0} {$i<=9} {incr i} {
+SETVAL ConTxt_000$i=A\/:*?"><|~!@#$%^&_-
+}
+for {set i 10} {$i<=99} {incr i} {
+SETVAL ConTxt_00$i=A\/:*?"><|~!@#$%^&_-
+}
+for {set i 100} {$i<=500} {incr i} {
+SETVAL ConTxt_0$i=A\/:*?"><|~!@#$%^&_-
+}
+
+}
