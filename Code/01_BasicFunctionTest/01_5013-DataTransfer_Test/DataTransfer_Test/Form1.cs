@@ -140,11 +140,16 @@ namespace DataTransfer_Test
                 if (Int32.TryParse(recipe_Value.Values[0].Value, out tag1) && Int32.TryParse(recipe_Value.Values[1].Value, out tag2))
                 {
                     EventLog.AddLog(string.Format("The tagname value({0}={1})", sAITagList[0], recipe_Value.Values[0].Value));
-                    EventLog.AddLog(string.Format("The tagname value({0}={1})", sAITagList[0], recipe_Value.Values[0].Value));
+                    EventLog.AddLog(string.Format("The tagname value({0}={1})", sAITagList[1], recipe_Value.Values[1].Value));
                     if (Math.Abs(tag1-tag2) > 1 && Math.Abs(tag1-tag2) != 59)
                     {
                         bPartResult = false;
                         EventLog.AddLog("Check value fail, The difference between the two values should be less than 1");
+                    }
+                    else if(tag1 < 0 || tag2 < 0)
+                    {
+                        bPartResult = false;
+                        EventLog.AddLog("Check value fail, The value should not be negative");
                     }
                 }
                 else
