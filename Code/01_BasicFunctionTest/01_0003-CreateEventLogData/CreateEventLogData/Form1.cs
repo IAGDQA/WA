@@ -106,6 +106,10 @@ namespace CreateEventLogData
             EventLog.AddLog("Create Event Log Data...");
             //ReturnSCADAPage();
             CreateEventLogData(sProjectName);
+            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveloglist.asp')]").Click();
+            CreateEventLogData2(sProjectName);  // 記錄1,3,5,7,9 中間有空隔不連續 ( AE feedback)
+            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveloglist.asp')]").Click();
+            CreateEventLogData3(sProjectName);  // 只記錄1個測點 (AE feedback)
             //PrintStep("Create Event Log Data");
             EventLog.AddLog("Create Event Log Data Done!");
 
@@ -264,6 +268,140 @@ namespace CreateEventLogData
 
             Thread.Sleep(1000);
             
+            api.ByName("EventRefVal").Enter("").Submit().Exe();
+            Thread.Sleep(1000);
+        }
+
+        private void CreateEventLogData2(string sProjectName)
+        {
+            api.SwitchToCurWindow(0);
+            api.SwitchToFrame("rightFrame", 0);
+
+            //api.ByXpath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]").Click();
+            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]").Click();
+
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("EventTypeSel").SelectTxt("事件測點 == 參考值").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("EventTypeSel").SelectTxt("事件点 == 参考值").Exe();
+                    break;
+                case "JPN":
+                    api.ByName("EventTypeSel").SelectTxt("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値").Exe();
+                    break;
+                case "KRN":
+                    api.ByName("EventTypeSel").SelectTxt("이벤트 태그 == Reference Value").Exe();
+                    break;
+                case "FRN":
+                    api.ByName("EventTypeSel").SelectTxt("Repère d'Evénement == Valeur de Référence").Exe();
+                    break;
+
+                default:
+                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
+                    break;
+            }
+
+            api.ByName("EventLogName").Clear();
+            api.ByName("EventLogName").Enter("EventLog13579_" + sProjectName).Exe();
+            api.ByName("EventTag").Clear();
+            api.ByName("EventTag").Enter("ConAna_0241").Exe();
+            api.ByName("EventRefVal").Clear();
+            api.ByName("EventRefVal").Enter("51").Exe();
+            PrintStep("Set Event Log trigger event");
+
+            api.ByName("EventLogTag").Click();
+            
+            Thread.Sleep(1000);
+
+            for (int i = 1; i <= 9; i=i+2)
+            {
+                try
+                {
+                    if(i==9)
+                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_000{0}", i)).Submit().Exe();
+                    else
+                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_000{0}", i)).Exe();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog("CreateEventLogData 1,3,5,7,9 error: " + ex.ToString());
+                    i--;
+                }
+            }
+            PrintStep("Create 1,3,5,7,9  tags to log");
+            EventLog.AddLog("Create 1,3,5,7,9  tags to log");
+
+            Thread.Sleep(1000);
+
+            api.ByName("EventRefVal").Enter("").Submit().Exe();
+            Thread.Sleep(1000);
+        }
+
+        private void CreateEventLogData3(string sProjectName)
+        {
+            api.SwitchToCurWindow(0);
+            api.SwitchToFrame("rightFrame", 0);
+
+            //api.ByXpath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]").Click();
+            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]").Click();
+
+            switch (slanguage)
+            {
+                case "ENG":
+                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
+                    break;
+                case "CHT":
+                    api.ByName("EventTypeSel").SelectTxt("事件測點 == 參考值").Exe();
+                    break;
+                case "CHS":
+                    api.ByName("EventTypeSel").SelectTxt("事件点 == 参考值").Exe();
+                    break;
+                case "JPN":
+                    api.ByName("EventTypeSel").SelectTxt("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値").Exe();
+                    break;
+                case "KRN":
+                    api.ByName("EventTypeSel").SelectTxt("이벤트 태그 == Reference Value").Exe();
+                    break;
+                case "FRN":
+                    api.ByName("EventTypeSel").SelectTxt("Repère d'Evénement == Valeur de Référence").Exe();
+                    break;
+
+                default:
+                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
+                    break;
+            }
+
+            api.ByName("EventLogName").Clear();
+            api.ByName("EventLogName").Enter("EventLog1_" + sProjectName).Exe();
+            api.ByName("EventTag").Clear();
+            api.ByName("EventTag").Enter("ConAna_0241").Exe();
+            api.ByName("EventRefVal").Clear();
+            api.ByName("EventRefVal").Enter("51").Exe();
+            PrintStep("Set Event Log trigger event");
+
+            api.ByName("EventLogTag").Click();
+
+            Thread.Sleep(1000);
+
+            try
+            {
+                    api.ByName(string.Format("TagName1")).Enter(string.Format("ConAna_0001")).Submit().Exe();
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog("CreateEventLogData 1,3,5,7,9 error: " + ex.ToString());
+            }
+
+            PrintStep("Create 1 tags to log");
+            EventLog.AddLog("Create 1 tags to log");
+
+            Thread.Sleep(1000);
+
             api.ByName("EventRefVal").Enter("").Submit().Exe();
             Thread.Sleep(1000);
         }

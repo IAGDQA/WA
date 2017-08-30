@@ -98,43 +98,21 @@ namespace View_and_Save_EventLogData
             api.ById("userField").Enter("").Submit().Exe();
             PrintStep("Login WebAccess");
 
-            EventLog.AddLog("Go to Event log setting page");
-            api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp?pos=event')]").Click();
+            bool testresult = true;
+            if(testresult)
+                testresult = EventLogTest1(sProjectName);       // 測試只有記錄1個tag的事件
 
-            // select project name
-            EventLog.AddLog("select project name");
-            api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
-            Thread.Sleep(3000);
+            if (testresult)
+                testresult = EventLogTest13579(sProjectName);   // 測試記錄不連續tag的事件(1 3 5 7 9)
 
-            // set today as start date
-            string sToday = DateTime.Now.ToString("%d");
-            api.ByName("DateStart").Click();
-            Thread.Sleep(1000);
-            api.ByTxt(sToday).Click();
-            Thread.Sleep(1000);
-            EventLog.AddLog("select start date to today: " + sToday);
-
-            api.ByName("PageSizeSel").Enter("").Submit().Exe();
-            PrintStep("Set and get Event Log data");
-            EventLog.AddLog("Get Event Log data");
-
-            Thread.Sleep(10000); // wait to get ODBC data
-            
-            // print screen
-            string fileNameTar = string.Format("EventLogData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            EventLog.PrintScreen(fileNameTar);
-            /*
-            EventLog.AddLog("Save data to excel");
-            SaveDatatoExcel(sProjectName, sTestLogFolder);
-            */
-            EventLog.AddLog("Check event log data");
-            bool bCheckResult = CheckEventLogData();
-            PrintStep("CheckEventLogData");
+            if (testresult)
+                testresult = EventLogTestFull(sProjectName);    // 測試記錄240個tag的事件
 
             Thread.Sleep(500);
             api.Quit();
             PrintStep("Quit browser");
 
+            #region Result judgement
             bool bSeleniumResult = true;
             int iTotalSeleniumAction = dataGridView1.Rows.Count;
             for (int i = 0; i < iTotalSeleniumAction - 1; i++)
@@ -154,7 +132,7 @@ namespace View_and_Save_EventLogData
                 }
             }
 
-            if (bSeleniumResult && bCheckResult)
+            if (bSeleniumResult && testresult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -168,8 +146,133 @@ namespace View_and_Save_EventLogData
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
+            #endregion
+        }
 
-            //return 0;
+        private bool EventLogTestFull(string sProjectName)
+        {
+            EventLog.AddLog("Go to Event log setting page");
+            api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp?pos=event')]").Click();
+
+            // select project name
+            EventLog.AddLog("select project name");
+            api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
+            Thread.Sleep(3000);
+
+            // set today as start date
+            string sToday = DateTime.Now.ToString("%d");
+            api.ByName("DateStart").Click();
+            Thread.Sleep(1000);
+            api.ByTxt(sToday).Click();
+            Thread.Sleep(1000);
+            EventLog.AddLog("select start date to today: " + sToday);
+
+            // select event log name
+            api.ByName("EveNameSel").SelectTxt("EventLog_" + sProjectName).Exe();
+
+            api.ByName("PageSizeSel").Enter("").Submit().Exe();
+            PrintStep("Set and get Event Log data");
+            EventLog.AddLog("Get Event Log data");
+
+            Thread.Sleep(10000); // wait to get ODBC data
+
+            // print screen
+            string fileNameTar = string.Format("EventLogData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
+            EventLog.PrintScreen(fileNameTar);
+
+            EventLog.AddLog("Check event log data for 240 continuous log value");
+            bool bCheckResult = CheckEventLogData();
+            PrintStep("CheckEventLogData");
+
+            // return to home page
+            api.ByXpath("//a[5]/font").Click();
+
+            return bCheckResult;
+        }
+
+        private bool EventLogTest1(string sProjectName)
+        {
+            EventLog.AddLog("Go to Event log setting page");
+            api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp?pos=event')]").Click();
+
+            // select project name
+            EventLog.AddLog("select project name");
+            api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
+            Thread.Sleep(3000);
+
+            // set today as start date
+            string sToday = DateTime.Now.ToString("%d");
+            api.ByName("DateStart").Click();
+            Thread.Sleep(1000);
+            api.ByTxt(sToday).Click();
+            Thread.Sleep(1000);
+            EventLog.AddLog("select start date to today: " + sToday);
+
+            // select event log name
+            api.ByName("EveNameSel").SelectTxt("EventLog1_" + sProjectName).Exe();
+
+            api.ByName("PageSizeSel").Enter("").Submit().Exe();
+            PrintStep("Set and get Event Log data");
+            EventLog.AddLog("Get Event Log data");
+
+            Thread.Sleep(10000); // wait to get ODBC data
+
+            // print screen
+            string fileNameTar = string.Format("EventLogData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
+            EventLog.PrintScreen(fileNameTar);
+            /*
+            EventLog.AddLog("Save data to excel");
+            SaveDatatoExcel(sProjectName, sTestLogFolder);
+            */
+            EventLog.AddLog("Check event log data for 1 log value");
+            bool bCheckResult = CheckEventLogData1();
+            PrintStep("CheckEventLogData1");
+
+            // return to home page
+            api.ByXpath("//a[5]/font").Click();
+
+            return bCheckResult;
+        }
+
+        private bool EventLogTest13579(string sProjectName)
+        {
+            EventLog.AddLog("Go to Event log setting page");
+            api.ByXpath("//a[contains(@href, '/broadWeb/syslog/LogPg.asp?pos=event')]").Click();
+
+            // select project name
+            EventLog.AddLog("select project name");
+            api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
+            Thread.Sleep(3000);
+
+            // set today as start date
+            string sToday = DateTime.Now.ToString("%d");
+            api.ByName("DateStart").Click();
+            Thread.Sleep(1000);
+            api.ByTxt(sToday).Click();
+            Thread.Sleep(1000);
+            EventLog.AddLog("select start date to today: " + sToday);
+
+            // select event log name
+            api.ByName("EveNameSel").SelectTxt("EventLog13579_" + sProjectName).Exe();
+
+            api.ByName("PageSizeSel").Enter("").Submit().Exe();
+            PrintStep("Set and get Event Log data");
+            EventLog.AddLog("Get Event Log data");
+
+            Thread.Sleep(10000); // wait to get ODBC data
+
+            // print screen
+            string fileNameTar = string.Format("EventLogData_{0:yyyyMMdd_hhmmss}", DateTime.Now);
+            EventLog.PrintScreen(fileNameTar);
+
+            EventLog.AddLog("Check event log data for 5 discontinuous log value");
+            bool bCheckResult = CheckEventLogData13579();
+            PrintStep("CheckEventLogData13579");
+
+            // return to home page
+            api.ByXpath("//a[5]/font").Click();
+
+            return bCheckResult;
         }
 
         private bool CheckEventLogData()
@@ -290,14 +393,240 @@ namespace View_and_Save_EventLogData
                     double number;
                     if (!Double.TryParse(sValue, out number) || number != 51)    // if string to double success!!
                     {
-                        EventLog.AddLog("Event value check FAIL!!");
+                        EventLog.AddLog("Event log value check FAIL!!");
                         bCheckEventLogData = false;
                         break;
                     }
                 }
+                if (bCheckEventLogData)
+                    EventLog.AddLog("Event log value check PASS!!");
             }
             return bCheckEventLogData;
-        }
+        }  // 測試記錄240個tag的事件
+
+        private bool CheckEventLogData1()
+        {
+            bool bCheckEventLogData = true;
+            string sDate = DateTime.Now.ToString("yyyy/M/d");
+
+            string sEventRecordDate = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[1]/font").GetText();
+
+            EventLog.AddLog("Event record date: " + sEventRecordDate);
+            EventLog.AddLog("Today is: " + sDate);
+
+            api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[2]/a").Click();    // click time to sort data
+            Thread.Sleep(10000);
+
+            if (bCheckEventLogData) // 確認記錄事件的名稱是否前1秒後1秒
+            {
+                string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[2]").GetText();
+                string sRecordTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[2]").GetText();
+                string sRecordTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[2]").GetText();
+                string sRecordTimeMSBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[3]").GetText();
+                string sRecordMSTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[3]").GetText();
+                string sRecordMSTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[3]").GetText();
+                EventLog.AddLog("Event record time(Before): " + sRecordTimeBefore);
+                EventLog.AddLog("Event record time(Now): " + sRecordTime);
+                EventLog.AddLog("Event record time(After): " + sRecordTimeAfter);
+
+                string[] sBefore_tmp = sRecordTimeBefore.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sNow_tmp = sRecordTime.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sAfter_tmp = sRecordTimeAfter.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                if (sRecordTimeBefore != "" && sRecordTime != "" && sRecordTimeAfter != "")
+                {
+                    if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 1 &&      // 確認記錄事件的名稱是否前1秒後1秒
+                        Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 1)
+                    {
+                        EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == -59 &&      // 59-0-1
+                        Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 1)
+                    {
+                        EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 1 &&      // 58-59-0
+                        Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == -59)
+                    {
+                        EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 0)       // 前後值相等的情況
+                    {
+                        EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
+                        EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
+                        if (Int32.Parse(sRecordTimeMSBefore) - Int32.Parse(sRecordMSTime) > 900)
+                        {
+                            EventLog.AddLog("Record time interval check PASS!!");
+                        }
+                        else
+                        {
+                            bCheckEventLogData = false;
+                            EventLog.AddLog("Record time interval check FAIL!!");
+                        }
+                    }
+                    else if (Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 0) // 前後值相等的情況
+                    {
+                        EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
+                        EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
+                        if (Int32.Parse(sRecordMSTime) - Int32.Parse(sRecordMSTimeAfter) > 900)
+                        {
+                            EventLog.AddLog("Record time interval check PASS!!");
+                        }
+                        else
+                        {
+                            bCheckEventLogData = false;
+                            EventLog.AddLog("Record time interval check FAIL!!");
+                        }
+                    }
+                    else
+                    {
+                        bCheckEventLogData = false;
+                        EventLog.AddLog("Record time interval check FAIL!!");
+                    }
+                }
+                else
+                {
+                    bCheckEventLogData = false;
+                    EventLog.AddLog("Record time interval check FAIL!!");
+                }
+            }
+
+            if (bCheckEventLogData) // 確認記錄的數值是否為51
+            {
+                for (int i = 1; i <= 1; i++)
+                {
+                    string sTagName = api.ByXpath(string.Format("//*[@id=\"myTable\"]/thead[1]/tr/th[{0}]/a", i + 3)).GetText();
+                    //string sValueBefore = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[1]/td[{0}]", i + 3)).GetText();
+                    string sValue = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[2]/td[{0}]/font", i + 3)).GetText();
+                    //string sValueAfter = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[3]/td[{0}]/font", i + 3)).GetText();
+
+                    //EventLog.AddLog("TagName: " + sTagName + " BeforeValue: " + sValueBefore + " Value: " + sValue + " AfterValue: " + sValueAfter);
+                    EventLog.AddLog("TagName: " + sTagName + " Value: " + sValue);
+
+                    double number;
+                    if (!Double.TryParse(sValue, out number) || number != 51)    // if string to double success!!
+                    {
+                        EventLog.AddLog("Event log value check FAIL!!");
+                        bCheckEventLogData = false;
+                        break;
+                    }
+                }
+                if (bCheckEventLogData)
+                    EventLog.AddLog("Event log value check PASS!!");
+            }
+            return bCheckEventLogData;
+        }   // 測試只有記錄1個tag的事件
+
+        private bool CheckEventLogData13579()
+        {
+            bool bCheckEventLogData = true;
+            string sDate = DateTime.Now.ToString("yyyy/M/d");
+
+            string sEventRecordDate = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[1]/font").GetText();
+
+            EventLog.AddLog("Event record date: " + sEventRecordDate);
+            EventLog.AddLog("Today is: " + sDate);
+
+            api.ByXpath("//*[@id=\"myTable\"]/thead[1]/tr/th[2]/a").Click();    // click time to sort data
+            Thread.Sleep(10000);
+
+            if (bCheckEventLogData) // 確認記錄事件的名稱是否前1秒後1秒
+            {
+                string sRecordTimeBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[2]").GetText();
+                string sRecordTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[2]").GetText();
+                string sRecordTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[2]").GetText();
+                string sRecordTimeMSBefore = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[1]/td[3]").GetText();
+                string sRecordMSTime = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[2]/td[3]").GetText();
+                string sRecordMSTimeAfter = api.ByXpath("//*[@id=\"myTable\"]/tbody/tr[3]/td[3]").GetText();
+                EventLog.AddLog("Event record time(Before): " + sRecordTimeBefore);
+                EventLog.AddLog("Event record time(Now): " + sRecordTime);
+                EventLog.AddLog("Event record time(After): " + sRecordTimeAfter);
+
+                string[] sBefore_tmp = sRecordTimeBefore.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sNow_tmp = sRecordTime.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sAfter_tmp = sRecordTimeAfter.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                if (sRecordTimeBefore != "" && sRecordTime != "" && sRecordTimeAfter != "")
+                {
+                    if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 1 &&      // 確認記錄事件的名稱是否前1秒後1秒
+                        Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 1)
+                    {
+                        EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == -59 &&      // 59-0-1
+                        Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 1)
+                    {
+                        EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 1 &&      // 58-59-0
+                        Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == -59)
+                    {
+                        EventLog.AddLog("Record time interval check PASS!!");
+                    }
+                    else if (Int32.Parse(sNow_tmp[2]) - Int32.Parse(sBefore_tmp[2]) == 0)       // 前後值相等的情況
+                    {
+                        EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
+                        EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
+                        if (Int32.Parse(sRecordTimeMSBefore) - Int32.Parse(sRecordMSTime) > 900)
+                        {
+                            EventLog.AddLog("Record time interval check PASS!!");
+                        }
+                        else
+                        {
+                            bCheckEventLogData = false;
+                            EventLog.AddLog("Record time interval check FAIL!!");
+                        }
+                    }
+                    else if (Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 0) // 前後值相等的情況
+                    {
+                        EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
+                        EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
+                        if (Int32.Parse(sRecordMSTime) - Int32.Parse(sRecordMSTimeAfter) > 900)
+                        {
+                            EventLog.AddLog("Record time interval check PASS!!");
+                        }
+                        else
+                        {
+                            bCheckEventLogData = false;
+                            EventLog.AddLog("Record time interval check FAIL!!");
+                        }
+                    }
+                    else
+                    {
+                        bCheckEventLogData = false;
+                        EventLog.AddLog("Record time interval check FAIL!!");
+                    }
+                }
+                else
+                {
+                    bCheckEventLogData = false;
+                    EventLog.AddLog("Record time interval check FAIL!!");
+                }
+            }
+
+            if (bCheckEventLogData) // 確認記錄的數值是否為51
+            {
+                for (int i = 1; i <= 5; i++)
+                {
+                    string sTagName = api.ByXpath(string.Format("//*[@id=\"myTable\"]/thead[1]/tr/th[{0}]/a", i + 3)).GetText();
+                    //string sValueBefore = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[1]/td[{0}]", i + 3)).GetText();
+                    string sValue = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[2]/td[{0}]/font", i + 3)).GetText();
+                    //string sValueAfter = api.ByXpath(string.Format("//*[@id=\"myTable\"]/tbody/tr[3]/td[{0}]/font", i + 3)).GetText();
+
+                    //EventLog.AddLog("TagName: " + sTagName + " BeforeValue: " + sValueBefore + " Value: " + sValue + " AfterValue: " + sValueAfter);
+                    EventLog.AddLog("TagName: " + sTagName + " Value: " + sValue);
+
+                    double number;
+                    if (!Double.TryParse(sValue, out number) || number != 51)    // if string to double success!!
+                    {
+                        EventLog.AddLog("Event log value check FAIL!!");
+                        bCheckEventLogData = false;
+                        break;
+                    }
+                }
+                if (bCheckEventLogData)
+                    EventLog.AddLog("Event log value check PASS!!");
+            }
+            return bCheckEventLogData;
+        }  // 測試記錄不連續tag的事件(1 3 5 7 9)
 
         private void SaveDatatoExcel(string sProject, string sTestLogFolder)
         {
