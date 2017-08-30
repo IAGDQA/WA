@@ -22,6 +22,7 @@ namespace ActionLog_Test
         IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
         cEventLog EventLog = new cEventLog();
+        cWACommonFunction wacf = new cWACommonFunction();
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
@@ -99,6 +100,23 @@ namespace ActionLog_Test
             api.ById("userField").Enter("").Submit().Exe();
             PrintStep("Login WebAccess");
 
+            EventLog.AddLog("Download to reboot kernel"); //因為global script設定當kernel關閉時 才會去更改ConTxt的值 
+            try                                           // 故這邊使用download動作來使kernel關閉再打開
+            {
+                api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
+                PrintStep("Configure project");
+
+                EventLog.AddLog("Start Download...");
+                wacf.Download(api);
+
+                api.SwitchToFrame("topFrame", 0);
+                api.ByXpath("//a[3]/font").Click();
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+            }
+            
             EventLog.AddLog("Check analog tag data...");
             bool bActionChk = ActionLogDataCheck(sProjectName);
 
@@ -149,8 +167,8 @@ namespace ActionLog_Test
         private bool ActionLogDataCheck(string sProjectName)
         {
             bool bCheckData = true;
-            string[] ToBeTestTag = {"ConAna_0007", "ConDis_0007" };
-            //string[] ToBeTestTag = { "ConAna_0007", "ConDis_0007", "ConTxt_0007" }; // 之後應該會增加ConTxt_0007
+            //string[] ToBeTestTag = {"ConAna_0007", "ConDis_0007" };
+            string[] ToBeTestTag = { "ConAna_0007", "ConDis_0007", "ConTxt_0007" };
 
             for (int i = 0; i < ToBeTestTag.Length; i++)
             {
@@ -160,7 +178,7 @@ namespace ActionLog_Test
                 // select project name
                 EventLog.AddLog("select project name");
                 api.ByName("ProjNameSel").SelectTxt(sProjectName).Exe();
-                Thread.Sleep(3000);
+                Thread.Sleep(8000);
 
                 // set today as start date
                 string sToday = DateTime.Now.ToString("%d");
@@ -268,16 +286,20 @@ namespace ActionLog_Test
 
                 if (sTagName == "ConTxt_0007")
                 {
-                    if (sRecordValue1 != (sTagName + " o n") ||
-                        sRecordValue2 != (sTagName + " o n") ||
-                        sRecordValue3 != (sTagName + " o n"))
+                    string steststring = "A/:*?\"><|~!@#$%^&_-";
+                    if ( (sRecordValue1 == steststring && sRecordValue2 == "TEXT" && sRecordValue3 == "ConTxt_0007 o n")
+                        || (sRecordValue1 == steststring && sRecordValue2 == "ConTxt_0007 o n" && sRecordValue3 == "TEXT")
+                        || (sRecordValue1 == "TEXT" && sRecordValue2 == steststring && sRecordValue3 == "ConTxt_0007 o n")
+                        || (sRecordValue1 == "TEXT" && sRecordValue2 == "ConTxt_0007 o n" && sRecordValue3 == steststring)
+                        || (sRecordValue1 == "ConTxt_0007 o n" && sRecordValue2 == "TEXT" && sRecordValue3 == steststring)
+                        || (sRecordValue1 == "ConTxt_0007 o n" && sRecordValue2 == steststring && sRecordValue3 == "TEXT") )
                     {
-                        bChkValue = false;
-                        EventLog.AddLog(sTagName + " Record value interval check FAIL!!");
+                        EventLog.AddLog(sTagName + " Record value check PASS!!");
                     }
                     else
                     {
-                        EventLog.AddLog(sTagName + " Record value interval check PASS!!");
+                        bChkValue = false;
+                        EventLog.AddLog(sTagName + " Record value check FAIL!!");
                     }
                 }
             }
