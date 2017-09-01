@@ -7,16 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
+//using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using CommonFunction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using System.Diagnostics;
 
 namespace StartKernel
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
+        //IAdvSeleniumAPI api;
+        private IWebDriver driver;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
         cWACommonFunction wacf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
@@ -26,6 +32,10 @@ namespace StartKernel
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        bool bPartResult = true;
+        bool bFinalResult = true;
+        Stopwatch sw = new Stopwatch();
+        string sTestItemName = "Start Kernel";
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -47,23 +57,21 @@ namespace StartKernel
             EventLog.AddLog("Project= " + ProjectName.Text);
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Start Kernel end (by iATester)===");
+            EventLog.AddLog(string.Format("==={0} test end (by iATester)===", sTestItemName));
 
             if (lErrorCode == 0)
-            {
                 eResult(this, new ResultEventArgs(iResult.Pass));
-                eStatus(this, new StatusEventArgs(iStatus.Completion));
-            }
             else
-            {
                 eResult(this, new ResultEventArgs(iResult.Fail));
-                eStatus(this, new StatusEventArgs(iStatus.Stop));
-            }
+
+            eStatus(this, new StatusEventArgs(iStatus.Completion));
         }
 
         public Form1()
         {
             InitializeComponent();
+            Browser.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             try
             {
                 m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
@@ -72,64 +80,160 @@ namespace StartKernel
             {
                 MessageBox.Show(ex.ToString());
             }
-            Browser.SelectedIndex = 0;
 
             if (System.IO.File.Exists(sIniFilePath))
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
                 InitialRequiredInfo(sIniFilePath);
             }
-
         }
+
+        //long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
+        //{
+        //    baseUrl = "http://" + sWebAccessIP;
+
+        //    if (sBrowser == "Internet Explorer")
+        //    {
+        //        EventLog.AddLog("Browser= Internet Explorer");
+        //        api = new AdvSeleniumAPI("IE", "");
+        //        System.Threading.Thread.Sleep(1000);
+        //    }
+        //    else if (sBrowser == "Mozilla FireFox")
+        //    {
+        //        EventLog.AddLog("Browser= Mozilla FireFox");
+        //        api = new AdvSeleniumAPI("FireFox", "");
+        //        System.Threading.Thread.Sleep(1000);
+        //    }
+
+
+        //    // Launch Firefox and login
+        //    api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
+        //    api.ById("userField").Enter("").Submit().Exe();
+        //    PrintStep("Login WebAccess");
+
+        //    api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
+        //    PrintStep("Configure project");
+
+        //    try
+        //    {
+        //        EventLog.AddLog("start kernel");
+        //        wacf.StartKernel(api);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        EventLog.AddLog(ex.ToString());
+        //    }
+
+        //    api.Quit();
+        //    PrintStep("Quit browser");
+
+        //    bool bSeleniumResult = true;
+        //    int iTotalSeleniumAction = dataGridView1.Rows.Count;
+        //    for (int i = 0; i < iTotalSeleniumAction - 1; i++)
+        //    {
+        //        DataGridViewRow row = dataGridView1.Rows[i];
+        //        string sSeleniumResult = row.Cells[2].Value.ToString();
+        //        if (sSeleniumResult != "pass")
+        //        {
+        //            bSeleniumResult = false;
+        //            EventLog.AddLog("Test Fail !!");
+        //            EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
+        //            EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
+        //            EventLog.AddLog("Result = " + row.Cells[2].Value.ToString());
+        //            EventLog.AddLog("ErrorCode = " + row.Cells[3].Value.ToString());
+        //            EventLog.AddLog("ExeTime(ms) = " + row.Cells[4].Value.ToString());
+        //            break;
+        //        }
+        //    }
+
+        //    if (bSeleniumResult)
+        //    {
+        //        Result.Text = "PASS!!";
+        //        Result.ForeColor = Color.Green;
+        //        EventLog.AddLog("Test Result: PASS!!");
+        //        return 0;
+        //    }
+        //    else
+        //    {
+        //        Result.Text = "FAIL!!";
+        //        Result.ForeColor = Color.Red;
+        //        EventLog.AddLog("Test Result: FAIL!!");
+        //        return -1;
+        //    }
+
+        //    //return 0;
+        //}
 
         long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
         {
             baseUrl = "http://" + sWebAccessIP;
+            //baseUrl = "http://172.16.12.11" ;
 
             if (sBrowser == "Internet Explorer")
             {
                 EventLog.AddLog("Browser= Internet Explorer");
-                api = new AdvSeleniumAPI("IE", "");
-                System.Threading.Thread.Sleep(1000);
+                InternetExplorerOptions options = new InternetExplorerOptions();
+                options.IgnoreZoomLevel = true;
+                driver = new InternetExplorerDriver(options);
             }
-            else if (sBrowser == "Mozilla FireFox")
+            else
             {
-                EventLog.AddLog("Browser= Mozilla FireFox");
-                api = new AdvSeleniumAPI("FireFox", "");
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("Not support temporary");
+                ///driver = new FirefoxDriver();
             }
 
-            
-            // Launch Firefox and login
-            api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
-            api.ById("userField").Enter("").Submit().Exe();
-            PrintStep("Login WebAccess");
+            driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(120)); // Set implicit wait timeouts to 5 secs
 
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep("Configure project");
-
+            /*Login test*/
+            sw.Reset(); sw.Start(); bPartResult = true;
             try
             {
-                EventLog.AddLog("start kernel");
-                wacf.StartKernel(api);
+                driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Id("userField")).Submit();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]")).Click();
+                Thread.Sleep(1000);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                EventLog.AddLog(ex.ToString());
+                EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                bPartResult = false;
             }
+            sw.Stop();
+            PrintStep("Login", "login Project Manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+            /*Login test*/
 
-            api.Quit();
-            PrintStep("Quit browser");
+            sw.Reset(); sw.Start(); bPartResult = true;
+            try
+            {
+                EventLog.AddLog("start kernel...");
+                //bPartResult = wacf.Download(driver);
+                bPartResult = wacf.StartKernel(driver);
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Downloading : " + ex.ToString());
+                bPartResult = false;
+            }
+            sw.Stop();
+            PrintStep("start kernel", "start kernel...", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
 
-            bool bSeleniumResult = true;
+            //api.Quit();
+            //PrintStep("Quit browser");
+            driver.Dispose();
+
+            #region Result judgement
             int iTotalSeleniumAction = dataGridView1.Rows.Count;
             for (int i = 0; i < iTotalSeleniumAction - 1; i++)
             {
                 DataGridViewRow row = dataGridView1.Rows[i];
                 string sSeleniumResult = row.Cells[2].Value.ToString();
-                if (sSeleniumResult != "pass")
+                if (sSeleniumResult != "PASS")
                 {
-                    bSeleniumResult = false;
+                    bFinalResult = false;
                     EventLog.AddLog("Test Fail !!");
                     EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
                     EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
@@ -140,7 +244,7 @@ namespace StartKernel
                 }
             }
 
-            if (bSeleniumResult)
+            if (bFinalResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -154,8 +258,7 @@ namespace StartKernel
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
-            //return 0;
+            #endregion
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
@@ -176,9 +279,9 @@ namespace StartKernel
 
         private void ReturnSCADAPage()
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
+            //api.SwitchToCurWindow(0);
+            //api.SwitchToFrame("leftFrame", 0);
+            //api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
 
         }
 
@@ -193,45 +296,43 @@ namespace StartKernel
             EventLog.AddLog("===Start Kernel end===");
         }
 
-        private void PrintStep(string sTestItem)
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
         {
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
+
             DataGridViewRow dgvRow;
             DataGridViewCell dgvCell;
 
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
+            dgvRow = new DataGridViewRow();
 
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-            Application.DoEvents();
+            if (bResult == false)
+                dgvRow.DefaultCellStyle.ForeColor = Color.Red;
+
+            dgvCell = new DataGridViewTextBoxCell(); //Column Time
+
+            dgvCell.Value = sTestItem;
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            dgvCell.Value = sDescription;
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            if (bResult)
+                dgvCell.Value = "PASS";
+            else
+                dgvCell.Value = "FAIL";
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            dgvCell.Value = sErrorCode;
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            dgvCell.Value = sExTime;
+            dgvRow.Cells.Add(dgvCell);
+
+            m_DataGridViewCtrlAddDataRow(dgvRow);
         }
 
         private void InitialRequiredInfo(string sFilePath)
