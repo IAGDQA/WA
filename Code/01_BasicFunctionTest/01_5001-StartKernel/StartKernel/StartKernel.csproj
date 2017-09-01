@@ -39,14 +39,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdvSeleniumAPI">
-      <HintPath>..\..\..\GitLab\WebAccess\Code\IncludeLibrary\AdvSeleniumAPI.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\AdvSeleniumAPI.dll</HintPath>
     </Reference>
     <Reference Include="CommonFunction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\GitLab\WebAccess\Code\IncludeLibrary\CommonFunction.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\CommonFunction.dll</HintPath>
     </Reference>
     <Reference Include="iATesterAPI">
-      <HintPath>..\..\..\GitLab\WebAccess\Code\IncludeLibrary\iATesterAPI.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\iATesterAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,7 +59,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="ThirdPartyToolControl">
-      <HintPath>..\..\..\GitLab\WebAccess\Code\IncludeLibrary\ThirdPartyToolControl.dll</HintPath>
+      <HintPath>..\..\..\IncludeLibrary\ThirdPartyToolControl.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver, Version=3.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Selenium.WebDriver.3.5.1\lib\net40\WebDriver.dll</HintPath>

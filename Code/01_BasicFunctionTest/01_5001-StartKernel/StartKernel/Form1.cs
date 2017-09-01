@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-//using AdvWebUIAPI;
+using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using CommonFunction;
@@ -23,9 +23,10 @@ namespace StartKernel
     {
         //IAdvSeleniumAPI api;
         private IWebDriver driver;
-        cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cThirdPartyToolControl tpc = new cThirdPartyToolControl();  
         cWACommonFunction wacf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
+
 
         private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
         private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
