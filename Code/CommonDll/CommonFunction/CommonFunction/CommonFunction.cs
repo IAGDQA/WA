@@ -8,12 +8,97 @@ using System.IO;                // for AddLog
 using System.Drawing;           // for PrintScreen
 using System.Windows.Forms;     // for PrintScreen
 using AdvWebUIAPI;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using System.Diagnostics;
+using System.Collections.ObjectModel;   // for ReadOnlyCollection<T> use
 
 namespace CommonFunction
 {
     public class cWACommonFunction
     {
         cEventLog EventLog = new cEventLog();
+
+        public bool Download(IWebDriver driver)
+        {
+            try
+            {
+                //Thread.Sleep(1000);
+                //driver.SwitchTo().Window(driver.CurrentWindowHandle);
+                //Thread.Sleep(1000);
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//tr[2]/td/a[3]/font")).Click();
+
+                // get current window handle
+                string originalHandle = driver.CurrentWindowHandle;
+
+                // trigger popup window
+                //driver.FindElement(By.Id("a_btn_viewMode")).Click();    // View dashboard
+                //Thread.Sleep(3000);
+
+                // get current all window handle
+                string popupHandle = string.Empty;
+                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
+
+                foreach (string handle in windowHandles)
+                {
+                    if (handle != originalHandle)
+                    {
+                        popupHandle = handle; break;
+                    }
+                }
+
+                //switch to new window 
+                driver.SwitchTo().Window(popupHandle);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("submit")).Click();
+
+                //WebDriverWait _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                //System.Console.Write("a = {0} \n", _wait.Until(d => d.FindElement(By.CssSelector("font[class=e4]"))).Text);
+
+                
+
+                string mqtt_msg = driver.FindElement(By.Id("mqtt_msg")).GetAttribute("style");
+                if (mqtt_msg.IndexOf("none") < 0)
+                {
+                    EventLog.AddLog("[MQTT]Failed to Updated Config.");
+                    return false;
+                }
+                    
+
+                string mqtt_msg_timeout = driver.FindElement(By.Id("mqtt_msg_timeout")).GetAttribute("style");
+                if (mqtt_msg_timeout.IndexOf("none") < 0)
+                {
+                    EventLog.AddLog("[MQTT]Communication timeout.");
+                    return false;
+                }
+
+                Boolean bDoneChk = true;
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                foreach (IWebElement link in links)
+                {
+                    string text = link.Text;
+                    System.Console.Write("b = {0} \n", text);
+                    if ((link.Text == "Done") || (link.Text == "Primary SCADA Node restarted in Communication mode"))
+                        bDoneChk = false;
+                }
+                if (bDoneChk)
+                {
+                    EventLog.AddLog("Downland Fail.");
+                    return false;
+                }   
+                
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+                return false;
+            }
+            return true;
+        }
 
         public void Download(IAdvSeleniumAPI api)
         {
@@ -52,6 +137,112 @@ namespace CommonFunction
             api.Close();
             EventLog.AddLog("Close download window and switch to main window");
             api.SwitchToWinHandle(main);
+        }
+
+        public bool StartKernel(IWebDriver driver)
+        {
+            try
+            {
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//tr[2]/td/a[5]/font")).Click();
+
+                // get current window handle
+                string originalHandle = driver.CurrentWindowHandle;
+
+                // get current all window handle
+                string popupHandle = string.Empty;
+                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
+
+                foreach (string handle in windowHandles)
+                {
+                    if (handle != originalHandle)
+                    {
+                        popupHandle = handle; break;
+                    }
+                }
+
+                //switch to new window 
+                driver.SwitchTo().Window(popupHandle);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("submit")).Click();
+
+                Boolean bDoneChk = true;
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                foreach (IWebElement link in links)
+                {
+                    //string text = link.Text;
+                    //System.Console.Write("b = {0} \n", text);
+                    if ((link.Text == "Done") ||  (link.Text == "Primary SCADA Node started in Communication mode") || (link.Text == "Primary SCADA Node is running. Nothing done."))
+                        bDoneChk = false; EventLog.AddLog("Message: "+link.Text);
+                }
+                if (bDoneChk)
+                {
+                    EventLog.AddLog("Start Kernel Fail.");
+                    return false;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+                return false;
+            }
+            
+            return true;
+        }
+
+        public bool StopKernel(IWebDriver driver)
+        {
+            try
+            {
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//tr[2]/td/a[6]/font")).Click();
+
+                // get current window handle
+                string originalHandle = driver.CurrentWindowHandle;
+
+                // get current all window handle
+                string popupHandle = string.Empty;
+                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
+
+                foreach (string handle in windowHandles)
+                {
+                    if (handle != originalHandle)
+                    {
+                        popupHandle = handle; break;
+                    }
+                }
+
+                //switch to new window 
+                driver.SwitchTo().Window(popupHandle);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("submit")).Click();
+
+                Boolean bDoneChk = true;
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                foreach (IWebElement link in links)
+                {
+                    //string text = link.Text;
+                    //System.Console.Write("b = {0} \n", text);
+                    if ((link.Text == "Primary SCADA Node stopped.") || (link.Text == "Primary SCADA Node is not running. Nothing done."))
+                        bDoneChk = false; EventLog.AddLog("Message: " +link.Text);
+                }
+                if (bDoneChk)
+                {
+                    EventLog.AddLog("Stop Kernel Fail.");
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+                return false;
+            }
+
+            return true;
         }
 
         public void StartKernel(IAdvSeleniumAPI api)
@@ -179,7 +370,7 @@ namespace CommonFunction
                 EventLog.AddLog("Switch to items[0]");
                 api.SwitchToWinHandle(items[0]);
             }
-            
+
             if (bRedundancyTest == true)
             {
                 Thread.Sleep(500);
@@ -200,7 +391,7 @@ namespace CommonFunction
                 Thread.Sleep(30000);    // Wait 30s for Stop kernel finish
                 EventLog.AddLog("It's been wait 30 seconds");
             }
-            
+
             EventLog.PrintScreen("Stop Node result");
             api.Close();
             EventLog.AddLog("Close stop node window and switch to main window");
