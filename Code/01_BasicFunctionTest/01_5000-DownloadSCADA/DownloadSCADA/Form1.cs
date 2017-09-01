@@ -7,16 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
+//using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using CommonFunction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using System.Diagnostics;
 
 namespace DownloadSCADA
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
+        //IAdvSeleniumAPI api;
+        private IWebDriver driver;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
         cWACommonFunction wacf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
@@ -26,6 +32,10 @@ namespace DownloadSCADA
         internal const int Max_Rows_Val = 65535;
         string baseUrl;
         string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        bool bPartResult = true;
+        bool bFinalResult = true;
+        Stopwatch sw = new Stopwatch();
+        string sTestItemName = "Download SCADA";
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -38,7 +48,7 @@ namespace DownloadSCADA
         {
             //Add test code
             long lErrorCode = 0;
-            EventLog.AddLog("===Download SCADA start (by iATester)===");
+            EventLog.AddLog(string.Format("==={0} test start (by iATester)===", sTestItemName));
             if (System.IO.File.Exists(sIniFilePath))    // 再load一次
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
@@ -47,23 +57,21 @@ namespace DownloadSCADA
             EventLog.AddLog("Project= " + ProjectName.Text);
             EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
             lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Download SCADA end (by iATester)===");
+            EventLog.AddLog(string.Format("==={0} test end (by iATester)===", sTestItemName));
 
             if (lErrorCode == 0)
-            {
                 eResult(this, new ResultEventArgs(iResult.Pass));
-                eStatus(this, new StatusEventArgs(iStatus.Completion));
-            }
             else
-            {
                 eResult(this, new ResultEventArgs(iResult.Fail));
-                eStatus(this, new StatusEventArgs(iStatus.Stop));
-            }
+
+            eStatus(this, new StatusEventArgs(iStatus.Completion));
         }
 
         public Form1()
         {
             InitializeComponent();
+            Browser.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             try
             {
                 m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
@@ -72,7 +80,6 @@ namespace DownloadSCADA
             {
                 MessageBox.Show(ex.ToString());
             }
-            Browser.SelectedIndex = 0;
 
             if (System.IO.File.Exists(sIniFilePath))
             {
@@ -83,51 +90,103 @@ namespace DownloadSCADA
 
         long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
         {
+            //baseUrl = "http://" + sWebAccessIP;
+
+            //if (sBrowser == "Internet Explorer")
+            //{
+            //    EventLog.AddLog("Browser= Internet Explorer");
+            //    api = new AdvSeleniumAPI("IE", "");
+            //    System.Threading.Thread.Sleep(1000);
+            //}
+            //else if (sBrowser == "Mozilla FireFox")
+            //{
+            //    EventLog.AddLog("Browser= Mozilla FireFox");
+            //    api = new AdvSeleniumAPI("FireFox", "");
+            //    System.Threading.Thread.Sleep(1000);
+            //}
+
+            //// Launch Firefox and login
+            //api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
+            //api.ById("userField").Enter("").Submit().Exe();
+            //PrintStep("Login WebAccess");
+
+            //api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
+            //PrintStep("Configure project");
+
             baseUrl = "http://" + sWebAccessIP;
+            //baseUrl = "http://172.16.12.11" ;
 
             if (sBrowser == "Internet Explorer")
             {
                 EventLog.AddLog("Browser= Internet Explorer");
-                api = new AdvSeleniumAPI("IE", "");
-                System.Threading.Thread.Sleep(1000);
+                InternetExplorerOptions options = new InternetExplorerOptions();
+                options.IgnoreZoomLevel = true;
+                driver = new InternetExplorerDriver(options);
             }
-            else if (sBrowser == "Mozilla FireFox")
+            else
             {
-                EventLog.AddLog("Browser= Mozilla FireFox");
-                api = new AdvSeleniumAPI("FireFox", "");
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("Not support temporary");
+                ///driver = new FirefoxDriver();
             }
 
-            // Launch Firefox and login
-            api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
-            api.ById("userField").Enter("").Submit().Exe();
-            PrintStep("Login WebAccess");
+            /*Login test*/
+            sw.Reset(); sw.Start(); bPartResult = true;
+            try
+            {
+                driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(60)); // Set implicit wait timeouts to 5 secs
+                //driver.Manage().Timeouts().SetScriptTimeout(new TimeSpan(0, 0, 0, 5));  // Set script timeouts to 5 secs
 
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep("Configure project");
+                //WebDriverWait _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                //string text = _wait.Until(d => d.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]"))).Text;
+                //_wait.Until(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
 
+                driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Id("userField")).Submit();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]")).Click();
+                Thread.Sleep(1000);
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                bPartResult = false;
+            }
+            sw.Stop();
+            PrintStep("Login", "login Project Manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+            /*Login test*/
+
+            sw.Reset(); sw.Start(); bPartResult = true;
             try
             {
                 EventLog.AddLog("Start Download...");
-                wacf.Download(api);
+                bPartResult = wacf.Download(driver);
+                //bPartResult = wacf.StopKernel(driver);
+                //bPartResult = wacf.StartKernel(driver);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                EventLog.AddLog(ex.ToString());
+                EventLog.AddLog(@"Error occurred Downloading : " + ex.ToString());
+                bPartResult = false;
             }
+            sw.Stop();
+            PrintStep("Download", "Download Project", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
 
-            api.Quit();
-            PrintStep("Quit browser");
+            //api.Quit();
+            //PrintStep("Quit browser");
+            driver.Dispose();
 
-            bool bSeleniumResult = true;
+            #region Result judgement
             int iTotalSeleniumAction = dataGridView1.Rows.Count;
             for (int i = 0; i < iTotalSeleniumAction - 1; i++)
             {
                 DataGridViewRow row = dataGridView1.Rows[i];
                 string sSeleniumResult = row.Cells[2].Value.ToString();
-                if (sSeleniumResult != "pass")
+                if (sSeleniumResult != "PASS")
                 {
-                    bSeleniumResult = false;
+                    bFinalResult = false;
                     EventLog.AddLog("Test Fail !!");
                     EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
                     EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
@@ -138,7 +197,7 @@ namespace DownloadSCADA
                 }
             }
 
-            if (bSeleniumResult)
+            if (bFinalResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -152,8 +211,7 @@ namespace DownloadSCADA
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
-            //return 0;
+            #endregion
         }
 
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
@@ -174,9 +232,9 @@ namespace DownloadSCADA
 
         private void ReturnSCADAPage()
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
+            //api.SwitchToCurWindow(0);
+            //api.SwitchToFrame("leftFrame", 0);
+            //api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
 
         }
 
@@ -191,45 +249,43 @@ namespace DownloadSCADA
             EventLog.AddLog("===Download SCADA end===");
         }
 
-        private void PrintStep(string sTestItem)
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
         {
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
+
             DataGridViewRow dgvRow;
             DataGridViewCell dgvCell;
 
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
+            dgvRow = new DataGridViewRow();
 
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-            Application.DoEvents();
+            if (bResult == false)
+                dgvRow.DefaultCellStyle.ForeColor = Color.Red;
+
+            dgvCell = new DataGridViewTextBoxCell(); //Column Time
+
+            dgvCell.Value = sTestItem;
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            dgvCell.Value = sDescription;
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            if (bResult)
+                dgvCell.Value = "PASS";
+            else
+                dgvCell.Value = "FAIL";
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            dgvCell.Value = sErrorCode;
+            dgvRow.Cells.Add(dgvCell);
+            //
+            dgvCell = new DataGridViewTextBoxCell();
+            dgvCell.Value = sExTime;
+            dgvRow.Cells.Add(dgvCell);
+
+            m_DataGridViewCtrlAddDataRow(dgvRow);
         }
 
         private void InitialRequiredInfo(string sFilePath)
