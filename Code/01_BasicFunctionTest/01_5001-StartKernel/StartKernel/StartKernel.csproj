@@ -43,7 +43,7 @@
     </Reference>
     <Reference Include="CommonFunction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\IncludeLibrary\CommonFunction.dll</HintPath>
+      <HintPath>..\..\..\GitLab\WebAccess\Code\IncludeLibrary\CommonFunction.dll</HintPath>
     </Reference>
     <Reference Include="iATesterAPI">
       <HintPath>..\..\..\IncludeLibrary\iATesterAPI.dll</HintPath>
