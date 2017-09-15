@@ -453,7 +453,7 @@ namespace View_and_Save_EventLogData
                     {
                         EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
-                        if (Int32.Parse(sRecordTimeMSBefore) - Int32.Parse(sRecordMSTime) > 900)
+                        if (Convert.ToDouble(sRecordTimeMSBefore) - Convert.ToDouble(sRecordMSTime) > 500)
                         {
                             EventLog.AddLog("Record time interval check PASS!!");
                         }
@@ -467,7 +467,8 @@ namespace View_and_Save_EventLogData
                     {
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
                         EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
-                        if (Int32.Parse(sRecordMSTime) - Int32.Parse(sRecordMSTimeAfter) > 900)
+
+                        if (Convert.ToDouble(sRecordMSTime) - Convert.ToDouble(sRecordMSTimeAfter) > 500)
                         {
                             EventLog.AddLog("Record time interval check PASS!!");
                         }
