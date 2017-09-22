@@ -211,6 +211,7 @@ namespace StartKernel
             sw.Reset(); sw.Start(); bPartResult = true;
             try
             {
+                Thread.Sleep(3000);
                 EventLog.AddLog("start kernel...");
                 //bPartResult = wacf.Download(driver);
                 bPartResult = wacf.StartKernel(driver, slanguage);
