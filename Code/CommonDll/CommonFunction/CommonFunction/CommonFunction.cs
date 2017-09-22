@@ -21,7 +21,7 @@ namespace CommonFunction
     {
         cEventLog EventLog = new cEventLog();
 
-        public bool Download(IWebDriver driver)
+        public bool Download(IWebDriver driver, string slanguage)
         {
             try
             {
@@ -59,7 +59,54 @@ namespace CommonFunction
                 //WebDriverWait _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
                 //System.Console.Write("a = {0} \n", _wait.Until(d => d.FindElement(By.CssSelector("font[class=e4]"))).Text);
 
-                
+                Boolean bDoneChk = true;
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                for (int check = 0; check < 3; check++)
+                {
+                    if (links.Count < 5)
+                    {
+                        Thread.Sleep(5000);
+                        links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                    }
+                    else
+                        break;
+                }
+                foreach (IWebElement link in links)
+                {
+                    //string text = link.Text;
+                    //System.Console.Write("b = {0} \n", text);
+                    
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            if ((link.Text == "Done") || (link.Text == "Primary SCADA Node restarted in Communication mode"))
+                                bDoneChk = false;
+                            break;
+                        case "CHT":
+                            if ((link.Text == "完成") || (link.Text == "再啟動主要監控節點為通信模式"))
+                                bDoneChk = false;
+                            break;
+                        case "CHS":
+                            if ((link.Text == "完成") || (link.Text == "再启动主要监控节点为通信模式"))
+                                bDoneChk = false; 
+                            break;
+                        case "JPN":
+                            if ((link.Text == "完了") || (link.Text == "ﾌﾟﾗｲﾏﾘSCADAﾉｰﾄﾞはｺﾐｭﾆｹｰｼｮﾝ ﾓｰﾄﾞで再起動しました。"))
+                                bDoneChk = false;
+                            break;
+                        case "KRN":
+
+                            break;
+                        case "FRN":
+
+                            break;
+
+                        default:
+                            if ((link.Text == "Done") || (link.Text == "Primary SCADA Node restarted in Communication mode"))
+                                bDoneChk = false;
+                            break;
+                    }
+                }
 
                 string mqtt_msg = driver.FindElement(By.Id("mqtt_msg")).GetAttribute("style");
                 if (mqtt_msg.IndexOf("none") < 0)
@@ -67,23 +114,12 @@ namespace CommonFunction
                     EventLog.AddLog("[MQTT]Failed to Updated Config.");
                     return false;
                 }
-                    
 
                 string mqtt_msg_timeout = driver.FindElement(By.Id("mqtt_msg_timeout")).GetAttribute("style");
                 if (mqtt_msg_timeout.IndexOf("none") < 0)
                 {
                     EventLog.AddLog("[MQTT]Communication timeout.");
                     return false;
-                }
-
-                Boolean bDoneChk = true;
-                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
-                foreach (IWebElement link in links)
-                {
-                    string text = link.Text;
-                    System.Console.Write("b = {0} \n", text);
-                    if ((link.Text == "Done") || (link.Text == "Primary SCADA Node restarted in Communication mode"))
-                        bDoneChk = false;
                 }
                 if (bDoneChk)
                 {
@@ -97,6 +133,194 @@ namespace CommonFunction
                 EventLog.AddLog(ex.ToString());
                 return false;
             }
+            return true;
+        }
+
+        
+
+        public bool StartKernel(IWebDriver driver, string slanguage)
+        {
+            try
+            {
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//tr[2]/td/a[5]/font")).Click();
+
+                // get current window handle
+                string originalHandle = driver.CurrentWindowHandle;
+
+                // get current all window handle
+                string popupHandle = string.Empty;
+                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
+
+                foreach (string handle in windowHandles)
+                {
+                    if (handle != originalHandle)
+                    {
+                        popupHandle = handle; break;
+                    }
+                }
+
+                //switch to new window 
+                driver.SwitchTo().Window(popupHandle);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("submit")).Click();
+                //Thread.Sleep(5000);
+                Boolean bDoneChk = true;
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                for (int check = 0; check < 3; check++)
+                {
+                    if (links.Count < 4)
+                    {
+                        Thread.Sleep(5000);
+                        links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                    }
+                    else
+                        break;
+                }
+                foreach (IWebElement link in links)
+                {
+                    string text = link.Text;
+                     System.Console.Write("b = {0} \n", text);
+
+
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            //if ((link.Text == "Done") || (link.Text == "Primary SCADA Node started in Communication mode") || (link.Text == "Primary SCADA Node is running. Nothing done."))
+                            if ((link.Text == "Primary SCADA Node started in Communication mode") || (link.Text == "Primary SCADA Node is running. Nothing done."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "CHT":
+                            if ((link.Text == "啟動主要監控節點為通信模式") || (link.Text == "主要監控節點正在執行中,指令取消"))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "CHS":
+                            if ((link.Text == "启动主要监控节点为通信模式") || (link.Text == "主要监控节点正在运行.指令取消."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "JPN":
+                            if ((link.Text == "ﾌﾟﾗｲﾏﾘSCADAﾉｰﾄﾞはｺﾐｭﾆｹｰｼｮﾝ ﾓｰﾄﾞで開始しました。") || (link.Text == "ﾌﾟﾗｲﾏﾘSCADAﾉｰﾄﾞは稼働しています。ｺﾏﾝﾄﾞを取り消します。"))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "KRN":
+                            
+                            break;
+                        case "FRN":
+                            
+                            break;
+
+                        default:
+                            if ((link.Text == "Primary SCADA Node started in Communication mode") || (link.Text == "Primary SCADA Node is running. Nothing done."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                    }
+                }
+                if (bDoneChk)
+                {
+                    EventLog.AddLog("Start Kernel Fail.");
+                    return false;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+                return false;
+            }
+            
+            return true;
+        }
+
+        public bool StopKernel(IWebDriver driver, string slanguage)
+        {
+            try
+            {
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//tr[2]/td/a[6]/font")).Click();
+
+                // get current window handle
+                string originalHandle = driver.CurrentWindowHandle;
+
+                // get current all window handle
+                string popupHandle = string.Empty;
+                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
+
+                foreach (string handle in windowHandles)
+                {
+                    if (handle != originalHandle)
+                    {
+                        popupHandle = handle; break;
+                    }
+                }
+
+                //switch to new window 
+                driver.SwitchTo().Window(popupHandle);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("submit")).Click();
+
+                Boolean bDoneChk = true;
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                for (int check = 0; check < 3; check++)
+                {
+                    if (links.Count < 4)
+                    {
+                        Thread.Sleep(5000);
+                        links = driver.FindElements(By.CssSelector("font[class=e3]"));
+                    }
+                    else
+                        break;
+                }
+                foreach (IWebElement link in links)
+                {
+                    //string text = link.Text;
+                    //System.Console.Write("b = {0} \n", text);
+                    
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            if ((link.Text == "Primary SCADA Node stopped.") || (link.Text == "Primary SCADA Node is not running. Nothing done."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "CHT":
+                            if ((link.Text == "主要監控節點停止") || (link.Text == "主要監控節點沒有執行,指令取消"))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "CHS":
+                            if ((link.Text == "主要监控节点停止") || (link.Text == "主要监控节点未运行.指令取消."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "JPN":
+                            if ((link.Text == "ﾌﾟﾗｲﾏﾘSCADAﾉｰﾄﾞ停止") || (link.Text == "ﾌﾟﾗｲﾏﾘSCADAﾉｰﾄﾞは稼働していません。ｺﾏﾝﾄﾞを取り消します。"))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                        case "KRN":
+
+                            break;
+                        case "FRN":
+
+                            break;
+
+                        default:
+                            if ((link.Text == "Primary SCADA Node stopped.") || (link.Text == "Primary SCADA Node is not running. Nothing done."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
+                            break;
+                    }
+                }
+                if (bDoneChk)
+                {
+                    EventLog.AddLog("Stop Kernel Fail.");
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(ex.ToString());
+                return false;
+            }
+
             return true;
         }
 
@@ -137,112 +361,6 @@ namespace CommonFunction
             api.Close();
             EventLog.AddLog("Close download window and switch to main window");
             api.SwitchToWinHandle(main);
-        }
-
-        public bool StartKernel(IWebDriver driver)
-        {
-            try
-            {
-                driver.SwitchTo().Frame("rightFrame");
-                Thread.Sleep(1000);
-                driver.FindElement(By.XPath("//tr[2]/td/a[5]/font")).Click();
-
-                // get current window handle
-                string originalHandle = driver.CurrentWindowHandle;
-
-                // get current all window handle
-                string popupHandle = string.Empty;
-                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
-
-                foreach (string handle in windowHandles)
-                {
-                    if (handle != originalHandle)
-                    {
-                        popupHandle = handle; break;
-                    }
-                }
-
-                //switch to new window 
-                driver.SwitchTo().Window(popupHandle);
-                Thread.Sleep(1000);
-                driver.FindElement(By.Name("submit")).Click();
-
-                Boolean bDoneChk = true;
-                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
-                foreach (IWebElement link in links)
-                {
-                    //string text = link.Text;
-                    //System.Console.Write("b = {0} \n", text);
-                    if ((link.Text == "Done") ||  (link.Text == "Primary SCADA Node started in Communication mode") || (link.Text == "Primary SCADA Node is running. Nothing done."))
-                        bDoneChk = false; EventLog.AddLog("Message: "+link.Text);
-                }
-                if (bDoneChk)
-                {
-                    EventLog.AddLog("Start Kernel Fail.");
-                    return false;
-                }
-                
-            }
-            catch (Exception ex)
-            {
-                EventLog.AddLog(ex.ToString());
-                return false;
-            }
-            
-            return true;
-        }
-
-        public bool StopKernel(IWebDriver driver)
-        {
-            try
-            {
-                driver.SwitchTo().Frame("rightFrame");
-                Thread.Sleep(1000);
-                driver.FindElement(By.XPath("//tr[2]/td/a[6]/font")).Click();
-
-                // get current window handle
-                string originalHandle = driver.CurrentWindowHandle;
-
-                // get current all window handle
-                string popupHandle = string.Empty;
-                ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
-
-                foreach (string handle in windowHandles)
-                {
-                    if (handle != originalHandle)
-                    {
-                        popupHandle = handle; break;
-                    }
-                }
-
-                //switch to new window 
-                driver.SwitchTo().Window(popupHandle);
-                Thread.Sleep(1000);
-                driver.FindElement(By.Name("submit")).Click();
-
-                Boolean bDoneChk = true;
-                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.CssSelector("font[class=e3]"));
-                foreach (IWebElement link in links)
-                {
-                    //string text = link.Text;
-                    //System.Console.Write("b = {0} \n", text);
-                    if ((link.Text == "Primary SCADA Node stopped.") || (link.Text == "Primary SCADA Node is not running. Nothing done."))
-                        bDoneChk = false; EventLog.AddLog("Message: " +link.Text);
-                }
-                if (bDoneChk)
-                {
-                    EventLog.AddLog("Stop Kernel Fail.");
-                    return false;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                EventLog.AddLog(ex.ToString());
-                return false;
-            }
-
-            return true;
         }
 
         public void StartKernel(IAdvSeleniumAPI api)
