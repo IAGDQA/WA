@@ -162,6 +162,7 @@ namespace DownloadSCADA
             sw.Reset(); sw.Start(); bPartResult = true;
             try
             {
+                Thread.Sleep(3000);
                 EventLog.AddLog("Start Download...");
                 bPartResult = wacf.Download(driver, slanguage);
                 //bPartResult = wacf.StopKernel(driver);
