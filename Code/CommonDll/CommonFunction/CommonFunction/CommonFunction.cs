@@ -75,7 +75,7 @@ namespace CommonFunction
                 {
                     //string text = link.Text;
                     //System.Console.Write("b = {0} \n", text);
-                    
+
                     switch (slanguage)
                     {
                         case "ENG":
@@ -88,17 +88,19 @@ namespace CommonFunction
                             break;
                         case "CHS":
                             if ((link.Text == "完成") || (link.Text == "再启动主要监控节点为通信模式"))
-                                bDoneChk = false; 
+                                bDoneChk = false;
                             break;
                         case "JPN":
                             if ((link.Text == "完了") || (link.Text == "ﾌﾟﾗｲﾏﾘSCADAﾉｰﾄﾞはｺﾐｭﾆｹｰｼｮﾝ ﾓｰﾄﾞで再起動しました。"))
                                 bDoneChk = false;
                             break;
                         case "KRN":
-
+                            if ((link.Text == "완료") || (link.Text == "Primary SCADA Node는 커뮤니케이션 모드에서 재시작되었습니다"))
+                                bDoneChk = false;
                             break;
                         case "FRN":
-
+                            if ((link.Text == "Terminé") || (link.Text == "Noeud SCADA primaire redémarré en mode communication"))
+                                bDoneChk = false;
                             break;
 
                         default:
@@ -125,8 +127,8 @@ namespace CommonFunction
                 {
                     EventLog.AddLog("Downland Fail.");
                     return false;
-                }   
-                
+                }
+
             }
             catch (Exception ex)
             {
@@ -135,8 +137,6 @@ namespace CommonFunction
             }
             return true;
         }
-
-        
 
         public bool StartKernel(IWebDriver driver, string slanguage)
         {
@@ -181,7 +181,7 @@ namespace CommonFunction
                 foreach (IWebElement link in links)
                 {
                     string text = link.Text;
-                     System.Console.Write("b = {0} \n", text);
+                    System.Console.Write("b = {0} \n", text);
 
 
                     switch (slanguage)
@@ -204,10 +204,12 @@ namespace CommonFunction
                                 bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
                             break;
                         case "KRN":
-                            
+                            if ((link.Text == "Primary SCADA Node는 커뮤니케이션 모드에서 재시작 되었습니다.") || (link.Text == "Primary SCADA 노드는 가동중입니다. 아무것도 된 것이 없음"))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
                             break;
                         case "FRN":
-                            
+                            if ((link.Text == "Noeud SCADA primaire démarré en mode communication") || (link.Text == "Noeud SCADA primaire est en cours d'exécution. Aucune action effectuée."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
                             break;
 
                         default:
@@ -221,14 +223,14 @@ namespace CommonFunction
                     EventLog.AddLog("Start Kernel Fail.");
                     return false;
                 }
-                
+
             }
             catch (Exception ex)
             {
                 EventLog.AddLog(ex.ToString());
                 return false;
             }
-            
+
             return true;
         }
 
@@ -276,7 +278,7 @@ namespace CommonFunction
                 {
                     //string text = link.Text;
                     //System.Console.Write("b = {0} \n", text);
-                    
+
                     switch (slanguage)
                     {
                         case "ENG":
@@ -296,10 +298,12 @@ namespace CommonFunction
                                 bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
                             break;
                         case "KRN":
-
+                            if ((link.Text == "Primary SCADA 노드는 정지되었습니다") || (link.Text == "Primary SCADA 노드는 가동되지 않음. 아무것도 된 것이 없음"))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
                             break;
                         case "FRN":
-
+                            if ((link.Text == "Noeud SCADA pimaire arrêté.") || (link.Text == "Noeud SCADA primaire n'est pas lancé. Aucune action effectuée."))
+                                bDoneChk = false; EventLog.AddLog("Message: " + link.Text);
                             break;
 
                         default:
