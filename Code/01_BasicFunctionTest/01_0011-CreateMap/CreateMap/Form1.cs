@@ -240,7 +240,7 @@ namespace CreateMap
 
             EventLog.AddLog("Marker label font set");
             api.ByXpath("//input[@id='ff']").Click();
-            api.ByXpath("//div[@id='fontpicker']/div[19]").Click(); //Font Family = "Bookman Old Style"
+            api.ByXpath("//div[@id='fontpicker']/div[10]").Click(); //Font Family = "Impact"
             System.Threading.Thread.Sleep(500);
             api.ByXpath("//select[@id='gg']").Click();
             api.ByXpath("//select[@id='gg']").Enter("16").Exe();   //Font Size = 16
