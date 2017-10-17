@@ -517,7 +517,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             }
 
             Thread.Sleep(2000);
-            api.ByCss("img").Click();   // page1
+            api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
 
             bool bTotalResult = true;
@@ -609,7 +609,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             }
 
             Thread.Sleep(2000);
-            api.ByCss("img").Click();   // page1
+            api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
@@ -653,7 +653,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             }
 
             Thread.Sleep(2000);
-            api.ByCss("img").Click();   // page1
+            api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
@@ -695,7 +695,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
                     api.ById("tagTypes").SelectTxt("Acc Point").Exe();
                     break;
             }
-            //api.ByCss("img").Click();   // page1
+            //api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
             if (bTotalResult == true)
             {
@@ -843,49 +843,52 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             api.SwitchToFrame("rightFrame", 0);
             string sTagChangedName, sDescription, sHHPriority, sHHAlarmLimit, sHighPriority, sHighAlarmLimit, sLowPriority, sLowAlarmLimit, sLLPriority, sLLAlarmLimit, sHLDb;
             string sTagType = api.ByXpath("//tr/td[2]").GetText();
+            EventLog.AddLog("TagType=" + sTagType);
 
             // 只有在地面端才需要這樣分類 雲端全部都是Point  (analog)類型
-            if (sTagType == "Accumulation")
+            if (sTagType == "Accumulation" || sTagType == "累算" ||
+                sTagType == "積算" || sTagType == "누적" || sTagType == "Totalisation")
             {
                 sTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
                 sDescription = api.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
-                sHHPriority = api.ByXpath("//tr[29]/td[2]/font").GetText();     // 8 (HH Priority)
-                sHHAlarmLimit = api.ByXpath("//tr[30]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
-                sHighPriority = api.ByXpath("//tr[31]/td[2]/font").GetText();   // 6 (High Priority)
-                sHighAlarmLimit = api.ByXpath("//tr[32]/td[2]/font").GetText(); // 5 (High Alarm Limit)
-                sLowPriority = api.ByXpath("//tr[33]/td[2]/font").GetText();    // 1 (Low Priority)
-                sLowAlarmLimit = api.ByXpath("//tr[34]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
-                sLLPriority = api.ByXpath("//tr[35]/td[2]/font").GetText();     // 2 (LL Priority)
-                sLLAlarmLimit = api.ByXpath("//tr[36]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
-                sHLDb = api.ByXpath("//tr[37]/td[2]/font").GetText();           // 0 (HL Db)
+                sHHPriority = api.ByXpath("//tr[30]/td[2]/font").GetText();     // 8 (HH Priority)
+                sHHAlarmLimit = api.ByXpath("//tr[31]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
+                sHighPriority = api.ByXpath("//tr[32]/td[2]/font").GetText();   // 6 (High Priority)
+                sHighAlarmLimit = api.ByXpath("//tr[33]/td[2]/font").GetText(); // 5 (High Alarm Limit)
+                sLowPriority = api.ByXpath("//tr[34]/td[2]/font").GetText();    // 1 (Low Priority)
+                sLowAlarmLimit = api.ByXpath("//tr[35]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
+                sLLPriority = api.ByXpath("//tr[36]/td[2]/font").GetText();     // 2 (LL Priority)
+                sLLAlarmLimit = api.ByXpath("//tr[37]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
+                sHLDb = api.ByXpath("//tr[38]/td[2]/font").GetText();           // 0 (HL Db)
             }
-            else if (sTagType == "System Point  (analog)")
+            else if (sTagType == "System Point  (analog)" || sTagType == "系統點  (類比)" || sTagType == "系统点  (模拟量)" ||
+                sTagType == "System Point  (ｱﾅﾛｸﾞ)" || sTagType == "시스템 포인트   (아날로그)" || sTagType == "System Point  (Analogique)")
             {
                 sTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
                 sDescription = api.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
-                sHHPriority = api.ByXpath("//tr[25]/td[2]/font").GetText();     // 8 (HH Priority)
-                sHHAlarmLimit = api.ByXpath("//tr[26]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
-                sHighPriority = api.ByXpath("//tr[27]/td[2]/font").GetText();   // 6 (High Priority)
-                sHighAlarmLimit = api.ByXpath("//tr[28]/td[2]/font").GetText(); // 5 (High Alarm Limit)
-                sLowPriority = api.ByXpath("//tr[29]/td[2]/font").GetText();    // 1 (Low Priority)
-                sLowAlarmLimit = api.ByXpath("//tr[30]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
-                sLLPriority = api.ByXpath("//tr[31]/td[2]/font").GetText();     // 2 (LL Priority)
-                sLLAlarmLimit = api.ByXpath("//tr[32]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
-                sHLDb = api.ByXpath("//tr[33]/td[2]/font").GetText();           // 0 (HL Db)
+                sHHPriority = api.ByXpath("//tr[26]/td[2]/font").GetText();     // 8 (HH Priority)
+                sHHAlarmLimit = api.ByXpath("//tr[27]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
+                sHighPriority = api.ByXpath("//tr[28]/td[2]/font").GetText();   // 6 (High Priority)
+                sHighAlarmLimit = api.ByXpath("//tr[29]/td[2]/font").GetText(); // 5 (High Alarm Limit)
+                sLowPriority = api.ByXpath("//tr[30]/td[2]/font").GetText();    // 1 (Low Priority)
+                sLowAlarmLimit = api.ByXpath("//tr[31]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
+                sLLPriority = api.ByXpath("//tr[32]/td[2]/font").GetText();     // 2 (LL Priority)
+                sLLAlarmLimit = api.ByXpath("//tr[33]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
+                sHLDb = api.ByXpath("//tr[34]/td[2]/font").GetText();           // 0 (HL Db)
             }
             else    // Point  (analog)
             {
                 sTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
                 sDescription = api.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
-                sHHPriority = api.ByXpath("//tr[35]/td[2]/font").GetText();     // 8 (HH Priority)
-                sHHAlarmLimit = api.ByXpath("//tr[36]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
-                sHighPriority = api.ByXpath("//tr[37]/td[2]/font").GetText();   // 6 (High Priority)
-                sHighAlarmLimit = api.ByXpath("//tr[38]/td[2]/font").GetText(); // 5 (High Alarm Limit)
-                sLowPriority = api.ByXpath("//tr[39]/td[2]/font").GetText();    // 1 (Low Priority)
-                sLowAlarmLimit = api.ByXpath("//tr[40]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
-                sLLPriority = api.ByXpath("//tr[41]/td[2]/font").GetText();     // 2 (LL Priority)
-                sLLAlarmLimit = api.ByXpath("//tr[42]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
-                sHLDb = api.ByXpath("//tr[43]/td[2]/font").GetText();           // 0 (HL Db)
+                sHHPriority = api.ByXpath("//tr[36]/td[2]/font").GetText();     // 8 (HH Priority)
+                sHHAlarmLimit = api.ByXpath("//tr[37]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
+                sHighPriority = api.ByXpath("//tr[38]/td[2]/font").GetText();   // 6 (High Priority)
+                sHighAlarmLimit = api.ByXpath("//tr[39]/td[2]/font").GetText(); // 5 (High Alarm Limit)
+                sLowPriority = api.ByXpath("//tr[40]/td[2]/font").GetText();    // 1 (Low Priority)
+                sLowAlarmLimit = api.ByXpath("//tr[41]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
+                sLLPriority = api.ByXpath("//tr[42]/td[2]/font").GetText();     // 2 (LL Priority)
+                sLLAlarmLimit = api.ByXpath("//tr[43]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
+                sHLDb = api.ByXpath("//tr[44]/td[2]/font").GetText();           // 0 (HL Db)
             }
             api.SwitchToCurWindow(0);
             api.SwitchToFrame("leftFrame", 0);
@@ -935,48 +938,50 @@ namespace PlugandPlay_DeleteUpdateTagTest_CtoG
             string sdState0AlarmPriority, sdState1AlarmPriority, sdState2AlarmPriority, sdState3AlarmPriority, sdState4AlarmPriority, sdState5AlarmPriority, sdState6AlarmPriority, sdState7AlarmPriority;
             string sdAlarmDelayTime0, sdAlarmDelayTime1, sdAlarmDelayTime2, sdAlarmDelayTime3, sdAlarmDelayTime4, sdAlarmDelayTime5, sdAlarmDelayTime6, sdAlarmDelayTime7;
             string sTagType = api.ByXpath("//tr/td[2]").GetText();
+            EventLog.AddLog("TagType=" + sTagType);
 
-            if (sTagType == "Constant  (discrete)")
+            if (sTagType == "Constant  (discrete)" || sTagType == "常數  (數位)" || sTagType == "常数  (数字量)" ||
+                sTagType == "ｺﾝｽﾀﾝﾄ  (個別)" || sTagType == "상수  (분리)" || sTagType == "Constante  (Discret)")
             {
-                sdTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
+                sdTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       
                 sdDescription = api.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
-                sdState0AlarmPriority = api.ByXpath("//tr[26]/td[2]/font").GetText();     // 8 (State 0 Alarm Priority)
-                sdAlarmDelayTime0 = api.ByXpath("//tr[27]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState1AlarmPriority = api.ByXpath("//tr[28]/td[2]/font").GetText();     // 7 (State 1 Alarm Priority)
-                sdAlarmDelayTime1 = api.ByXpath("//tr[29]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState2AlarmPriority = api.ByXpath("//tr[30]/td[2]/font").GetText();     // 6 (State 2 Alarm Priority)
-                sdAlarmDelayTime2 = api.ByXpath("//tr[31]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState3AlarmPriority = api.ByXpath("//tr[32]/td[2]/font").GetText();     // 5 (State 3 Alarm Priority)
-                sdAlarmDelayTime3 = api.ByXpath("//tr[33]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState4AlarmPriority = api.ByXpath("//tr[34]/td[2]/font").GetText();     // 4 (State 4 Alarm Priority)
-                sdAlarmDelayTime4 = api.ByXpath("//tr[35]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState5AlarmPriority = api.ByXpath("//tr[36]/td[2]/font").GetText();     // 3 (State 5 Alarm Priority)
-                sdAlarmDelayTime5 = api.ByXpath("//tr[37]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState6AlarmPriority = api.ByXpath("//tr[38]/td[2]/font").GetText();     // 2 (State 6 Alarm Priorityb)
-                sdAlarmDelayTime6 = api.ByXpath("//tr[39]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState7AlarmPriority = api.ByXpath("//tr[40]/td[2]/font").GetText();     // 1 (State 7 Alarm Priority)
-                sdAlarmDelayTime7 = api.ByXpath("//tr[41]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState0AlarmPriority = api.ByXpath("//tr[27]/td[2]/font").GetText();     // 8 (State 0 Alarm Priority)
+                sdAlarmDelayTime0 = api.ByXpath("//tr[28]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState1AlarmPriority = api.ByXpath("//tr[29]/td[2]/font").GetText();     // 7 (State 1 Alarm Priority)
+                sdAlarmDelayTime1 = api.ByXpath("//tr[30]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState2AlarmPriority = api.ByXpath("//tr[31]/td[2]/font").GetText();     // 6 (State 2 Alarm Priority)
+                sdAlarmDelayTime2 = api.ByXpath("//tr[32]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState3AlarmPriority = api.ByXpath("//tr[33]/td[2]/font").GetText();     // 5 (State 3 Alarm Priority)
+                sdAlarmDelayTime3 = api.ByXpath("//tr[34]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState4AlarmPriority = api.ByXpath("//tr[35]/td[2]/font").GetText();     // 4 (State 4 Alarm Priority)
+                sdAlarmDelayTime4 = api.ByXpath("//tr[36]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState5AlarmPriority = api.ByXpath("//tr[37]/td[2]/font").GetText();     // 3 (State 5 Alarm Priority)
+                sdAlarmDelayTime5 = api.ByXpath("//tr[38]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState6AlarmPriority = api.ByXpath("//tr[39]/td[2]/font").GetText();     // 2 (State 6 Alarm Priorityb)
+                sdAlarmDelayTime6 = api.ByXpath("//tr[40]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState7AlarmPriority = api.ByXpath("//tr[41]/td[2]/font").GetText();     // 1 (State 7 Alarm Priority)
+                sdAlarmDelayTime7 = api.ByXpath("//tr[42]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
             }
             else
             {
-                sdTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
+                sdTagChangedName = api.ByXpath("//tr[2]/td[2]").GetText();       
                 sdDescription = api.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
-                sdState0AlarmPriority = api.ByXpath("//tr[31]/td[2]/font").GetText();     // 8 (State 0 Alarm Priority)
-                sdAlarmDelayTime0 = api.ByXpath("//tr[32]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState1AlarmPriority = api.ByXpath("//tr[33]/td[2]/font").GetText();     // 7 (State 1 Alarm Priority)
-                sdAlarmDelayTime1 = api.ByXpath("//tr[34]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState2AlarmPriority = api.ByXpath("//tr[35]/td[2]/font").GetText();     // 6 (State 2 Alarm Priority)
-                sdAlarmDelayTime2 = api.ByXpath("//tr[36]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState3AlarmPriority = api.ByXpath("//tr[37]/td[2]/font").GetText();     // 5 (State 3 Alarm Priority)
-                sdAlarmDelayTime3 = api.ByXpath("//tr[38]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState4AlarmPriority = api.ByXpath("//tr[39]/td[2]/font").GetText();     // 4 (State 4 Alarm Priority)
-                sdAlarmDelayTime4 = api.ByXpath("//tr[40]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState5AlarmPriority = api.ByXpath("//tr[41]/td[2]/font").GetText();     // 3 (State 5 Alarm Priority)
-                sdAlarmDelayTime5 = api.ByXpath("//tr[42]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState6AlarmPriority = api.ByXpath("//tr[43]/td[2]/font").GetText();     // 2 (State 6 Alarm Priorityb)
-                sdAlarmDelayTime6 = api.ByXpath("//tr[44]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-                sdState7AlarmPriority = api.ByXpath("//tr[45]/td[2]/font").GetText();     // 1 (State 7 Alarm Priority)
-                sdAlarmDelayTime7 = api.ByXpath("//tr[46]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState0AlarmPriority = api.ByXpath("//tr[32]/td[2]/font").GetText();     // 8 (State 0 Alarm Priority)
+                sdAlarmDelayTime0 = api.ByXpath("//tr[33]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState1AlarmPriority = api.ByXpath("//tr[34]/td[2]/font").GetText();     // 7 (State 1 Alarm Priority)
+                sdAlarmDelayTime1 = api.ByXpath("//tr[35]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState2AlarmPriority = api.ByXpath("//tr[36]/td[2]/font").GetText();     // 6 (State 2 Alarm Priority)
+                sdAlarmDelayTime2 = api.ByXpath("//tr[37]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState3AlarmPriority = api.ByXpath("//tr[38]/td[2]/font").GetText();     // 5 (State 3 Alarm Priority)
+                sdAlarmDelayTime3 = api.ByXpath("//tr[39]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState4AlarmPriority = api.ByXpath("//tr[40]/td[2]/font").GetText();     // 4 (State 4 Alarm Priority)
+                sdAlarmDelayTime4 = api.ByXpath("//tr[41]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState5AlarmPriority = api.ByXpath("//tr[42]/td[2]/font").GetText();     // 3 (State 5 Alarm Priority)
+                sdAlarmDelayTime5 = api.ByXpath("//tr[43]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState6AlarmPriority = api.ByXpath("//tr[44]/td[2]/font").GetText();     // 2 (State 6 Alarm Priorityb)
+                sdAlarmDelayTime6 = api.ByXpath("//tr[45]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+                sdState7AlarmPriority = api.ByXpath("//tr[46]/td[2]/font").GetText();     // 1 (State 7 Alarm Priority)
+                sdAlarmDelayTime7 = api.ByXpath("//tr[47]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
             }
 
             api.SwitchToCurWindow(0);

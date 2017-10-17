@@ -249,7 +249,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.ByXpath("(//input[@name='tsel'])[754]").Click();    //AT_DO0004
 
 
-            api.ByCss("span.e6").Click();   // delete
+            api.ByCss("span.e5").Click();   // delete
             string alertText = api.GetAlartTxt();
             if (alertText == "Are you sure you want to delete these tags?" || alertText == "Are you sure you want to delete these 4 tags?")
                 api.Accept();
@@ -266,7 +266,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.ByXpath("(//input[@name='tsel'])[4]").Click();      //OPCDA_0004
 
 
-            api.ByCss("span.e6").Click();   // delete
+            api.ByCss("span.e5").Click();   // delete
             string alertText2 = api.GetAlartTxt();
             if (alertText2 == "Are you sure you want to delete these tags?" || alertText2 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
@@ -283,7 +283,7 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api.ByXpath("(//input[@name='tsel'])[4]").Click();      //OPCUA_0004
 
 
-            api.ByCss("span.e6").Click();   // delete
+            api.ByCss("span.e5").Click();   // delete
             string alertText3 = api.GetAlartTxt();
             if (alertText3 == "Are you sure you want to delete these tags?" || alertText3 == "Are you sure you want to delete these 1 tags?")
                 api.Accept();
@@ -605,15 +605,15 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             api2.SwitchToFrame("rightFrame", 0);
             string sTagChangedName = api2.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
             string sDescription = api2.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
-            string sHHPriority = api2.ByXpath("//tr[35]/td[2]/font").GetText();     // 8 (HH Priority)
-            string sHHAlarmLimit = api2.ByXpath("//tr[36]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
-            string sHighPriority = api2.ByXpath("//tr[37]/td[2]/font").GetText();   // 6 (High Priority)
-            string sHighAlarmLimit = api2.ByXpath("//tr[38]/td[2]/font").GetText(); // 5 (High Alarm Limit)
-            string sLowPriority = api2.ByXpath("//tr[39]/td[2]/font").GetText();    // 1 (Low Priority)
-            string sLowAlarmLimit = api2.ByXpath("//tr[40]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
-            string sLLPriority = api2.ByXpath("//tr[41]/td[2]/font").GetText();     // 2 (LL Priority)
-            string sLLAlarmLimit = api2.ByXpath("//tr[42]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
-            string sHLDb = api2.ByXpath("//tr[43]/td[2]/font").GetText();           // 0 (HL Db)
+            string sHHPriority = api2.ByXpath("//tr[36]/td[2]/font").GetText();     // 8 (HH Priority)
+            string sHHAlarmLimit = api2.ByXpath("//tr[37]/td[2]/font").GetText();   // 7 (HH Alarm Limit)
+            string sHighPriority = api2.ByXpath("//tr[38]/td[2]/font").GetText();   // 6 (High Priority)
+            string sHighAlarmLimit = api2.ByXpath("//tr[39]/td[2]/font").GetText(); // 5 (High Alarm Limit)
+            string sLowPriority = api2.ByXpath("//tr[40]/td[2]/font").GetText();    // 1 (Low Priority)
+            string sLowAlarmLimit = api2.ByXpath("//tr[41]/td[2]/font").GetText();  // 4 (Low Alarm Limit)
+            string sLLPriority = api2.ByXpath("//tr[42]/td[2]/font").GetText();     // 2 (LL Priority)
+            string sLLAlarmLimit = api2.ByXpath("//tr[43]/td[2]/font").GetText();   // 3 (LL Alarm Limit)
+            string sHLDb = api2.ByXpath("//tr[44]/td[2]/font").GetText();           // 0 (HL Db)
             api2.SwitchToCurWindow(0);
             api2.SwitchToFrame("leftFrame", 0);
 
@@ -661,22 +661,22 @@ namespace PlugandPlay_DeleteUpdateTagTest_GtoC
             string sdTagChangedName = api2.ByXpath("//tr[2]/td[2]").GetText();       // OPCDA_0005_Test (Tag Name)
             string sdDescription = api2.ByXpath("//tr[3]/td[2]").GetText();          // Plug and play update tag test from ground to cloud (Description)
 
-            string sdState0AlarmPriority = api2.ByXpath("//tr[31]/td[2]/font").GetText();     // 8 (State 0 Alarm Priority)
-            string sdAlarmDelayTime0 = api2.ByXpath("//tr[32]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState1AlarmPriority = api2.ByXpath("//tr[33]/td[2]/font").GetText();     // 7 (State 1 Alarm Priority)
-            string sdAlarmDelayTime1 = api2.ByXpath("//tr[34]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState2AlarmPriority = api2.ByXpath("//tr[35]/td[2]/font").GetText();     // 6 (State 2 Alarm Priority)
-            string sdAlarmDelayTime2 = api2.ByXpath("//tr[36]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState3AlarmPriority = api2.ByXpath("//tr[37]/td[2]/font").GetText();     // 5 (State 3 Alarm Priority)
-            string sdAlarmDelayTime3 = api2.ByXpath("//tr[38]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState4AlarmPriority = api2.ByXpath("//tr[39]/td[2]/font").GetText();     // 4 (State 4 Alarm Priority)
-            string sdAlarmDelayTime4 = api2.ByXpath("//tr[40]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState5AlarmPriority = api2.ByXpath("//tr[41]/td[2]/font").GetText();     // 3 (State 5 Alarm Priority)
-            string sdAlarmDelayTime5 = api2.ByXpath("//tr[42]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState6AlarmPriority = api2.ByXpath("//tr[43]/td[2]/font").GetText();     // 2 (State 6 Alarm Priorityb)
-            string sdAlarmDelayTime6 = api2.ByXpath("//tr[44]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
-            string sdState7AlarmPriority = api2.ByXpath("//tr[45]/td[2]/font").GetText();     // 1 (State 7 Alarm Priority)
-            string sdAlarmDelayTime7 = api2.ByXpath("//tr[46]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState0AlarmPriority = api2.ByXpath("//tr[32]/td[2]/font").GetText();     // 8 (State 0 Alarm Priority)
+            string sdAlarmDelayTime0 = api2.ByXpath("//tr[33]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState1AlarmPriority = api2.ByXpath("//tr[34]/td[2]/font").GetText();     // 7 (State 1 Alarm Priority)
+            string sdAlarmDelayTime1 = api2.ByXpath("//tr[35]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState2AlarmPriority = api2.ByXpath("//tr[36]/td[2]/font").GetText();     // 6 (State 2 Alarm Priority)
+            string sdAlarmDelayTime2 = api2.ByXpath("//tr[37]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState3AlarmPriority = api2.ByXpath("//tr[38]/td[2]/font").GetText();     // 5 (State 3 Alarm Priority)
+            string sdAlarmDelayTime3 = api2.ByXpath("//tr[39]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState4AlarmPriority = api2.ByXpath("//tr[40]/td[2]/font").GetText();     // 4 (State 4 Alarm Priority)
+            string sdAlarmDelayTime4 = api2.ByXpath("//tr[41]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState5AlarmPriority = api2.ByXpath("//tr[42]/td[2]/font").GetText();     // 3 (State 5 Alarm Priority)
+            string sdAlarmDelayTime5 = api2.ByXpath("//tr[43]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState6AlarmPriority = api2.ByXpath("//tr[44]/td[2]/font").GetText();     // 2 (State 6 Alarm Priorityb)
+            string sdAlarmDelayTime6 = api2.ByXpath("//tr[45]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
+            string sdState7AlarmPriority = api2.ByXpath("//tr[46]/td[2]/font").GetText();     // 1 (State 7 Alarm Priority)
+            string sdAlarmDelayTime7 = api2.ByXpath("//tr[47]/td[2]/font").GetText();         // 0 (Alarm Delay Time)
             api2.SwitchToCurWindow(0);
             api2.SwitchToFrame("leftFrame", 0);
 

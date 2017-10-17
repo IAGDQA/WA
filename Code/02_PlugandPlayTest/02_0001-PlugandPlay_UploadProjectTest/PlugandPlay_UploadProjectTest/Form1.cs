@@ -159,6 +159,7 @@ namespace PlugandPlay_UploadProjectTest
             EventLog.AddLog("<CloudPC> Set MQTT broker Account");
             EventLog.AddLog("<CloudPC> UserName=admin Password=12345");
             api2.ByXpath("//a[contains(@href, '/broadWeb/mqtt/mqttBroker.asp')]").Click();
+            api2.ByName("Enable").Click();
             api2.ByName("UserName").Clear();
             api2.ByName("UserName").Enter("admin").Exe();
             api2.ByName("Password").Clear();
@@ -206,6 +207,16 @@ namespace PlugandPlay_UploadProjectTest
             api.ByName("DEFAULT_BUTTON").Click();
             api.ByName("CLOUD_IP").Clear();
             api.ByName("CLOUD_IP").Enter(sWebAccessIP2).Exe();
+
+            /*
+             TCP comport-1883             -> win7 / win8 / win10
+             WebSocket and SSL -443       -> win8 / win10
+             WebSocket and Non-SSL=80     -> win8 / win 10
+            */
+            api.ByName("CLOUD_COMPORT").Clear();
+            api.ByName("CLOUD_COMPORT").Enter("1883").Exe();            // port = 1883
+            api.ByXpath("(//input[@name='CLOUD_TCP'])[2]").Click();     // Connection Type = TCP
+
             api.ByName("CLOUD_USERNAME").Clear();
             api.ByName("CLOUD_USERNAME").Enter("admin").Exe();
             api.ByName("CLOUD_PASSWORD").Clear();
@@ -246,7 +257,8 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
                         break;
                 }
-                api.ByCss("img").Click();   // page1
+                Thread.Sleep(2000);
+                api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
@@ -297,7 +309,7 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(100);
 
                 api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
-                Thread.Sleep(1000);
+                Thread.Sleep(3000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
                 switch (slanguage)
@@ -360,7 +372,7 @@ namespace PlugandPlay_UploadProjectTest
                         break;
                 }
                 Thread.Sleep(2000);
-                api.ByCss("img").Click();   // page1
+                api.ById("SubContent").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
@@ -439,7 +451,7 @@ namespace PlugandPlay_UploadProjectTest
                         break;
                 }
                 Thread.Sleep(2000);
-                api.ByCss("img").Click();   // page1
+                api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
@@ -517,7 +529,7 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Acc Point").Exe();
                         break;
                 }
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
@@ -595,7 +607,7 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Calc Point").Exe();
                         break;
                 }
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
@@ -664,7 +676,7 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("Const Point").Exe();
                         break;
                 }
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
@@ -713,7 +725,7 @@ namespace PlugandPlay_UploadProjectTest
                 Thread.Sleep(100);
 
                 api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
-                Thread.Sleep(1000);
+                Thread.Sleep(3000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
                 switch (slanguage)
@@ -775,7 +787,7 @@ namespace PlugandPlay_UploadProjectTest
                         api.ById("tagTypes").SelectTxt("System Point").Exe();
                         break;
                 }
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(1000);
                 api.ByName("SetConfigAll").Click();
                 api.ByName("SetDataLogAll").Click();
