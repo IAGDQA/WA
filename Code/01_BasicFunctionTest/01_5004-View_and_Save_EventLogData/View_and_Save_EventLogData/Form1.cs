@@ -341,28 +341,51 @@ namespace View_and_Save_EventLogData
                     {
                         EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
-                        if (Int32.Parse(sRecordTimeMSBefore) - Int32.Parse(sRecordMSTime) > 900)
+
+                        try
                         {
-                            EventLog.AddLog("Record time interval check PASS!!");
+                            if (Convert.ToDouble(sRecordTimeMSBefore) - Convert.ToDouble(sRecordMSTime) > 900)
+                            {
+                                EventLog.AddLog("Record time interval check PASS!!");
+                            }
+                            else
+                            {
+                                bCheckEventLogData = false;
+                                EventLog.AddLog("Record time interval check FAIL!!");
+                            }
                         }
-                        else
+                        catch (FormatException)
                         {
-                            bCheckEventLogData = false;
-                            EventLog.AddLog("Record time interval check FAIL!!");
+                            EventLog.AddLog("Unable to convert record time to a Double.");
+                        }
+                        catch (OverflowException)
+                        {
+                            EventLog.AddLog(" Record time is outside the range of a Double.");
                         }
                     }
                     else if(Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 0) // 前後值相等的情況
                     {
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
                         EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
-                        if (Int32.Parse(sRecordMSTime) - Int32.Parse(sRecordMSTimeAfter) > 900)
+                        try
                         {
-                            EventLog.AddLog("Record time interval check PASS!!");
+                            if (Convert.ToDouble(sRecordMSTime) - Convert.ToDouble(sRecordMSTimeAfter) > 900)
+                            {
+                                EventLog.AddLog("Record time interval check PASS!!");
+                            }
+                            else
+                            {
+                                bCheckEventLogData = false;
+                                EventLog.AddLog("Record time interval check FAIL!!");
+                            }
                         }
-                        else
+                        catch (FormatException)
                         {
-                            bCheckEventLogData = false;
-                            EventLog.AddLog("Record time interval check FAIL!!");
+                            EventLog.AddLog("Unable to convert record time to a Double.");
+                        }
+                        catch (OverflowException)
+                        {
+                            EventLog.AddLog(" Record time is outside the range of a Double.");
                         }
                     }
                     else
@@ -389,9 +412,16 @@ namespace View_and_Save_EventLogData
 
                     //EventLog.AddLog("TagName: " + sTagName + " BeforeValue: " + sValueBefore + " Value: " + sValue + " AfterValue: " + sValueAfter);
                     EventLog.AddLog("TagName: " + sTagName + " Value: " + sValue);
-
+                    /*
                     double number;
                     if (!Double.TryParse(sValue, out number) || number != 51)    // if string to double success!!
+                    {
+                        EventLog.AddLog("Event log value check FAIL!!");
+                        bCheckEventLogData = false;
+                        break;
+                    }
+                    */
+                    if (sValue.Trim() != "51.00" && sValue.Trim() != "51")    // if string to double success!!
                     {
                         EventLog.AddLog("Event log value check FAIL!!");
                         bCheckEventLogData = false;
@@ -453,14 +483,25 @@ namespace View_and_Save_EventLogData
                     {
                         EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
-                        if (Convert.ToDouble(sRecordTimeMSBefore) - Convert.ToDouble(sRecordMSTime) > 500)
+                        try
                         {
-                            EventLog.AddLog("Record time interval check PASS!!");
+                            if (Convert.ToDouble(sRecordTimeMSBefore) - Convert.ToDouble(sRecordMSTime) > 500)
+                            {
+                                EventLog.AddLog("Record time interval check PASS!!");
+                            }
+                            else
+                            {
+                                bCheckEventLogData = false;
+                                EventLog.AddLog("Record time interval check FAIL!!");
+                            }
                         }
-                        else
+                        catch (FormatException)
                         {
-                            bCheckEventLogData = false;
-                            EventLog.AddLog("Record time interval check FAIL!!");
+                            EventLog.AddLog("Unable to convert record time to a Double.");
+                        }
+                        catch (OverflowException)
+                        {
+                            EventLog.AddLog(" Record time is outside the range of a Double.");
                         }
                     }
                     else if (Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 0) // 前後值相等的情況
@@ -468,14 +509,25 @@ namespace View_and_Save_EventLogData
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
                         EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
 
-                        if (Convert.ToDouble(sRecordMSTime) - Convert.ToDouble(sRecordMSTimeAfter) > 500)
+                        try
                         {
-                            EventLog.AddLog("Record time interval check PASS!!");
+                            if (Convert.ToDouble(sRecordMSTime) - Convert.ToDouble(sRecordMSTimeAfter) > 500)
+                            {
+                                EventLog.AddLog("Record time interval check PASS!!");
+                            }
+                            else
+                            {
+                                bCheckEventLogData = false;
+                                EventLog.AddLog("Record time interval check FAIL!!");
+                            }
                         }
-                        else
+                        catch (FormatException)
                         {
-                            bCheckEventLogData = false;
-                            EventLog.AddLog("Record time interval check FAIL!!");
+                            EventLog.AddLog("Unable to convert record time to a Double.");
+                        }
+                        catch (OverflowException)
+                        {
+                            EventLog.AddLog(" Record time is outside the range of a Double.");
                         }
                     }
                     else
@@ -502,14 +554,23 @@ namespace View_and_Save_EventLogData
 
                     //EventLog.AddLog("TagName: " + sTagName + " BeforeValue: " + sValueBefore + " Value: " + sValue + " AfterValue: " + sValueAfter);
                     EventLog.AddLog("TagName: " + sTagName + " Value: " + sValue);
-
+                    /*
                     double number;
+
                     if (!Double.TryParse(sValue, out number) || number != 51)    // if string to double success!!
+                    {                                                            // 此部分不知為何在法文版本一定會進到這個if, 故停用這方式
+                        EventLog.AddLog("Event log value check FAIL!!");
+                        bCheckEventLogData = false;
+                        break;
+                    }
+                    */
+                    if ( sValue.Trim() != "51.00" && sValue.Trim() != "51")    // if string to double success!!
                     {
                         EventLog.AddLog("Event log value check FAIL!!");
                         bCheckEventLogData = false;
                         break;
                     }
+
                 }
                 if (bCheckEventLogData)
                     EventLog.AddLog("Event log value check PASS!!");
@@ -566,28 +627,50 @@ namespace View_and_Save_EventLogData
                     {
                         EventLog.AddLog("Event record ms time(Before): " + sRecordTimeMSBefore);
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
-                        if (Int32.Parse(sRecordTimeMSBefore) - Int32.Parse(sRecordMSTime) > 900)
+                        try
                         {
-                            EventLog.AddLog("Record time interval check PASS!!");
+                            if (Convert.ToDouble(sRecordTimeMSBefore) - Convert.ToDouble(sRecordMSTime) > 900)
+                            {
+                                EventLog.AddLog("Record time interval check PASS!!");
+                            }
+                            else
+                            {
+                                bCheckEventLogData = false;
+                                EventLog.AddLog("Record time interval check FAIL!!");
+                            }
                         }
-                        else
+                        catch (FormatException)
                         {
-                            bCheckEventLogData = false;
-                            EventLog.AddLog("Record time interval check FAIL!!");
+                            EventLog.AddLog("Unable to convert record time to a Double.");
+                        }
+                        catch (OverflowException)
+                        {
+                            EventLog.AddLog(" Record time is outside the range of a Double.");
                         }
                     }
                     else if (Int32.Parse(sAfter_tmp[2]) - Int32.Parse(sNow_tmp[2]) == 0) // 前後值相等的情況
                     {
                         EventLog.AddLog("Event record ms time(Now): " + sRecordMSTime);
                         EventLog.AddLog("Event record ms time(After): " + sRecordMSTimeAfter);
-                        if (Int32.Parse(sRecordMSTime) - Int32.Parse(sRecordMSTimeAfter) > 900)
+                        try
                         {
-                            EventLog.AddLog("Record time interval check PASS!!");
+                            if (Convert.ToDouble(sRecordMSTime) - Convert.ToDouble(sRecordMSTimeAfter) > 900)
+                            {
+                                EventLog.AddLog("Record time interval check PASS!!");
+                            }
+                            else
+                            {
+                                bCheckEventLogData = false;
+                                EventLog.AddLog("Record time interval check FAIL!!");
+                            }
                         }
-                        else
+                        catch (FormatException)
                         {
-                            bCheckEventLogData = false;
-                            EventLog.AddLog("Record time interval check FAIL!!");
+                            EventLog.AddLog("Unable to convert record time to a Double.");
+                        }
+                        catch (OverflowException)
+                        {
+                            EventLog.AddLog(" Record time is outside the range of a Double.");
                         }
                     }
                     else
@@ -614,9 +697,16 @@ namespace View_and_Save_EventLogData
 
                     //EventLog.AddLog("TagName: " + sTagName + " BeforeValue: " + sValueBefore + " Value: " + sValue + " AfterValue: " + sValueAfter);
                     EventLog.AddLog("TagName: " + sTagName + " Value: " + sValue);
-
+                    /*
                     double number;
                     if (!Double.TryParse(sValue, out number) || number != 51)    // if string to double success!!
+                    {
+                        EventLog.AddLog("Event log value check FAIL!!");
+                        bCheckEventLogData = false;
+                        break;
+                    }
+                    */
+                    if (sValue.Trim() != "51.00" && sValue.Trim() != "51")    // if string to double success!!
                     {
                         EventLog.AddLog("Event log value check FAIL!!");
                         bCheckEventLogData = false;
