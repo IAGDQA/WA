@@ -253,7 +253,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                     break;
             }
             Thread.Sleep(2000);
-            api.ByCss("img").Click();   // page1
+            api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
 
             bool bTotalResult = true;
@@ -314,7 +314,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                     break;
             }
             Thread.Sleep(2000);
-            api.ByCss("img").Click();   // page1
+            api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
             for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點OPCDA_0004 所以剩249個tag
             {
@@ -357,7 +357,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                     break;
             }
             Thread.Sleep(2000);
-            api.ByCss("img").Click();   // page1
+            api.ById("SubContent").Click();   // page1
             Thread.Sleep(2000);
             for (int i = 1; i <= 249; i++)  // 因為被前面PlugandPlay_DeleteUpdateTagTest_GtoC刪除1個點OPCUA_0004 所以剩249個tag
             {
@@ -592,7 +592,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 EventLog.AddLog("<GroundPC> Modbus tag setting");
                 api.ById("tagTypes").SelectTxt("Port3(tcpip)").Exe();
                 Thread.Sleep(2000);
-                api.ByCss("img").Click();   // page1
+                api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ModsimWhiteList_Page1");
@@ -606,7 +606,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 EventLog.AddLog("<GroundPC> Port4(opc) setting");
                 api.ById("tagTypes").SelectTxt("Port4(opc)").Exe();
                 Thread.Sleep(2000);
-                api.ByCss("img").Click();   // page1
+                api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_OPCDAWhiteList");
             }
@@ -616,7 +616,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
                 EventLog.AddLog("<GroundPC> Port5(tcpip) setting");
                 api.ById("tagTypes").SelectTxt("Port5(tcpip)").Exe();
                 Thread.Sleep(2000);
-                api.ByCss("img").Click();   // page1
+                api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_OPCUAWhiteList");
             }
@@ -625,7 +625,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             {
                 EventLog.AddLog("<GroundPC> Acc Point setting");
                 api.ById("tagTypes").SelectTxt("Acc Point").Exe();
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_AccWhiteList");
             }
@@ -634,7 +634,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             {
                 EventLog.AddLog("<GroundPC> Calc Point setting");
                 api.ById("tagTypes").SelectTxt("Calc Point").Exe();
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_CalcWhiteList");
             }
@@ -643,7 +643,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             {
                 EventLog.AddLog("<GroundPC> Const Point setting");
                 api.ById("tagTypes").SelectTxt("Const Point").Exe();
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_ConstWhiteList_Page1");
                 api.ByXpath("//a[contains(text(),'2')]").Click();   // page 2
@@ -655,7 +655,7 @@ namespace PlugandPlay_DeleteProjectTest_CtoG
             {
                 EventLog.AddLog("<GroundPC> System Point setting");
                 api.ById("tagTypes").SelectTxt("System Point").Exe();
-                //api.ByCss("img").Click();   // page1
+                //api.ById("SubContent").Click();   // page1
                 Thread.Sleep(2000);
                 EventLog.PrintScreen("PlugandPlay_DeleteProjectTest_CtoG_SystemWhiteList");
             }
