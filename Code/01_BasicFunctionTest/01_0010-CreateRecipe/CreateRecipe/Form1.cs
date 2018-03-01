@@ -7,28 +7,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using System.Runtime.InteropServices;
 using CommonFunction;
+using System.Threading;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;       // for SelectElement use
+using System.Diagnostics;
+using System.Collections.ObjectModel;
 
 namespace CreateRecipe
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wcf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
+        Stopwatch sw = new Stopwatch();
 
-        private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
-        private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
-        internal const int Max_Rows_Val = 65535;
+        private IWebDriver driver;
+        int iRetryNum;
+        bool bFinalResult = true;
+        bool bPartResult = true;
         string baseUrl;
-        string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
-
-        string slanguage;
-        string sProjectName;
+        string sTestItemName = "CreateModbusServerData";
+        string sIniFilePath = @"C:\WebAccessAutoTestSettingInfo.ini";
+        string sTestLogFolder = @"C:\WALogData";
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -41,38 +48,41 @@ namespace CreateRecipe
         {
             //Add test code
             long lErrorCode = 0;
-            EventLog.AddLog("===Create Recipe start===");
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(WebAccessIP.Text, Browser.Text, Recipe_File_Name.Text, Unit_Name.Text, Recipe_Name.Text, Value.Text);
-            EventLog.AddLog("===Create Recipe end===");
-
-            if (lErrorCode == 0)
+            EventLog.AddLog(string.Format("***** {0} test start (by iATester) *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            //Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            for (int i = 0; i < iRetryNum; i++)
             {
-                eResult(this, new ResultEventArgs(iResult.Pass));
-                eStatus(this, new StatusEventArgs(iStatus.Completion));
-            }
-            else
-            {
-                eResult(this, new ResultEventArgs(iResult.Fail));
-                eStatus(this, new StatusEventArgs(iStatus.Stop));
+                EventLog.AddLog(string.Format("===Retry Number : {0} / {1} ===", i + 1, iRetryNum));
+                lErrorCode = Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+                if (lErrorCode == 0)
+                {
+                    eResult(this, new ResultEventArgs(iResult.Pass));
+                    break;
+                }
+                else
+                {
+                    if (i == iRetryNum - 1)
+                        eResult(this, new ResultEventArgs(iResult.Fail));
+                }
             }
 
-            //eStatus(this, new StatusEventArgs(iStatus.Completion));
+            eStatus(this, new StatusEventArgs(iStatus.Completion));
+
+            EventLog.AddLog(string.Format("***** {0} test end (by iATester) *****", sTestItemName));
         }
 
         public Form1()
         {
             InitializeComponent();
-            try
-            {
-                m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            Browser.SelectedIndex = 0;
 
+            comboBox_Browser.SelectedIndex = 0;
+            comboBox_Language.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             if (System.IO.File.Exists(sIniFilePath))
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
@@ -80,206 +90,327 @@ namespace CreateRecipe
             }
         }
 
-        private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
+        private void Start_Click(object sender, EventArgs e)
         {
-            if (this.dataGridView1.InvokeRequired)
+            EventLog.AddLog(string.Format("***** {0} test start *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            EventLog.AddLog(string.Format("***** {0} test end *****", sTestItemName));
+        }
+
+        long Form1_Load(string sPrimaryProject, string sPrimaryIP, string sSecondaryProject, string sSecondaryIP, string sTestLogFolder, string sBrowser, string sUserEmail, string sLanguage)
+        {
+            bPartResult = true;
+            baseUrl = "http://" + sPrimaryIP;
+            if (bPartResult == true)
             {
-                this.dataGridView1.Invoke(new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow), new object[] { i_Row });
-                return;
+                EventLog.AddLog("Open browser for selenium driver use");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    if (sBrowser == "Internet Explorer")
+                    {
+                        EventLog.AddLog("Browser= Internet Explorer");
+                        InternetExplorerOptions options = new InternetExplorerOptions();
+                        options.IgnoreZoomLevel = true;
+                        driver = new InternetExplorerDriver(options);
+                        driver.Manage().Window.Maximize();
+                    }
+                    else
+                    {
+                        EventLog.AddLog("Not support temporary");
+                        bPartResult = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error opening browser: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Open browser", "Open browser for selenium driver use", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
             }
 
-            this.dataGridView1.Rows.Insert(0, i_Row);
-            if (dataGridView1.Rows.Count > Max_Rows_Val)
+            //Login test
+            if (bPartResult == true)
             {
-                dataGridView1.Rows.RemoveAt((dataGridView1.Rows.Count - 1));
+                EventLog.AddLog("Login WebAccess homepage");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                    driver.FindElement(By.Id("userField")).Submit();
+                    Thread.Sleep(3000);
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sPrimaryProject + "')]")).Click();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Login", "Login project manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
             }
-            this.dataGridView1.Update();
+
+            if (bPartResult == true)
+            {
+                try
+                {
+                    CheckData();
+
+                    if (bPartResult == true)
+                        bPartResult = CreateRecipe();
+               
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog("Create	Recipe error: " + ex.ToString());
+                    bPartResult = false;
+                }
+                Thread.Sleep(1000);
+            }
+            driver.Dispose();
+
+            #region Result judgement
+            if (bFinalResult && bPartResult)
+            {
+                Result.Text = "PASS!!";
+                Result.ForeColor = Color.Green;
+                EventLog.AddLog("Test Result: PASS!!");
+                return 0;
+            }
+            else
+            {
+                Result.Text = "FAIL!!";
+                Result.ForeColor = Color.Red;
+                EventLog.AddLog("Test Result: FAIL!!");
+                return -1;
+            }
+            #endregion
+        }
+
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
+        {
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
         }
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
-            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
 
-            tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
             tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sFilePath);
 
-            WebAccessIP.Text = sDefaultIP1.ToString();
-            slanguage = sDefaultUserLanguage.ToString();
-            sProjectName = sDefaultProjectName1.ToString();
+            comboBox_Language.Text = sDefaultUserLanguage.ToString();
+            textbox_UserEmail.Text = sDefaultUserEmail.ToString();
+            comboBox_Browser.Text = sBrowser.ToString();
+            textBox_Primary_project.Text = sDefaultProjectName1.ToString();
+            textBox_Secondary_project.Text = sDefaultProjectName2.ToString();
+            textBox_Primary_IP.Text = sDefaultIP1.ToString();
+            textBox_Secondary_IP.Text = sDefaultIP2.ToString();
+            if (Int32.TryParse(sDefaultUserRetryNum.ToString(), out iRetryNum))     // 在這邊取得retry number
+            {
+                EventLog.AddLog("Converted retry number '{0}' to {1}.", sDefaultUserRetryNum.ToString(), iRetryNum);
+            }
+            else
+            {
+                EventLog.AddLog("Attempted conversion of '{0}' failed.",
+                                sDefaultUserRetryNum.ToString() == null ? "<null>" : sDefaultUserRetryNum.ToString());
+                EventLog.AddLog("Set the number of retry as 3");
+                iRetryNum = 3;  // 轉換失敗 直接指定預設值為3
+            }
         }
 
-        long Form1_Load(string sWebAccessIP, string sBrowser, string Recipe_File_Name, string Unit_Name, string Recipe_Name, string Value)
+        private void CheckifIniFileChange()
+        {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
+            StringBuilder sDefaultProjectName1 = new StringBuilder(255);
+            StringBuilder sDefaultProjectName2 = new StringBuilder(255);
+            StringBuilder sDefaultIP1 = new StringBuilder(255);
+            StringBuilder sDefaultIP2 = new StringBuilder(255);
+
+            if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
+            {
+                EventLog.AddLog(".ini file exist, check if .ini file need to update");
+                tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sIniFilePath);
+
+                if (comboBox_Language.Text != sDefaultUserLanguage.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                    EventLog.AddLog("New Language update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserLanguage.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Language.Text);
+                }
+                if (textbox_UserEmail.Text != sDefaultUserEmail.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                    EventLog.AddLog("New UserEmail update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserEmail.ToString());
+                    EventLog.AddLog("New ini:" + textbox_UserEmail.Text);
+                }
+                if (comboBox_Browser.Text != sBrowser.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                    EventLog.AddLog("New Browser update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sBrowser.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Browser.Text);
+                }
+                if (textBox_Primary_project.Text != sDefaultProjectName1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Primary_project.Text);
+                }
+                if (textBox_Secondary_project.Text != sDefaultProjectName2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_project.Text);
+                }
+                if (textBox_Primary_IP.Text != sDefaultIP1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP1.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Primary_IP.Text);
+                }
+                if (textBox_Secondary_IP.Text != sDefaultIP2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_IP.Text);
+                }
+            }
+            else
+            {   // 若ini檔不存在 則建立新的
+                EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "RetryNum", "3", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+            }
+        }
+
+        bool CreateRecipe()
         {
             try
             {
-                baseUrl = "http://" + sWebAccessIP;
-                if (sBrowser == "Internet Explorer")
-                {
-                    EventLog.AddLog("Browser= Internet Explorer");
-                    //driver = new FirefoxDriver();
-                    api = new AdvSeleniumAPI("IE", "");
-                    System.Threading.Thread.Sleep(1000);
-                }
-                else if (sBrowser == "Mozilla FireFox")
-                {
-                    EventLog.AddLog("Browser= Mozilla FireFox");
-                    //driver = new FirefoxDriver();
-                    api = new AdvSeleniumAPI("FireFox", "");
-                    System.Threading.Thread.Sleep(1000);
-                }
+                EventLog.AddLog("Create recipe");
+                
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/recipe/rpPg.asp') and contains(@href, 'action=add_recipe')]")).Click();
 
-                // Launch Firefox and login
-                api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
-                //api.ById("userField").Enter("").Submit().Exe();
-                api.ByXpath("//input[@id='submit1']").Click();   //??
-                PrintStep("Login WebAccess");
+                driver.FindElement(By.Name("FileName")).Clear();
+                driver.FindElement(By.Name("FileName")).SendKeys("test");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("UnitName")).Clear();
+                driver.FindElement(By.Name("UnitName")).SendKeys("Unit1");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("RecipeName")).Clear();
+                driver.FindElement(By.Name("RecipeName")).SendKeys("Recipe1");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("ItemName_1")).Clear();
+                driver.FindElement(By.Name("ItemName_1")).SendKeys("ItemName_1");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("ItemName_2")).Clear();
+                driver.FindElement(By.Name("ItemName_2")).SendKeys("ItemName_2");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("TagName001")).Clear();
+                driver.FindElement(By.Name("TagName001")).SendKeys("ConAna_0249");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("TagName002")).Clear();
+                driver.FindElement(By.Name("TagName002")).SendKeys("ConAna_0250");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("PreValue_1")).Clear();
+                driver.FindElement(By.Name("PreValue_1")).SendKeys("500");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("PreValue_2")).Clear();
+                driver.FindElement(By.Name("PreValue_2")).SendKeys("500");
+                System.Threading.Thread.Sleep(1000);
+                driver.FindElement(By.Name("PreValue_3")).Clear();
+                driver.FindElement(By.Name("PreValue_3")).SendKeys("");
+                System.Threading.Thread.Sleep(1000);
 
-                //Step0: select first project and scada
-                EventLog.AddLog("Create a recipe");
-                api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-                //iCheckIfSCADAExis = api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
-                //api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project&pid=2&ProjName=TestProjectGGGG')]").Click();      //??
-
-                //Step1: select recipe and add new recipe
-                api.SwitchToFrame("rightFrame", 0);
-                api.ByXpath("//a[contains(@href, '/broadWeb/recipe/rpList.asp')]").Click();
-                api.ByXpath("//a[contains(@href, '/broadWeb/recipe/rpPg.asp') and contains(@href, 'action=add_recipe')]").Click();
-
-                //Step2: set recipe data
-                bool bResult = CreateRecipe(Recipe_File_Name, Unit_Name, Recipe_Name, Value);
-                PrintStep("create a recipe");
-
-                api.Quit();
-
-                if (bResult)
-                {
-                    Result.Text = "PASS!!";
-                    Result.ForeColor = Color.Green;
-                    EventLog.AddLog("Test Result: PASS!!");
-                    return 0;
-                }
-                else
-                {
-                    Result.Text = "FAIL!!";
-                    Result.ForeColor = Color.Red;
-                    EventLog.AddLog("Test Result: FAIL!!");
-                    return -1;
-                }
+                driver.FindElement(By.Name("submit")).Click();
+                //int iSubmitResult = api.ByName("PreValue_3").Enter("").Submit().Exe();
+                //if (iSubmitResult == 0)
+                //{
+                //    EventLog.AddLog("Create success!!");
+                return true;
+                //}
+                //else
+                //{
+                //    EventLog.AddLog("Create fail!!");
+                //    return false;
+                //}
             }
             catch (Exception ex)
             {
-                EventLog.AddLog(ex.ToString());
-                return -1;
-            }
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            long lErrorCode = 0;
-            EventLog.AddLog("===Create Recipe start===");
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(WebAccessIP.Text, Browser.Text, Recipe_File_Name.Text, Unit_Name.Text, Recipe_Name.Text, Value.Text);
-            EventLog.AddLog("===Create Recipe end===");
-        }
-
-        private void PrintStep(string sTestItem)
-        {
-            DataGridViewRow dgvRow;
-            DataGridViewCell dgvCell;
-
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
-
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-        }
-
-        bool CreateRecipe(string Recipe_File_Name, string Unit_Name, string Recipe_Name, string Value)
-        {
-            try
-            {
-                api.ByName("FileName").Clear();
-                api.ByName("FileName").Enter(Recipe_File_Name).Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("UnitName").Clear();
-                api.ByName("UnitName").Enter(Unit_Name).Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("RecipeName").Clear();
-                api.ByName("RecipeName").Enter(Recipe_Name).Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("ItemName_1").Clear();
-                api.ByName("ItemName_1").Enter("ItemName_1").Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("ItemName_2").Clear();
-                api.ByName("ItemName_2").Enter("ItemName_2").Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("TagName001").Clear();
-                api.ByName("TagName001").Enter("ConAna_0249").Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("TagName002").Clear();
-                api.ByName("TagName002").Enter("ConAna_0250").Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("PreValue_1").Clear();
-                api.ByName("PreValue_1").Enter(Value).Exe();
-                System.Threading.Thread.Sleep(1000);
-                api.ByName("PreValue_2").Clear();
-                api.ByName("PreValue_2").Enter(Value).Exe();
-                System.Threading.Thread.Sleep(1000);
-
-                int iSubmitResult = api.ByName("PreValue_3").Enter("").Submit().Exe();
-                if (iSubmitResult == 0)
-                {
-                    EventLog.AddLog("Create success!!");
-                    return true;
-                }
-                else
-                {
-                    EventLog.AddLog("Create fail!!");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                EventLog.AddLog(ex.ToString());
+                EventLog.AddLog("CreateRecipe error: " + ex.ToString());
                 return false;
+            }
+        }
+
+        private void CheckData()
+        {
+            try
+            {
+                EventLog.AddLog("Check Data");
+                driver.SwitchTo().Frame("rightFrame");
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/recipe/rpList.asp')]")).Click();
+                Thread.Sleep(3000);
+
+                List<string> matchingLinks = new List<string>();
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.XPath("//a[contains(@href, 'rpDel.asp')]"));
+
+                for (int i = 0; i < links.Count; i++)
+                {
+                    driver.FindElement(By.XPath("/html/body/font/table/tbody/tr[3]/td/center/table/tbody/tr[2]/td[4]/font/a")).Click();
+                    Thread.Sleep(1000);
+                    driver.SwitchTo().Alert().Accept();
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog("CheckData error: " + ex.ToString());
+                bPartResult = false;
             }
         }
     }

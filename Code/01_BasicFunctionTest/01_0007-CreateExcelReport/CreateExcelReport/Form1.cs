@@ -7,25 +7,32 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
 using ThirdPartyToolControl;
 using iATester;
 using CommonFunction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using System.Diagnostics;
 
 namespace CreateExcelReport
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wcf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
+        Stopwatch sw = new Stopwatch();
 
-        private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
-        private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
-        internal const int Max_Rows_Val = 65535;
+        private IWebDriver driver;
+        int iRetryNum;
+        bool bFinalResult = true;
+        bool bPartResult = true;
         string baseUrl;
-        string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
-        string slanguage;
+        string sTestItemName = "CreateExcelReport";
+        string sIniFilePath = @"C:\WebAccessAutoTestSettingInfo.ini";
+        string sTestLogFolder = @"C:\WALogData";
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -38,39 +45,41 @@ namespace CreateExcelReport
         {
             //Add test code
             long lErrorCode = 0;
-            EventLog.AddLog("===Create Excel Report start (by iATester)===");
-            if (System.IO.File.Exists(sIniFilePath))    // 再load一次
+            EventLog.AddLog(string.Format("***** {0} test start (by iATester) *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            //Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            for (int i = 0; i < iRetryNum; i++)
             {
-                EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
-                InitialRequiredInfo(sIniFilePath);
+                EventLog.AddLog(string.Format("===Retry Number : {0} / {1} ===", i + 1, iRetryNum));
+                lErrorCode = Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+                if (lErrorCode == 0)
+                {
+                    eResult(this, new ResultEventArgs(iResult.Pass));
+                    break;
+                }
+                else
+                {
+                    if (i == iRetryNum - 1)
+                        eResult(this, new ResultEventArgs(iResult.Fail));
+                }
             }
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text, UserEmail.Text);
-            EventLog.AddLog("===Create Excel Report end (by iATester)===");
-
-            Thread.Sleep(3000);
-
-            if (lErrorCode == 0)
-                eResult(this, new ResultEventArgs(iResult.Pass));
-            else
-                eResult(this, new ResultEventArgs(iResult.Fail));
 
             eStatus(this, new StatusEventArgs(iStatus.Completion));
+
+            EventLog.AddLog(string.Format("***** {0} test end (by iATester) *****", sTestItemName));
         }
 
         public Form1()
         {
             InitializeComponent();
-            try
-            {
-                m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            Browser.SelectedIndex = 0;
+
+            comboBox_Browser.SelectedIndex = 0;
+            comboBox_Language.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             if (System.IO.File.Exists(sIniFilePath))
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
@@ -78,93 +87,92 @@ namespace CreateExcelReport
             }
         }
 
-        long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser, string sUserEmail)
+        private void Start_Click(object sender, EventArgs e)
         {
-            baseUrl = "http://" + sWebAccessIP;
+            EventLog.AddLog(string.Format("***** {0} test start *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            EventLog.AddLog(string.Format("***** {0} test end *****", sTestItemName));
+        }
 
-            if (sBrowser == "Internet Explorer")
+        long Form1_Load(string sPrimaryProject, string sPrimaryIP, string sSecondaryProject, string sSecondaryIP, string sTestLogFolder, string sBrowser, string sUserEmail, string sLanguage)
+        {
+            bPartResult = true;
+            baseUrl = "http://" + sPrimaryIP;
+            if (bPartResult == true)
             {
-                EventLog.AddLog("Browser= Internet Explorer");
-                //driver = new FirefoxDriver();
-                api = new AdvSeleniumAPI("IE", "");
-                System.Threading.Thread.Sleep(1000);
-            }
-            else if (sBrowser == "Mozilla FireFox")
-            {
-                EventLog.AddLog("Browser= Mozilla FireFox");
-                //driver = new FirefoxDriver();
-                api = new AdvSeleniumAPI("FireFox", "");
-                System.Threading.Thread.Sleep(1000);
-            }
-
-
-            // Launch Firefox and login
-            api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
-            api.ById("userField").Enter("").Submit().Exe();
-            PrintStep("Login WebAccess");
-
-            // Configure project by project name
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep("Configure project");
-
-            //Create Excel Report
-            
-            //step 1
-            EventLog.AddLog("Create DailyReport Excel Report...");
-            Create_DailyReport_ExcelReport(sUserEmail);
-            PrintStep("Create DailyReport Excel Report");
-
-            ReturnSCADAPage();
-            
-            //step 2
-            EventLog.AddLog("Create SelfDefined Excel Report...");
-            Create_SelfDefined_ExcelReport(sUserEmail);
-            PrintStep("Create SelfDefined Excel Report");
-            EventLog.PrintScreen("ExcelReportTest1");
-            /*
-            api.ByXpath("//a[contains(text(),'Generate')]").Click();
-            Thread.Sleep(500);
-
-            PrintScreen("ExcelReportTest2", sTestLogFolder);
-
-            // copy ExcelReport_SelfDefined_DataLog_Excel_ex.xlsx to log path.
-            //C:\inetpub\wwwroot\broadweb\WaExlViewer\report\TestProject_TestSCADA\ExcelReport_SelfDefined_DataLog_Excel
-            {
-                string fileNameSrc = "ExcelReport_SelfDefined_DataLog_Excel_ex.xlsx";
-                string fileNameTar = string.Format("ExcelReport_SelfDefined_DataLog_Excel_ex_{0:yyyyMMdd_hhmmss}.xlsx", DateTime.Now);
-
-                string sourcePath = string.Format(@"C:\inetpub\wwwroot\broadweb\WaExlViewer\report\{0}_TestSCADA\ExcelReport_SelfDefined_DataLog_Excel", sProjectName);
-                string targetPath = sTestLogFolder;
-
-                // Use Path class to manipulate file and directory paths.
-                string sourceFile = System.IO.Path.Combine(sourcePath, fileNameSrc);
-                string destFile = System.IO.Path.Combine(targetPath, fileNameTar);
-                System.IO.File.Copy(sourceFile, destFile, true);
-            }
-            */
-            api.Quit();
-            PrintStep("Quit browser");
-
-            bool bSeleniumResult = true;
-            int iTotalSeleniumAction = dataGridView1.Rows.Count;
-            for (int i = 0; i < iTotalSeleniumAction - 1; i++)
-            {
-                DataGridViewRow row = dataGridView1.Rows[i];
-                string sSeleniumResult = row.Cells[2].Value.ToString();
-                if (sSeleniumResult != "pass")
+                EventLog.AddLog("Open browser for selenium driver use");
+                sw.Reset(); sw.Start();
+                try
                 {
-                    bSeleniumResult = false;
-                    EventLog.AddLog("Test Fail !!");
-                    EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
-                    EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
-                    EventLog.AddLog("Result = " + row.Cells[2].Value.ToString());
-                    EventLog.AddLog("ErrorCode = " + row.Cells[3].Value.ToString());
-                    EventLog.AddLog("ExeTime(ms) = " + row.Cells[4].Value.ToString());
-                    break;
+                    if (sBrowser == "Internet Explorer")
+                    {
+                        EventLog.AddLog("Browser= Internet Explorer");
+                        InternetExplorerOptions options = new InternetExplorerOptions();
+                        options.IgnoreZoomLevel = true;
+                        driver = new InternetExplorerDriver(options);
+                        driver.Manage().Window.Maximize();
+                    }
+                    else
+                    {
+                        EventLog.AddLog("Not support temporary");
+                        bPartResult = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error opening browser: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Open browser", "Open browser for selenium driver use", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+            }
+
+            //Login test
+            if (bPartResult == true)
+            {
+                EventLog.AddLog("Login WebAccess homepage");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                    driver.FindElement(By.Id("userField")).Submit();
+                    Thread.Sleep(3000);
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sPrimaryProject + "')]")).Click();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Login", "Login project manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
+            }
+
+            if (bPartResult == true)
+            {
+                try
+                {
+                    bPartResult = CreateExcelReport(sPrimaryProject, sUserEmail, sLanguage);
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred CreateExcelReport: " + ex.ToString());
+                    bPartResult = false;
                 }
             }
+            
+            driver.Dispose();
 
-            if (bSeleniumResult)
+            #region Result judgement
+            if (bFinalResult && bPartResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -178,819 +186,1081 @@ namespace CreateExcelReport
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
-            //return 0;
+            #endregion
         }
 
-        private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
+        private bool Create_DailyReport_ExcelReport(string sUserEmail, string slanguage)
         {
-            if (this.dataGridView1.InvokeRequired)
+            try
             {
-                this.dataGridView1.Invoke(new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow), new object[] { i_Row });
-                return;
-            }
-
-            this.dataGridView1.Rows.Insert(0, i_Row);
-            if (dataGridView1.Rows.Count > Max_Rows_Val)
-            {
-                dataGridView1.Rows.RemoveAt((dataGridView1.Rows.Count - 1));
-            }
-            this.dataGridView1.Update();
-        }
-
-        private void Create_DailyReport_ExcelReport(string sUserEmail)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/WaExlViewer/WaExlViewer.asp')]").Click();
-            
-            for(int t = 1; t<=4; t++)   /////// template 1~4 ; 8min
-            {
-                api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-                api.ByName("rptName").Clear();
-                api.ByName("rptName").Enter(string.Format("ER_ODBC_T{0}_DR_8min_LastValue_ER", t)).Exe();
-                api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
-                api.ByName("selectTemplate").SelectVal(string.Format("template{0}.xlsx", t)).Exe();
-
-                switch (slanguage)
+                for (int t = 1; t <= 4; t++)   /////// template 1~4 ; 8min
                 {
-                    case "ENG":
-                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
-                        break;
-                    case "CHT":
-                        api.ByName("speTimeFmt").SelectTxt("日報表").Exe();
-                        break;
-                    case "CHS":
-                        api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
-                        break;
-                    case "JPN":
-                        api.ByName("speTimeFmt").SelectTxt("日報").Exe();
-                        break;
-                    case "KRN":
-                        api.ByName("speTimeFmt").SelectTxt("일간 보고").Exe();
-                        break;
-                    case "FRN":
-                        api.ByName("speTimeFmt").SelectTxt("Rapport quotidien").Exe();
-                        break;
+                    driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("rptName")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("rptName")).SendKeys(string.Format("ER_ODBC_T{0}_DR_8min_LastValue_ER", t));
+                    Thread.Sleep(1000);
 
-                    default:
-                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
-                        break;
-                }
+                    IList<IWebElement> oRadioButton = driver.FindElements(By.Name("dataSrc"));
+                    int Size = oRadioButton.Count;
+                    for (int i = 0; i < Size; i++)
+                    {
+                        // Store the checkbox name to the string variable, using 'Value' attribute
+                        String Value = oRadioButton.ElementAt(i).GetAttribute("value");
 
-                // set end date
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByXpath("//button[@type='button']").Click();
-                api.ByXpath("(//button[@type='button'])[2]").Click();
+                        // Select the checkbox it the value of the checkbox is same what you are looking for
+                        if (Value.Equals("1"))
+                        {
+                            oRadioButton.ElementAt(i).Click();
+                            // This will take the execution out of for loop
+                            break;
+                        }
+                    }
+                    
+                    Thread.Sleep(1000);
+                    new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText(string.Format("template{0}.xlsx", t));
+                    Thread.Sleep(1000);
+                    
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Daily Report");
+                            break;
+                        case "CHT":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日報表");
+                            break;
+                        case "CHS":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日报表");
+                            break;
+                        case "JPN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日報");
+                            break;
+                        case "KRN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("일간 보고");
+                            break;
+                        case "FRN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Rapport quotidien");
+                            break;
 
-                api.ByName("interval").Clear();
-                api.ByName("interval").Enter("8").Exe();                // Time Interval = 8
-                api.ByXpath("(//input[@name='fileType'])[2]").Click();  // Time Unit: Minute
-                api.ByXpath("//input[@name='valueType']").Click();      // Data Type: Last Value
-                // 湊到最大上限32個TAG
-                string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
+                        default:
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Daily Report");
+                            break;
+                    }
+                    Thread.Sleep(1000);
+
+                    // set end date
+                    driver.FindElement(By.Name("tEnd")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("tEnd")).SendKeys("23:59");
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                    Thread.Sleep(1000);
+
+                    driver.FindElement(By.Name("interval")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("interval")).SendKeys("8");                // Time Interval = 8
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//input[@name='fileType'])[2]")).Click();  // Time Unit: Minute
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("//input[@name='valueType']")).Click();      // Data Type: Last Value
+                    Thread.Sleep(1000);
+
+                    // 湊到最大上限32個TAG
+                    string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
                                          "Calc_ANDConDisAll", "Calc_ANDDIAll", "Calc_ANDDOAll", "Calc_AvgAIAll", "Calc_AvgAOAll", "Calc_AvgConAnaAll", "Calc_AvgSystemAll",
                                          "AT_AI0050", "AT_AI0100", "AT_AI0150", "AT_AO0050", "AT_AO0100", "AT_AO0150", "AT_DI0050", "AT_DI0100", "AT_DI0150", "AT_DO0050",
                                          "AT_DO0100", "AT_DO0150", "ConAna_0100", "ConDis_0100", "SystemSec_0100", "SystemSec_0200"};
 
-                for (int i = 0; i < ReportTagName.Length; i++)
-                {
-                    api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
-                }
-                api.ById("torightBtn").Click();
+                    for (int i = 0; i < ReportTagName.Length; i++)
+                    {
+                        new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[i]);
+                    }
+                    Thread.Sleep(1000);
 
-                api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
-
-                api.ByXpath("(//input[@name='attachFormat'])[2]").Click();  // Send Email: Excel Report
-                api.ByName("emailto").Clear();
-                api.ByName("emailto").Enter(sUserEmail).Exe();
-                //api.ByName("rptName").Enter("").Submit().Exe();   這邊不能用這種方式submit...很奇怪 反而按submit的button可以正常送出
-                api.ByName("cfgSubmit").Click();
-            }
-
-            for (int t = 1; t <= 4; t++)   ////// template 1~4 ; 1hour
-            {
-                api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-                api.ByName("rptName").Clear();
-                api.ByName("rptName").Enter(string.Format("ER_ODBC_T{0}_DR_1hour_LastValue_ER", t)).Exe();
-                api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
-                api.ByName("selectTemplate").SelectVal(string.Format("template{0}.xlsx", t)).Exe();
-                switch (slanguage)
-                {
-                    case "ENG":
-                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
-                        break;
-                    case "CHT":
-                        api.ByName("speTimeFmt").SelectTxt("日報表").Exe();
-                        break;
-                    case "CHS":
-                        api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
-                        break;
-                    case "JPN":
-                        api.ByName("speTimeFmt").SelectTxt("日報").Exe();
-                        break;
-                    case "KRN":
-                        api.ByName("speTimeFmt").SelectTxt("일간 보고").Exe();
-                        break;
-                    case "FRN":
-                        api.ByName("speTimeFmt").SelectTxt("Rapport quotidien").Exe();
-                        break;
-
-                    default:
-                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
-                        break;
+                    driver.FindElement(By.Id("torightBtn")).Click();
+                    Thread.Sleep(1000);
+                    new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[0]);
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("emailto")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("cfgSubmit")).Click();
                 }
 
-                // set end date
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByXpath("//button[@type='button']").Click();
-                api.ByXpath("(//button[@type='button'])[2]").Click();
+                for (int t = 1; t <= 4; t++)   ////// template 1~4 ; 1hour
+                {
+                    driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("rptName")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("rptName")).SendKeys(string.Format("ER_ODBC_T{0}_DR_1hour_LastValue_ER", t));
+                    Thread.Sleep(1000);
 
-                api.ByName("interval").Clear();
-                api.ByName("interval").Enter("1").Exe();                // Time Interval = 1
-                api.ByXpath("(//input[@name='fileType'])[3]").Click();  // Time Unit: hour
-                api.ByXpath("//input[@name='valueType']").Click();      // Data Type: Last Value
-                // 湊到最大上限32個TAG
-                string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
+                    IList<IWebElement> oRadioButton = driver.FindElements(By.Name("dataSrc"));
+                    int Size = oRadioButton.Count;
+                    for (int i = 0; i < Size; i++)
+                    {
+                        // Store the checkbox name to the string variable, using 'Value' attribute
+                        String Value = oRadioButton.ElementAt(i).GetAttribute("value");
+
+                        // Select the checkbox it the value of the checkbox is same what you are looking for
+                        if (Value.Equals("1"))
+                        {
+                            oRadioButton.ElementAt(i).Click();
+                            // This will take the execution out of for loop
+                            break;
+                        }
+                    }
+                    Thread.Sleep(1000);
+                    new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText(string.Format("template{0}.xlsx", t));
+                    Thread.Sleep(1000);
+
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Daily Report");
+                            break;
+                        case "CHT":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日報表");
+                            break;
+                        case "CHS":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日报表");
+                            break;
+                        case "JPN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日報");
+                            break;
+                        case "KRN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("일간 보고");
+                            break;
+                        case "FRN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Rapport quotidien");
+                            break;
+
+                        default:
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Daily Report");
+                            break;
+                    }
+                    Thread.Sleep(1000);
+
+                    // set end date
+                    driver.FindElement(By.Name("tEnd")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("tEnd")).SendKeys("23:59");
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                    Thread.Sleep(1000);
+
+                    driver.FindElement(By.Name("interval")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("interval")).SendKeys("1");                // Time Interval = 1
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//input[@name='fileType'])[3]")).Click();  // Time Unit: hour
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("//input[@name='valueType']")).Click();      // Data Type: Last Value
+                    Thread.Sleep(1000);
+
+                    string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
                                          "Calc_ANDConDisAll", "Calc_ANDDIAll", "Calc_ANDDOAll", "Calc_AvgAIAll", "Calc_AvgAOAll", "Calc_AvgConAnaAll", "Calc_AvgSystemAll",
                                          "AT_AI0050", "AT_AI0100", "AT_AI0150", "AT_AO0050", "AT_AO0100", "AT_AO0150", "AT_DI0050", "AT_DI0100", "AT_DI0150", "AT_DO0050",
                                          "AT_DO0100", "AT_DO0150", "ConAna_0100", "ConDis_0100", "SystemSec_0100", "SystemSec_0200"};
 
-                for (int i = 0; i < ReportTagName.Length; i++)
-                {
-                    try
+                    for (int i = 0; i < ReportTagName.Length; i++)
                     {
-                        api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                        new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[i]);
                     }
-                    catch (Exception ex)
-                    {
-                        EventLog.AddLog("CreateExcelReport error: " + ex.ToString());
-                        i--;
-                    }
-                }
-                api.ById("torightBtn").Click();
-                api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
+                    Thread.Sleep(1000);
 
-                api.ByXpath("(//input[@name='attachFormat'])[2]").Click();  // Send Email: Excel Report
-                api.ByName("emailto").Clear();
-                api.ByName("emailto").Enter(sUserEmail).Exe();
-                api.ByName("cfgSubmit").Click();
-            }
-            
-            for (int d = 1; d <= 3; d++)   ////// data type = Maximum or  Minimum or  Average
-            {
-                api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-                api.ByName("rptName").Clear();
-
-                if(d == 1)
-                    api.ByName("rptName").Enter("ER_ODBC_T1_DR_1hour_Max_ER").Exe();
-                else if(d == 2)
-                    api.ByName("rptName").Enter("ER_ODBC_T1_DR_1hour_Min_ER").Exe();
-                else if(d == 3)
-                    api.ByName("rptName").Enter("ER_ODBC_T1_DR_1hour_Avg_ER").Exe();
-
-                api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
-                api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
-                switch (slanguage)
-                {
-                    case "ENG":
-                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
-                        break;
-                    case "CHT":
-                        api.ByName("speTimeFmt").SelectTxt("日報表").Exe();
-                        break;
-                    case "CHS":
-                        api.ByName("speTimeFmt").SelectTxt("日报表").Exe();
-                        break;
-                    case "JPN":
-                        api.ByName("speTimeFmt").SelectTxt("日報").Exe();
-                        break;
-                    case "KRN":
-                        api.ByName("speTimeFmt").SelectTxt("일간 보고").Exe();
-                        break;
-                    case "FRN":
-                        api.ByName("speTimeFmt").SelectTxt("Rapport quotidien").Exe();
-                        break;
-
-                    default:
-                        api.ByName("speTimeFmt").SelectTxt("Daily Report").Exe();
-                        break;
+                    driver.FindElement(By.Id("torightBtn")).Click();
+                    Thread.Sleep(1000);
+                    new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[0]);
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("emailto")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("cfgSubmit")).Click();
                 }
 
-                // set end date
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByXpath("//button[@type='button']").Click();
-                api.ByXpath("(//button[@type='button'])[2]").Click();
+                for (int d = 1; d <= 3; d++)   ////// data type = Maximum or  Minimum or  Average
+                {
+                    driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("rptName")).Clear();
+                    Thread.Sleep(1000);
+                    
+                    if (d == 1)
+                    {
+                        driver.FindElement(By.Name("rptName")).SendKeys("ER_ODBC_T1_DR_1hour_Max_ER");
+                    }
+                    else if (d == 2)
+                    {
+                        driver.FindElement(By.Name("rptName")).SendKeys("ER_ODBC_T1_DR_1hour_Min_ER");
+                    }
+                    else if (d == 3)
+                    {
+                        driver.FindElement(By.Name("rptName")).SendKeys("ER_ODBC_T1_DR_1hour_Avg_ER");
+                    }
+                    
+                    Thread.Sleep(1000);
 
-                api.ByName("interval").Clear();
-                api.ByName("interval").Enter("1").Exe();                // Time Interval = 1
-                api.ByXpath("(//input[@name='fileType'])[3]").Click();  // Time Unit: hour
-                api.ByXpath(string.Format("(//input[@name='valueType'])[{0}]", d+1)).Click();      // Data Type
-                // 湊到最大上限32個TAG
-                string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
+                    IList<IWebElement> oRadioButton = driver.FindElements(By.Name("dataSrc"));
+                    int Size = oRadioButton.Count;
+                    for (int i = 0; i < Size; i++)
+                    {
+                        // Store the checkbox name to the string variable, using 'Value' attribute
+                        String Value = oRadioButton.ElementAt(i).GetAttribute("value");
+
+                        // Select the checkbox it the value of the checkbox is same what you are looking for
+                        if (Value.Equals("1"))
+                        {
+                            oRadioButton.ElementAt(i).Click();
+                            // This will take the execution out of for loop
+                            break;
+                        }
+                    }
+                    Thread.Sleep(1000);
+
+                    switch (slanguage)
+                    {
+                        case "ENG":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Daily Report");
+                            break;
+                        case "CHT":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日報表");
+                            break;
+                        case "CHS":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日报表");
+                            break;
+                        case "JPN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("日報");
+                            break;
+                        case "KRN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("일간 보고");
+                            break;
+                        case "FRN":
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Rapport quotidien");
+                            break;
+
+                        default:
+                            new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Daily Report");
+                            break;
+                    }
+                    Thread.Sleep(1000);
+
+                    // set end date
+                    driver.FindElement(By.Name("tEnd")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("tEnd")).SendKeys("23:59");
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                    Thread.Sleep(1000);
+
+                    driver.FindElement(By.Name("interval")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("interval")).SendKeys("1");                // Time Interval = 1
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//input[@name='fileType'])[3]")).Click();  // Time Unit: hour
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath(string.Format("(//input[@name='valueType'])[{0}]", d + 1))).Click();      // Data Type: Last Value
+                    Thread.Sleep(1000);
+
+                    // 湊到最大上限32個TAG
+                    string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
                                          "Calc_ANDConDisAll", "Calc_ANDDIAll", "Calc_ANDDOAll", "Calc_AvgAIAll", "Calc_AvgAOAll", "Calc_AvgConAnaAll", "Calc_AvgSystemAll",
                                          "AT_AI0050", "AT_AI0100", "AT_AI0150", "AT_AO0050", "AT_AO0100", "AT_AO0150", "AT_DI0050", "AT_DI0100", "AT_DI0150", "AT_DO0050",
                                          "AT_DO0100", "AT_DO0150", "ConAna_0100", "ConDis_0100", "SystemSec_0100", "SystemSec_0200"};
 
-                for (int i = 0; i < ReportTagName.Length; i++)
-                {
-                    try
+                    for (int i = 0; i < ReportTagName.Length; i++)
                     {
-                        api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                        new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[i]);
                     }
-                    catch (Exception ex)
-                    {
-                        EventLog.AddLog("CreateExcelReport error: " + ex.ToString());
-                        i--;
-                    }
+
+                    driver.FindElement(By.Id("torightBtn")).Click();
+                    Thread.Sleep(1000);
+                    new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[0]);
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("emailto")).Clear();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.Name("cfgSubmit")).Click();
                 }
-                api.ById("torightBtn").Click();
-                api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
-
-                api.ByXpath("(//input[@name='attachFormat'])[2]").Click();  // Send Email: Excel Report
-                api.ByName("emailto").Clear();
-                api.ByName("emailto").Enter(sUserEmail).Exe();
-                api.ByName("cfgSubmit").Click();
             }
+            catch(Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Create_DailyReport_ExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
         }
 
-        private void Create_SelfDefined_ExcelReport(string sUserEmail)
+        private bool Create_SelfDefined_ExcelReport(string sUserEmail, string sLanguage)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/WaExlViewer/WaExlViewer.asp')]").Click();
-            PrintStep("Create SelfDefined type ExcelReport");
+            try
+            {
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/WaExlViewer/WaExlViewer.asp')]")).Click();
+                Thread.Sleep(1000);
 
-            EventLog.AddLog("Create SelfDefined Data log ExcelReport");
-            Create_SelfDefined_Datalog_ExcelReport(sUserEmail);
-            PrintStep("Create SelfDefined Data log ExcelReport");
+                EventLog.AddLog("Create SelfDefined Data log ExcelReport");
+                if (Create_SelfDefined_Datalog_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
 
-            EventLog.AddLog("Create SelfDefined ODBC Data ExcelReport");
-            Create_SelfDefined_ODBCData_ExcelReport(sUserEmail);
-            PrintStep("Create SelfDefined ODBC Data ExcelReport");
+                EventLog.AddLog("Create SelfDefined ODBC Data ExcelReport");
+                if (Create_SelfDefined_ODBCData_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
 
-            EventLog.AddLog("Create SelfDefined Alarm ExcelReport");
-            Create_SelfDefined_Alarm_ExcelReport(sUserEmail);
-            PrintStep("Create SelfDefined Alarm ExcelReport");
+                EventLog.AddLog("Create SelfDefined Alarm ExcelReport");
+                if (Create_SelfDefined_Alarm_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
 
-            EventLog.AddLog("Create SelfDefined Action Log ExcelReport");
-            Create_SelfDefined_ActionLog_ExcelReport(sUserEmail);
-            PrintStep("Create SelfDefined Action Log ExcelReport");
+                EventLog.AddLog("Create SelfDefined Action Log ExcelReport");
+                if (Create_SelfDefined_ActionLog_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
 
-            EventLog.AddLog("Create SelfDefined Event Log ExcelReport");
-            Create_SelfDefined_EventLog_ExcelReport(sUserEmail);
-            PrintStep("Create SelfDefined Event Log ExcelReport");
+                EventLog.AddLog("Create SelfDefined Event Log ExcelReport");
+                if (Create_SelfDefined_EventLog_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Create_SelfDefined_ExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
         }
 
-        private void Create_SelfDefined_Datalog_ExcelReport(string sUserEmail)
+        private bool Create_SelfDefined_Datalog_ExcelReport(string sUserEmail, string slanguage)
         {
-            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-            api.ByName("rptName").Clear();
-            api.ByName("rptName").Enter("ExcelReport_SelfDefined_DataLog_Excel").Exe();
-            api.ByName("dataSrc").Click();  // Click "Data Log" button
-            api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
-            switch (slanguage)
+            try
             {
-                case "ENG":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
+                driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).SendKeys("ExcelReport_SelfDefined_DataLog_Excel");
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("dataSrc")).Click();  // Click "Data Log" button
+                new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText("template1.xlsx");
+                Thread.Sleep(1000);
 
-                default:
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-            }
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自訂");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自订");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
 
-            // set today as start/end date
-            string sToday = DateTime.Now.ToString("%d");
-            string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
-            api.ByName("tStart").Click();
-            Thread.Sleep(500);
-            api.ByTxt(sToday).Click();
-            Thread.Sleep(500);
-            api.ByXpath("(//button[@type='button'])[2]").Click();
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                }
 
-            if (sTomorrow != "1")
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
-            else  // 跳頁
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
+                // set today as start/end date
+                string sToday = DateTime.Now.ToString("%d");
+                string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
+                driver.FindElement(By.Name("tStart")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.LinkText(sToday)).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                
+                if (sTomorrow != "1")
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+                else  // 跳頁
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.CssSelector("span.ui-icon.ui-icon-circle-triangle-e")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
 
-            api.ByName("interval").Clear();
-            api.ByName("interval").Enter("1").Exe();
-            api.ByXpath("(//input[@name='fileType'])[2]").Click();
-
-            // 湊到最大上限32個TAG
-            string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
+                driver.FindElement(By.Name("interval")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("interval")).SendKeys("1");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='fileType'])[2]")).Click();
+                Thread.Sleep(1000);
+                
+                // 湊到最大上限32個TAG
+                string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
                                      "Calc_ANDConDisAll", "Calc_ANDDIAll", "Calc_ANDDOAll", "Calc_AvgAIAll", "Calc_AvgAOAll", "Calc_AvgConAnaAll", "Calc_AvgSystemAll",
                                      "AT_AI0050", "AT_AI0100", "AT_AI0150", "AT_AO0050", "AT_AO0100", "AT_AO0150", "AT_DI0050", "AT_DI0100", "AT_DI0150", "AT_DO0050",
                                      "AT_DO0100", "AT_DO0150", "ConAna_0100", "ConDis_0100", "SystemSec_0100", "SystemSec_0200"};
-            for (int i = 0; i < ReportTagName.Length; i++)
-            {
-                try
+                for (int i = 0; i < ReportTagName.Length; i++)
                 {
-                    api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                    new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[i]);
                 }
-                catch (Exception ex)
-                {
-                    EventLog.AddLog("CreateExcelReport error: " + ex.ToString());
-                    i--;
-                }
-            }
-            api.ById("torightBtn").Click();
-            api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
 
-            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
-            api.ByName("emailto").Clear();
-            api.ByName("emailto").Enter(sUserEmail).Exe();
-            api.ByName("cfgSubmit").Click();
+                driver.FindElement(By.Id("torightBtn")).Click();
+                Thread.Sleep(1000);
+                new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[0]);
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("cfgSubmit")).Click();
+                
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Create_SelfDefined_Datalog_ExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
+            
         }
 
-        private void Create_SelfDefined_ODBCData_ExcelReport(string sUserEmail)
+        private bool Create_SelfDefined_ODBCData_ExcelReport(string sUserEmail, string slanguage)
         {
-            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-            api.ByName("rptName").Clear();
-            api.ByName("rptName").Enter("ExcelReport_SelfDefined_ODBCData_Excel").Exe();
-            api.ByXpath("(//input[@name='dataSrc'])[2]").Click();   // ODBC
-            api.ByName("selectTemplate").SelectVal("template1.xlsx").Exe();
-            switch (slanguage)
+            try
             {
-                case "ENG":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
+                driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).SendKeys("ExcelReport_SelfDefined_ODBCData_Excel");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='dataSrc'])[2]")).Click();  // ODBC
+                new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText("template1.xlsx");
+                Thread.Sleep(1000);
 
-                default:
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-            }
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自訂");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自订");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
 
-            // set today as start/end date
-            string sToday = DateTime.Now.ToString("%d");
-            string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
-            api.ByName("tStart").Click();
-            Thread.Sleep(500);
-            api.ByTxt(sToday).Click();
-            Thread.Sleep(500);
-            api.ByXpath("(//button[@type='button'])[2]").Click();
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                }
 
-            if (sTomorrow != "1")
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
-            else
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
+                // set today as start/end date
+                string sToday = DateTime.Now.ToString("%d");
+                string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
+                driver.FindElement(By.Name("tStart")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.LinkText(sToday)).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                
+                if (sTomorrow != "1")
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+                else  // 跳頁
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.CssSelector("span.ui-icon.ui-icon-circle-triangle-e")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
 
-            api.ByName("interval").Clear();
-            api.ByName("interval").Enter("1").Exe();
-            api.ByXpath("(//input[@name='fileType'])[2]").Click();
-
-            // 湊到最大上限32個TAG
-            string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
+                driver.FindElement(By.Name("interval")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("interval")).SendKeys("1");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='fileType'])[2]")).Click();
+                Thread.Sleep(1000);
+                
+                // 湊到最大上限32個TAG
+                string[] ReportTagName = { "Calc_ConAna", "Calc_ConDis", "Calc_ModBusAI", "Calc_ModBusAO", "Calc_ModBusDI", "Calc_ModBusDO", "Calc_OPCDA", "Calc_OPCUA","Calc_System",
                                      "Calc_ANDConDisAll", "Calc_ANDDIAll", "Calc_ANDDOAll", "Calc_AvgAIAll", "Calc_AvgAOAll", "Calc_AvgConAnaAll", "Calc_AvgSystemAll",
                                      "AT_AI0050", "AT_AI0100", "AT_AI0150", "AT_AO0050", "AT_AO0100", "AT_AO0150", "AT_DI0050", "AT_DI0100", "AT_DI0150", "AT_DO0050",
                                      "AT_DO0100", "AT_DO0150", "ConAna_0100", "ConDis_0100", "SystemSec_0100", "SystemSec_0200"};
-            for (int i = 0; i < ReportTagName.Length; i++)
-            {
-                try
+                for (int i = 0; i < ReportTagName.Length; i++)
                 {
-                    api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                    new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[i]);
                 }
-                catch (Exception ex)
-                {
-                    EventLog.AddLog("CreateExcelReport error: " + ex.ToString());
-                    i--;
-                }
-            }
-            api.ById("torightBtn").Click();
-            api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
 
-            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
-            api.ByName("emailto").Clear();
-            api.ByName("emailto").Enter(sUserEmail).Exe();
-            api.ByName("cfgSubmit").Click();
+                driver.FindElement(By.Id("torightBtn")).Click();
+                Thread.Sleep(1000);
+                new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[0]);
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("cfgSubmit")).Click();
+
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Create_SelfDefined_ODBCData_ExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
+            
         }
 
-        private void Create_SelfDefined_Alarm_ExcelReport(string sUserEmail)
+        private bool Create_SelfDefined_Alarm_ExcelReport(string sUserEmail,string slanguage)
         {
-            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-            api.ByName("rptName").Clear();
-            api.ByName("rptName").Enter("ExcelReport_SelfDefined_Alarm_Excel").Exe();
-            api.ByXpath("(//input[@name='dataSrc'])[3]").Click();   // Alarm
-            api.ByName("selectTemplate").SelectVal("AlarmTemplate1_ver.xlsx").Exe();
-            switch (slanguage)
+            try
             {
-                case "ENG":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
+                driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).SendKeys("ExcelReport_SelfDefined_Alarm_Excel");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='dataSrc'])[3]")).Click();  // Alarm
+                new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText("AlarmTemplate1_ver.xlsx");
+                Thread.Sleep(1000);
 
-                default:
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-            }
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自訂");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自订");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
 
-            // set today as start/end date
-            string sToday = DateTime.Now.ToString("%d");
-            string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
-            api.ByName("tStart").Click();
-            Thread.Sleep(500);
-            api.ByTxt(sToday).Click();
-            Thread.Sleep(500);
-            api.ByXpath("(//button[@type='button'])[2]").Click();
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                }
 
-            if (sTomorrow != "1")
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
-            else
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
+                // set today as start/end date
+                string sToday = DateTime.Now.ToString("%d");
+                string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
+                driver.FindElement(By.Name("tStart")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.LinkText(sToday)).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                
+                if (sTomorrow != "1")
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+                else  // 跳頁
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.CssSelector("span.ui-icon.ui-icon-circle-triangle-e")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
 
-            // 湊到最大上限32個TAG
-            string[] ReportTagName = { "AT_AI0001", "AT_AO0001", "AT_DI0001", "AT_DO0001", "Calc_ConAna", "Calc_ConDis", "ConDis_0001", "SystemSec_0001",
+                // 湊到最大上限32個TAG
+                string[] ReportTagName = { "AT_AI0001", "AT_AO0001", "AT_DI0001", "AT_DO0001", "Calc_ConAna", "Calc_ConDis", "ConDis_0001", "SystemSec_0001",
                                        "ConAna_0001", "ConAna_0010", "ConAna_0020", "ConAna_0030", "ConAna_0040", "ConAna_0050", "ConAna_0060", "ConAna_0070",
-                                       "ConAna_0080", "ConAna_0090", "ConAna_0100", "ConAna_0110", "ConAna_0120", "ConAna_0130", "ConAna_0140", "ConAna_0150", 
+                                       "ConAna_0080", "ConAna_0090", "ConAna_0100", "ConAna_0110", "ConAna_0120", "ConAna_0130", "ConAna_0140", "ConAna_0150",
                                        "ConAna_0160", "ConAna_0170","ConAna_0180", "ConAna_0190", "ConAna_0200", "ConAna_0210", "ConAna_0220", "ConAna_0230"};
-            for (int i = 0; i < ReportTagName.Length; i++)
-            {
-                try
+                for (int i = 0; i < ReportTagName.Length; i++)
                 {
-                    api.ById("tagsLeftList").SelectTxt(ReportTagName[i]).Exe();
+                    new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[i]);
                 }
-                catch (Exception ex)
+
+                driver.FindElement(By.Id("torightBtn")).Click();
+                Thread.Sleep(1000);
+                new SelectElement(driver.FindElement(By.Id("tagsLeftList"))).SelectByText(ReportTagName[0]);
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("cfgSubmit")).Click();
+
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Create_SelfDefined_Alarm_ExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
+        }
+
+        private bool Create_SelfDefined_ActionLog_ExcelReport(string sUserEmail, string slanguage)
+        {
+            try
+            {
+                driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).SendKeys("ExcelReport_SelfDefined_ActionLog_Excel");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='dataSrc'])[4]")).Click();  // Action Log
+                new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText("ActionTemplate1_ver.xlsx");
+                Thread.Sleep(1000);
+
+                switch (slanguage)
                 {
-                    EventLog.AddLog("CreateExcelReport error: " + ex.ToString());
-                    i--;
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自訂");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自订");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
                 }
-            }
-            api.ById("torightBtn").Click();
-            api.ById("tagsRightList").SelectTxt(ReportTagName[0]).Exe();
 
-            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
-            api.ByName("emailto").Clear();
-            api.ByName("emailto").Enter(sUserEmail).Exe();
-            api.ByName("cfgSubmit").Click();
+                // set today as start/end date
+                string sToday = DateTime.Now.ToString("%d");
+                string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
+                driver.FindElement(By.Name("tStart")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.LinkText(sToday)).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                
+                if (sTomorrow != "1")
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+                else  // 跳頁
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.CssSelector("span.ui-icon.ui-icon-circle-triangle-e")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+
+                driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("cfgSubmit")).Click();
+
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred Create_SelfDefined_ActionLog_ExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
         }
 
-        private void Create_SelfDefined_ActionLog_ExcelReport(string sUserEmail)
+        private bool Create_SelfDefined_EventLog_ExcelReport(string sUserEmail,string slanguage)
         {
-            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-            api.ByName("rptName").Clear();
-            api.ByName("rptName").Enter("ExcelReport_SelfDefined_ActionLog_Excel").Exe();
-            api.ByXpath("(//input[@name='dataSrc'])[4]").Click();   // Action Log
-            api.ByName("selectTemplate").SelectVal("ActionTemplate1_ver.xlsx").Exe();
-            switch (slanguage)
+            try
             {
-                case "ENG":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
+                driver.FindElement(By.XPath("//a[contains(@href, 'addRptCfg.aspx')]")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("rptName")).SendKeys("ExcelReport_SelfDefined_EventLog_Excel");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//input[@name='dataSrc'])[5]")).Click();  // Action Log
+                new SelectElement(driver.FindElement(By.Name("selectTemplate"))).SelectByText("EventTemplate1_ver.xlsx");
+                Thread.Sleep(1000);
 
-                default:
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自訂");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("自订");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("speTimeFmt"))).SelectByText("Self-Defined");
+                        break;
+                }
+
+                // set today as start/end date
+                string sToday = DateTime.Now.ToString("%d");
+                string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
+                driver.FindElement(By.Name("tStart")).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.LinkText(sToday)).Click();
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                
+                if (sTomorrow != "1")
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+                else  // 跳頁
+                {
+                    driver.FindElement(By.Name("tEnd")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.CssSelector("span.ui-icon.ui-icon-circle-triangle-e")).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.LinkText(sTomorrow)).Click();
+                    Thread.Sleep(1000);
+                    driver.FindElement(By.XPath("(//button[@type='button'])[2]")).Click();
+                }
+
+                driver.FindElement(By.XPath("(//input[@name='attachFormat'])[2]")).Click();   // Send Email: Excel Report     
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).Clear();
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("emailto")).SendKeys(sUserEmail);
+                Thread.Sleep(1000);
+                driver.FindElement(By.Name("cfgSubmit")).Click();
+                Thread.Sleep(1000);
+                
             }
-
-            // set today as start/end date
-            string sToday = DateTime.Now.ToString("%d");
-            string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
-            api.ByName("tStart").Click();
-            Thread.Sleep(500);
-            api.ByTxt(sToday).Click();
-            Thread.Sleep(500);
-            api.ByXpath("(//button[@type='button'])[2]").Click();
-
-            if (sTomorrow != "1")
+            catch (Exception ex)
             {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
+                EventLog.AddLog(@"Error occurred Create_SelfDefined_EventLog_ExcelReport: " + ex.ToString());
+                return false;
             }
-            else
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
-
-            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
-            api.ByName("emailto").Clear();
-            api.ByName("emailto").Enter(sUserEmail).Exe();
-            api.ByName("cfgSubmit").Click();
+            return true;
         }
 
-        private void Create_SelfDefined_EventLog_ExcelReport(string sUserEmail)
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
         {
-            api.ByXpath("//a[contains(@href, 'addRptCfg.aspx')]").Click();
-
-            api.ByName("rptName").Clear();
-            api.ByName("rptName").Enter("ExcelReport_SelfDefined_EventLog_Excel").Exe();
-            api.ByXpath("(//input[@name='dataSrc'])[5]").Click();   // Action Log
-            api.ByName("selectTemplate").SelectVal("EventTemplate1_ver.xlsx").Exe();
-            switch (slanguage)
-            {
-                case "ENG":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("speTimeFmt").SelectTxt("自訂").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("speTimeFmt").SelectTxt("自订").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-
-                default:
-                    api.ByName("speTimeFmt").SelectTxt("Self-Defined").Exe();
-                    break;
-            }
-
-            // set today as start/end date
-            string sToday = DateTime.Now.ToString("%d");
-            string sTomorrow = DateTime.Now.AddDays(+1).ToString("%d");
-            api.ByName("tStart").Click();
-            Thread.Sleep(500);
-            api.ByTxt(sToday).Click();
-            Thread.Sleep(500);
-            api.ByXpath("(//button[@type='button'])[2]").Click();
-
-            if (sTomorrow != "1")
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
-            else
-            {
-                api.ByName("tEnd").Click();
-                Thread.Sleep(500);
-                api.ByCss("span.ui-icon.ui-icon-circle-triangle-e").Click();
-                Thread.Sleep(500);
-                api.ByTxt(sTomorrow).Click();
-                Thread.Sleep(500);
-                api.ByXpath("(//button[@type='button'])[2]").Click();
-            }
-
-            api.ByXpath("(//input[@name='attachFormat'])[2]").Click();
-            api.ByName("emailto").Clear();
-            api.ByName("emailto").Enter(sUserEmail).Exe();
-            api.ByName("cfgSubmit").Click();
-        }
-
-        private void ReturnSCADAPage()
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
-
-        }
-
-        private void Start_Click(object sender, EventArgs e)
-        {
-            long lErrorCode = 0;
-            EventLog.AddLog("===Create Excel Report start===");
-            CheckifIniFileChange();
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            EventLog.AddLog("User Email Address= " + UserEmail.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text, UserEmail.Text);
-            EventLog.AddLog("===Create Excel Report end===");
-        }
-
-        private void PrintStep(string sTestItem)
-        {
-            DataGridViewRow dgvRow;
-            DataGridViewCell dgvCell;
-
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
-
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-            Application.DoEvents();
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
         }
 
         private void InitialRequiredInfo(string sFilePath)
         {
             StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
-            /*
-            tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", "TestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
-            */
+
             tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
             tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
-            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
-            UserEmail.Text = sDefaultUserEmail.ToString();
-            ProjectName.Text = sDefaultProjectName1.ToString();
-            WebAccessIP.Text = sDefaultIP1.ToString();
+            tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sFilePath);
+
+            comboBox_Language.Text = sDefaultUserLanguage.ToString();
+            textbox_UserEmail.Text = sDefaultUserEmail.ToString();
+            comboBox_Browser.Text = sBrowser.ToString();
+            textBox_Primary_project.Text = sDefaultProjectName1.ToString();
+            textBox_Secondary_project.Text = sDefaultProjectName2.ToString();
+            textBox_Primary_IP.Text = sDefaultIP1.ToString();
+            textBox_Secondary_IP.Text = sDefaultIP2.ToString();
+            if (Int32.TryParse(sDefaultUserRetryNum.ToString(), out iRetryNum))     // 在這邊取得retry number
+            {
+                EventLog.AddLog("Converted retry number '{0}' to {1}.", sDefaultUserRetryNum.ToString(), iRetryNum);
+            }
+            else
+            {
+                EventLog.AddLog("Attempted conversion of '{0}' failed.",
+                                sDefaultUserRetryNum.ToString() == null ? "<null>" : sDefaultUserRetryNum.ToString());
+                EventLog.AddLog("Set the number of retry as 3");
+                iRetryNum = 3;  // 轉換失敗 直接指定預設值為3
+            }
         }
 
         private void CheckifIniFileChange()
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
             StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
+
             if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
             {
                 EventLog.AddLog(".ini file exist, check if .ini file need to update");
+                tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sIniFilePath);
                 tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sIniFilePath);
 
-                if (UserEmail.Text != sDefaultUserEmail.ToString())
+                if (comboBox_Language.Text != sDefaultUserLanguage.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("UserInfo", "Email", UserEmail.Text, sIniFilePath);
+                    tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                    EventLog.AddLog("New Language update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserLanguage.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Language.Text);
+                }
+                if (textbox_UserEmail.Text != sDefaultUserEmail.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
                     EventLog.AddLog("New UserEmail update to .ini file!!");
                     EventLog.AddLog("Original ini:" + sDefaultUserEmail.ToString());
-                    EventLog.AddLog("New ini:" + UserEmail.Text);
+                    EventLog.AddLog("New ini:" + textbox_UserEmail.Text);
                 }
-                if (ProjectName.Text != sDefaultProjectName1.ToString())
+                if (comboBox_Browser.Text != sBrowser.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                    EventLog.AddLog("New ProjectName update to .ini file!!");
+                    tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                    EventLog.AddLog("New Browser update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sBrowser.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Browser.Text);
+                }
+                if (textBox_Primary_project.Text != sDefaultProjectName1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary ProjectName update to .ini file!!");
                     EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
-                    EventLog.AddLog("New ini:" + ProjectName.Text);
+                    EventLog.AddLog("New ini:" + textBox_Primary_project.Text);
                 }
-                if (WebAccessIP.Text != sDefaultIP1.ToString())
+                if (textBox_Secondary_project.Text != sDefaultProjectName2.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                    EventLog.AddLog("New WebAccessIP update to .ini file!!");
+                    tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_project.Text);
+                }
+                if (textBox_Primary_IP.Text != sDefaultIP1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary IP update to .ini file!!");
                     EventLog.AddLog("Original ini:" + sDefaultIP1.ToString());
-                    EventLog.AddLog("New ini:" + WebAccessIP.Text);
+                    EventLog.AddLog("New ini:" + textBox_Primary_IP.Text);
+                }
+                if (textBox_Secondary_IP.Text != sDefaultIP2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_IP.Text);
                 }
             }
             else
-            {
+            {   // 若ini檔不存在 則建立新的
                 EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
-                tpc.F_WritePrivateProfileString("UserInfo", "Email", UserEmail.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "RetryNum", "3", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
             }
         }
 
+        private bool CreateExcelReport(string sProjectName, string sUserEmail, string sLanguage)
+        {
+            try
+            {
+                //EventLog.AddLog("Configure project");
+                //driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]")).Click();
+                //Thread.Sleep(1000);
+
+                EventLog.AddLog("check if exist any excel report");
+                if (ChceckExcelReport() == false)
+                {
+                    return false;
+                }
+
+                EventLog.AddLog("Create DailyReport Excel Report");
+                if (Create_DailyReport_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
+
+                EventLog.AddLog("Return SCADA Page");
+                if (ReturnSCADAPage() == false)
+                {
+                    return false;
+                }
+
+                EventLog.AddLog("Create SelfDefined Excel Report");
+                if (Create_SelfDefined_ExcelReport(sUserEmail, sLanguage) == false)
+                {
+                    return false;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred CreateExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
+            
+        }
+
+        private bool ChceckExcelReport()
+        {
+            try
+            {
+                driver.SwitchTo().Frame("rightFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("/html/body/table/tbody/tr[1]/td/a[30]/font/b")).Click();
+                Thread.Sleep(1000);
+
+                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                Int64 table_tr_length = (Int64)js.ExecuteScript("return document.getElementsByTagName('tr').length")-3;
+                if(table_tr_length == 0)
+                    EventLog.AddLog(@"Exist No excel report ");
+                else
+                {
+                    EventLog.AddLog(@"Exist excel report and delete it");
+                    for(int i=0; i< table_tr_length; i++)
+                    {
+                        driver.FindElement(By.XPath("//*[@id='cfgTr_0']/td[7]/a")).Click();
+                        Thread.Sleep(1000);
+                        IAlert alert = driver.SwitchTo().Alert();
+                        alert.Accept();
+                        Thread.Sleep(1000);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred ChceckExcelReport: " + ex.ToString());
+                return false;
+            }
+            return true;
+        }
+
+        private bool ReturnSCADAPage()
+        {
+            try
+            {
+                driver.SwitchTo().ParentFrame();
+                Thread.Sleep(1000);
+                driver.SwitchTo().Frame("leftFrame");
+                Thread.Sleep(1000);
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]")).Click();
+                Thread.Sleep(1000);
+                driver.SwitchTo().ParentFrame();
+                Thread.Sleep(1000);
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog(@"Error occurred ReturnSCADAPage: " + ex.ToString());
+                return false;
+            }
+            return true;
+        }
     }
 }

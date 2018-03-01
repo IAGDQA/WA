@@ -7,27 +7,36 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
-using System.IO;
+using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
+using CommonFunction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;       // for SelectElement use
+using System.IO;
 using System.Reflection;
 using Excel = Microsoft.Office.Interop.Excel;
-using CommonFunction;
 
 namespace ExcelInOut
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wcf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
+        Stopwatch sw = new Stopwatch();
 
-        private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
-        private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
-        internal const int Max_Rows_Val = 65535;
+        private IWebDriver driver;
+        int iRetryNum;
+        bool bFinalResult = true;
+        bool bPartResult = true;
         string baseUrl;
-        string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string sTestItemName = "ExcelInOut";
+        string sIniFilePath = @"C:\WebAccessAutoTestSettingInfo.ini";
+        string sTestLogFolder = @"C:\WALogData";
+        int[] getTheNumberofImportTag = new int[8];
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -40,41 +49,53 @@ namespace ExcelInOut
         {
             //Add test code
             long lErrorCode = 0;
-            EventLog.AddLog("===Excel in or out start (by iATester)===");
-            if (System.IO.File.Exists(sIniFilePath))    // 再load一次
+            EventLog.AddLog(string.Format("***** {0} test start (by iATester) *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            //Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            for (int i = 0; i < iRetryNum; i++)
             {
-                EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
-                InitialRequiredInfo(sIniFilePath);
+                EventLog.AddLog(string.Format("===Retry Number : {0} / {1} ===", i + 1, iRetryNum));
+                lErrorCode = Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+                if (lErrorCode == 0)
+                {
+                    eResult(this, new ResultEventArgs(iResult.Pass));
+                    break;
+                }
+                else
+                {
+                    if (i == iRetryNum - 1)
+                        eResult(this, new ResultEventArgs(iResult.Fail));
+                }
             }
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Excel in or out end (by iATester)===");
 
-            if (lErrorCode == 0)
-            {
-                eResult(this, new ResultEventArgs(iResult.Pass));
-                eStatus(this, new StatusEventArgs(iStatus.Completion));
-            }
-            else
-            {
-                eResult(this, new ResultEventArgs(iResult.Fail));
-                eStatus(this, new StatusEventArgs(iStatus.Stop));
-            }
+            eStatus(this, new StatusEventArgs(iStatus.Completion));
+
+            EventLog.AddLog(string.Format("***** {0} test end (by iATester) *****", sTestItemName));
+        }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            EventLog.AddLog(string.Format("***** {0} test start *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            EventLog.AddLog(string.Format("***** {0} test end *****", sTestItemName));
         }
 
         public Form1()
         {
             InitializeComponent();
-            try
-            {
-                m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            Browser.SelectedIndex = 0;
+
+            comboBox_Browser.SelectedIndex = 0;
+            comboBox_Language.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             if (System.IO.File.Exists(sIniFilePath))
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
@@ -82,88 +103,124 @@ namespace ExcelInOut
             }
         }
 
-        long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
+        long Form1_Load(string sPrimaryProject, string sPrimaryIP, string sSecondaryProject, string sSecondaryIP, string sTestLogFolder, string sBrowser, string sUserEmail, string sLanguage)
         {
-            baseUrl = "http://" + sWebAccessIP;
-
-            if (sBrowser == "Internet Explorer")
+            bPartResult = true;
+            baseUrl = "http://" + sPrimaryIP;
+            if (bPartResult == true)
             {
-                EventLog.AddLog("Browser= Internet Explorer");
-                api = new AdvSeleniumAPI("IE", "");
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("Open browser for selenium driver use");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    if (sBrowser == "Internet Explorer")
+                    {
+                        EventLog.AddLog("Browser= Internet Explorer");
+                        InternetExplorerOptions options = new InternetExplorerOptions();
+                        options.IgnoreZoomLevel = true;
+                        driver = new InternetExplorerDriver(options);
+                        driver.Manage().Window.Maximize();
+                    }
+                    else
+                    {
+                        EventLog.AddLog("Not support temporary");
+                        bPartResult = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error opening browser: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Open browser", "Open browser for selenium driver use", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
             }
-            else if (sBrowser == "Mozilla FireFox")
+
+            //Login test
+            if (bPartResult == true)
             {
-                EventLog.AddLog("Browser= Mozilla FireFox");
-                api = new AdvSeleniumAPI("FireFox", "");
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("Login WebAccess homepage");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                    driver.FindElement(By.Id("userField")).Submit();
+                    Thread.Sleep(2000);
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sPrimaryProject + "')]")).Click();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Login", "Login project manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
             }
-
-
-            // Launch Firefox and login
-            api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
-
-            api.ById("userField").Enter("").Submit().Exe();
-            PrintStep("Login WebAccess");
-
-            // Configure project by project name
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep("Configure project");
-
 
             //Case1: Excel in
-            EventLog.AddLog("Excel in...");
-            //string sSourceFile = "C:\\WALogData\\bwTagImport_AutoTest"; //debug
-            //string sCurrentFilePath = Directory.GetCurrentDirectory();
-            string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
-
-            string sSourceFile = sCurrentFilePath + "\\ExcelIn\\bwTagImport_AutoTest";
-
-            EventLog.AddLog("Set project name to excel file");
-            SetExcelProjectName(sProjectName, sSourceFile);
-            EventLog.AddLog("Set project name to excel file done!");
-
-            ExcuteExcelIn(sSourceFile);
-            //Thread.Sleep(20000);
-            string fileNameTar_in = string.Format("ExcelIn_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            EventLog.PrintScreen(fileNameTar_in);
-            PrintStep("Excel in");
-
-            api.Refresh();
-            ReturnSCADAPage();
-
-            //Case2: Excel out
-            EventLog.AddLog("Excel out...");
-            string sdestFile = sTestLogFolder + string.Format("\\bwTagExport_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            ExcuteExcelOut(sdestFile);
-            //Thread.Sleep(20000);
-            string fileNameTar_out = string.Format("ExcelOut_{0:yyyyMMdd_hhmmss}", DateTime.Now);
-            EventLog.PrintScreen(fileNameTar_out);
-            PrintStep("Excel out");
-
-            api.Quit();
-            PrintStep("Quit browser");
-
-            bool bSeleniumResult = true;
-            int iTotalSeleniumAction = dataGridView1.Rows.Count;
-            for (int i = 0; i < iTotalSeleniumAction - 1; i++)
+            if (bPartResult == true)
             {
-                DataGridViewRow row = dataGridView1.Rows[i];
-                string sSeleniumResult = row.Cells[2].Value.ToString();
-                if (sSeleniumResult != "pass")
+                EventLog.AddLog("Excel in");
+                sw.Reset(); sw.Start();
+                try
                 {
-                    bSeleniumResult = false;
-                    EventLog.AddLog("Test Fail !!");
-                    EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
-                    EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
-                    EventLog.AddLog("Result = " + row.Cells[2].Value.ToString());
-                    EventLog.AddLog("ErrorCode = " + row.Cells[3].Value.ToString());
-                    EventLog.AddLog("ExeTime(ms) = " + row.Cells[4].Value.ToString());
-                    break;
+                    //string sSourceFile = @"C:\WALogData\bwTagImport_AutoTest"; //debug
+                    //string sCurrentFilePath = Directory.GetCurrentDirectory();
+                    string sCurrentFilePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(this.GetType()).Location);
+                    string sSourceFile = sCurrentFilePath + "\\ExcelIn\\bwTagImport_AutoTest";
+
+                    EventLog.AddLog("Set project name to excel file");
+                    SetExcelProjectName(sPrimaryProject, sSourceFile);
+                    EventLog.AddLog("Set project name to excel file done!");
+
+                    ExcuteExcelIn(sSourceFile);
+                    //Thread.Sleep(20000);
+                    string fileNameTar_in = string.Format("ExcelIn_{0:yyyyMMdd_hhmmss}", DateTime.Now);
+                    EventLog.PrintScreen(fileNameTar_in);
                 }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred Excel in: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Excel in", "Excel in", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
             }
 
-            if (bSeleniumResult)
+            //Case2: Excel out
+            if (bPartResult == true)
+            {
+                EventLog.AddLog("Excel out");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    string sdestFile = sTestLogFolder + string.Format("\\bwTagExport_{0:yyyyMMdd_hhmmss}", DateTime.Now);
+                    ExcuteExcelOut(sdestFile);
+                    //Thread.Sleep(20000);
+                    string fileNameTar_out = string.Format("ExcelOut_{0:yyyyMMdd_hhmmss}", DateTime.Now);
+                    EventLog.PrintScreen(fileNameTar_out);
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred Excel out: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Excel out", "Excel out", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
+            }
+            Thread.Sleep(1000);
+
+            driver.Dispose();
+
+            #region Result judgement
+            if (bFinalResult && bPartResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -177,8 +234,7 @@ namespace ExcelInOut
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
-            //return 0;
+            #endregion
         }
 
         private void SetExcelProjectName(string sProjectName, string sSourceFile)
@@ -211,6 +267,7 @@ namespace ExcelInOut
                 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[0] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i-2)); // 去頭去尾
                     break;
                 }
@@ -229,6 +286,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[1] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -247,6 +305,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[2] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -265,6 +324,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[3] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -283,6 +343,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[4] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -301,6 +362,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[5] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -319,6 +381,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[6] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -337,6 +400,7 @@ namespace ExcelInOut
 
                 if (aRangeChange.Value2 == "**********")
                 {
+                    getTheNumberofImportTag[7] = i - 2;
                     EventLog.AddLog(string.Format("The number of import tags is {0}", i - 2)); // 去頭去尾
                     break;
                 }
@@ -363,176 +427,183 @@ namespace ExcelInOut
             EventLog.AddLog("Quit");
         }
 
-        private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
-        {
-            if (this.dataGridView1.InvokeRequired)
-            {
-                this.dataGridView1.Invoke(new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow), new object[] { i_Row });
-                return;
-            }
-
-            this.dataGridView1.Rows.Insert(0, i_Row);
-            if (dataGridView1.Rows.Count > Max_Rows_Val)
-            {
-                dataGridView1.Rows.RemoveAt((dataGridView1.Rows.Count - 1));
-            }
-            this.dataGridView1.Update();
-        }
-
         private void ExcuteExcelIn(string sSourceFile)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=import')]").Click();
-            api.ByName("XlsName").Clear();
-            try
+            driver.SwitchTo().Frame("rightFrame");
+            driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=import')]")).Click();
+            Thread.Sleep(1000);
+            driver.FindElement(By.Name("XlsName")).Clear();
+            driver.FindElement(By.Name("XlsName")).SendKeys(sSourceFile);
+            driver.FindElement(By.Name("submit")).Click();
+            Thread.Sleep(1500);
+            string[] getName = new string[8];
+            string[] getDescription = new string[8];
+            EventLog.AddLog("The result of WebAccess excel in is below: ");
+            for (int i = 0; i < 8; i++)
             {
-                api.ByName("XlsName").Enter(sSourceFile).Submit().Exe();
+                getName[i] = driver.FindElement(By.XPath(string.Format("//*[@id='form1']/table/tbody/tr[{0}]/td[3]/font", i + 3))).Text;
+                getDescription[i] = driver.FindElement(By.XPath(string.Format("//*[@id='form1']/table/tbody/tr[{0}]/td[4]/font",i+3))).Text;
+                EventLog.AddLog( getName[i] + " --> " + getDescription[i] );
+
+                if (!getDescription[i].Contains(getTheNumberofImportTag[i].ToString()))
+                {
+                    bPartResult = false;
+                    EventLog.AddLog("Check the number of import tag is not correct!!");
+                    EventLog.AddLog("The number in excel is: " + getTheNumberofImportTag[i].ToString());
+                }
             }
-            catch(Exception ex)
-            {
-                EventLog.AddLog("selenium sumbit excel in action time out");
-                EventLog.AddLog(ex.ToString());
-            }
+            driver.FindElement(By.Name("submit")).Click();
+            // Check excel data
+            driver.SwitchTo().ParentFrame();
         }
 
         private void ExcuteExcelOut(string sdestFile)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=export')]").Click();
-            api.ByName("XlsName").Clear();
+            driver.SwitchTo().Frame("rightFrame");
+            driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/odbc/odbcPg1.asp?pos=export')]")).Click();
+            Thread.Sleep(1000);
+            driver.FindElement(By.Name("XlsName")).Clear();
+            driver.FindElement(By.Name("XlsName")).SendKeys(sdestFile);
+            driver.FindElement(By.Name("submit")).Click();
+            Thread.Sleep(1500);
+            driver.FindElement(By.Name("submit")).Click();
 
-            try
+            if (!System.IO.File.Exists(sdestFile+".XLS"))
             {
-                api.ByName("XlsName").Enter(sdestFile).Submit().Exe();
-            }
-            catch (Exception ex)
-            {
-                EventLog.AddLog("selenium sumbit excel out action time out");
-                EventLog.AddLog(ex.ToString());
+                bPartResult = false;
+                EventLog.AddLog("Error!! Cannot find " + sdestFile + ".XLS !!");
             }
         }
 
-        private void ReturnSCADAPage()
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
         {
-            //driver.SwitchTo().Window(driver.CurrentWindowHandle);   // Return parent frame
-            //driver.SwitchTo().Frame("leftFrame");                   // Focus on left frame
-            //driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]")).Click();
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
-
-        }
-
-        private void Start_Click(object sender, EventArgs e)
-        {
-            long lErrorCode = 0;
-            EventLog.AddLog("===Excel in or out start===");
-            CheckifIniFileChange();
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Excel in or out end===");
-        }
-
-        private void PrintStep(string sTestItem)
-        {
-            DataGridViewRow dgvRow;
-            DataGridViewCell dgvCell;
-
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
-
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-            Application.DoEvents();
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
         }
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
-            /*
-            tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", "TestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
-            */
-            tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
-            ProjectName.Text = sDefaultProjectName1.ToString();
-            WebAccessIP.Text = sDefaultIP1.ToString();
+
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sFilePath);
+
+            comboBox_Language.Text = sDefaultUserLanguage.ToString();
+            textbox_UserEmail.Text = sDefaultUserEmail.ToString();
+            comboBox_Browser.Text = sBrowser.ToString();
+            textBox_Primary_project.Text = sDefaultProjectName1.ToString();
+            textBox_Secondary_project.Text = sDefaultProjectName2.ToString();
+            textBox_Primary_IP.Text = sDefaultIP1.ToString();
+            textBox_Secondary_IP.Text = sDefaultIP2.ToString();
+            if (Int32.TryParse(sDefaultUserRetryNum.ToString(), out iRetryNum))     // 在這邊取得retry number
+            {
+                EventLog.AddLog("Converted retry number '{0}' to {1}.", sDefaultUserRetryNum.ToString(), iRetryNum);
+            }
+            else
+            {
+                EventLog.AddLog("Attempted conversion of '{0}' failed.",
+                                sDefaultUserRetryNum.ToString() == null ? "<null>" : sDefaultUserRetryNum.ToString());
+                EventLog.AddLog("Set the number of retry as 3");
+                iRetryNum = 3;  // 轉換失敗 直接指定預設值為3
+            }
         }
 
         private void CheckifIniFileChange()
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
+
             if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
             {
                 EventLog.AddLog(".ini file exist, check if .ini file need to update");
-                tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sIniFilePath);
 
-                if (ProjectName.Text != sDefaultProjectName1.ToString())
+                if (comboBox_Language.Text != sDefaultUserLanguage.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                    EventLog.AddLog("New ProjectName update to .ini file!!");
-                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
-                    EventLog.AddLog("New ini:" + ProjectName.Text);
+                    tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                    EventLog.AddLog("New Language update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserLanguage.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Language.Text);
                 }
-                if (WebAccessIP.Text != sDefaultIP1.ToString())
+                if (textbox_UserEmail.Text != sDefaultUserEmail.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                    EventLog.AddLog("New WebAccessIP update to .ini file!!");
+                    tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                    EventLog.AddLog("New UserEmail update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserEmail.ToString());
+                    EventLog.AddLog("New ini:" + textbox_UserEmail.Text);
+                }
+                if (comboBox_Browser.Text != sBrowser.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                    EventLog.AddLog("New Browser update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sBrowser.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Browser.Text);
+                }
+                if (textBox_Primary_project.Text != sDefaultProjectName1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Primary_project.Text);
+                }
+                if (textBox_Secondary_project.Text != sDefaultProjectName2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_project.Text);
+                }
+                if (textBox_Primary_IP.Text != sDefaultIP1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary IP update to .ini file!!");
                     EventLog.AddLog("Original ini:" + sDefaultIP1.ToString());
-                    EventLog.AddLog("New ini:" + WebAccessIP.Text);
+                    EventLog.AddLog("New ini:" + textBox_Primary_IP.Text);
+                }
+                if (textBox_Secondary_IP.Text != sDefaultIP2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_IP.Text);
                 }
             }
             else
-            {
+            {   // 若ini檔不存在 則建立新的
                 EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "RetryNum", "3", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
             }
         }
     }

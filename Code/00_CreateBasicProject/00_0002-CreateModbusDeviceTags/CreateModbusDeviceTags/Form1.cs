@@ -7,24 +7,35 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
+using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
 using CommonFunction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;       // for SelectElement use
+//using System.IO;
+//using System.Reflection;
+//using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CreateModbusDeviceTags
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wcf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
+        Stopwatch sw = new Stopwatch();
 
-        private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
-        private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
-        internal const int Max_Rows_Val = 65535;
+        private IWebDriver driver;
+        int iRetryNum;
+        bool bFinalResult = true;
+        bool bPartResult = true;
         string baseUrl;
-        string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
+        string sTestItemName = "CreateModbusDeviceTags";
+        string sIniFilePath = @"C:\WebAccessAutoTestSettingInfo.ini";
+        string sTestLogFolder = @"C:\WALogData";
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -37,44 +48,53 @@ namespace CreateModbusDeviceTags
         {
             //Add test code
             long lErrorCode = 0;
-            EventLog.AddLog("===Create Modebus Device Tags start (by iATester)===");
-
-            if (System.IO.File.Exists(sIniFilePath))    // 再load一次
-            {
-                EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
-                InitialRequiredInfo(sIniFilePath);
-            }
+            EventLog.AddLog(string.Format("***** {0} test start (by iATester) *****", sTestItemName));
             CheckifIniFileChange();
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Create Modebus Device Tags end (by iATester)===");
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            //Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            for (int i = 0; i < iRetryNum; i++)
+            {
+                EventLog.AddLog(string.Format("===Retry Number : {0} / {1} ===", i + 1, iRetryNum));
+                lErrorCode = Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+                if (lErrorCode == 0)
+                {
+                    eResult(this, new ResultEventArgs(iResult.Pass));
+                    break;
+                }
+                else
+                {
+                    if (i == iRetryNum - 1)
+                        eResult(this, new ResultEventArgs(iResult.Fail));
+                }
+            }
 
-            if (lErrorCode == 0)
-            {
-                eResult(this, new ResultEventArgs(iResult.Pass));
-                eStatus(this, new StatusEventArgs(iStatus.Completion));
-            }
-            else
-            {
-                eResult(this, new ResultEventArgs(iResult.Fail));
-                eStatus(this, new StatusEventArgs(iStatus.Stop));
-            }
+            eStatus(this, new StatusEventArgs(iStatus.Completion));
+
+            EventLog.AddLog(string.Format("***** {0} test end (by iATester) *****", sTestItemName));
+        }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            EventLog.AddLog(string.Format("***** {0} test start *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            EventLog.AddLog(string.Format("***** {0} test end *****", sTestItemName));
         }
 
         public Form1()
         {
             InitializeComponent();
-            try
-            {
-                m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            Browser.SelectedIndex = 0;
 
+            comboBox_Browser.SelectedIndex = 0;
+            comboBox_Language.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             if (System.IO.File.Exists(sIniFilePath))
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
@@ -82,76 +102,104 @@ namespace CreateModbusDeviceTags
             }
         }
 
-        long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
+        long Form1_Load(string sPrimaryProject, string sPrimaryIP, string sSecondaryProject, string sSecondaryIP, string sTestLogFolder, string sBrowser, string sUserEmail, string sLanguage)
         {
-            baseUrl = "http://" + sWebAccessIP;
-
-            if (sBrowser == "Internet Explorer")
+            bPartResult = true;
+            baseUrl = "http://" + sPrimaryIP;
+            if (bPartResult == true)
             {
-                EventLog.AddLog("Browser= Internet Explorer");
-                api = new AdvSeleniumAPI("IE", "");
-                System.Threading.Thread.Sleep(1000);
-            }
-            else if (sBrowser == "Mozilla FireFox")
-            {
-                EventLog.AddLog("Browser= Mozilla FireFox");
-                api = new AdvSeleniumAPI("FireFox", "");
-                System.Threading.Thread.Sleep(1000);
-            }
-
-
-            // Launch Firefox and login
-            api.LinkWebUI(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]").Click();
-            api.ById("userField").Enter("").Submit().Exe();
-            PrintStep("Login WebAccess");
-
-            // Configure project by project name
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep("Configure project");
-
-            //Step1: add Comport
-            EventLog.AddLog("Add Comport");
-            AddComport();
-            PrintStep("Add Comport");
-
-            Thread.Sleep(1000);
-
-            //Step2: add Device
-            EventLog.AddLog("Add Device");
-            AddDevice(sWebAccessIP);
-            PrintStep("Add Device");
-
-            ReturnSCADAPage();
-            PrintStep("Return SCADA Page");
-
-            //Step2: Create Modbus Tag
-            EventLog.AddLog("Create Modbus Tag");
-            CreateModbusTag();
-
-            api.Quit();
-            PrintStep("Quit browser");
-
-            bool bSeleniumResult = true;
-            int iTotalSeleniumAction = dataGridView1.Rows.Count;
-            for (int i = 0; i < iTotalSeleniumAction - 1; i++)
-            {
-                DataGridViewRow row = dataGridView1.Rows[i];
-                string sSeleniumResult = row.Cells[2].Value.ToString();
-                if (sSeleniumResult != "pass")
+                EventLog.AddLog("Open browser for selenium driver use");
+                sw.Reset(); sw.Start();
+                try
                 {
-                    bSeleniumResult = false;
-                    EventLog.AddLog("Test Fail !!");
-                    EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
-                    EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
-                    EventLog.AddLog("Result = " + row.Cells[2].Value.ToString());
-                    EventLog.AddLog("ErrorCode = " + row.Cells[3].Value.ToString());
-                    EventLog.AddLog("ExeTime(ms) = " + row.Cells[4].Value.ToString());
-                    break;
+                    if (sBrowser == "Internet Explorer")
+                    {
+                        EventLog.AddLog("Browser= Internet Explorer");
+                        InternetExplorerOptions options = new InternetExplorerOptions();
+                        options.IgnoreZoomLevel = true;
+                        driver = new InternetExplorerDriver(options);
+                        driver.Manage().Window.Maximize();
+                    }
+                    else
+                    {
+                        EventLog.AddLog("Not support temporary");
+                        bPartResult = false;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error opening browser: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Open browser", "Open browser for selenium driver use", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
             }
 
-            if (bSeleniumResult)
+            //Login test
+            if (bPartResult == true)
+            {
+                EventLog.AddLog("Login WebAccess homepage");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                    driver.FindElement(By.Id("userField")).Submit();
+                    Thread.Sleep(3000);
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sPrimaryProject + "')]")).Click();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Login", "Login project manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
+            }
+
+            if (bPartResult == true)
+            {
+                EventLog.AddLog("Create ModBus tag");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    //Step0: check comport exist
+                    EventLog.AddLog("Check Comport");
+                    CheckComport();
+                    
+                    //Step1: add Comport
+                    EventLog.AddLog("Add Comport");
+                    AddComport();
+                    //PrintStep("Add Comport");
+
+                    Thread.Sleep(1000);
+
+                    //Step2: add Device
+                    EventLog.AddLog("Add Device");
+                    AddDevice(sPrimaryIP);
+                    //PrintStep("Add Device");
+
+                    //Step2: Create Modbus Tag
+                    EventLog.AddLog("Create Modbus Tag");
+                    CreateModbusTag();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred create ModBus tag: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Create", "Create ModBus tag", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
+            }
+
+            driver.Dispose();
+
+            #region Result judgement
+            if (bFinalResult && bPartResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -165,57 +213,80 @@ namespace CreateModbusDeviceTags
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
-            //return 0;
+            #endregion
         }
 
-        private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
+        private void CheckComport()
         {
-            if (this.dataGridView1.InvokeRequired)
+            driver.SwitchTo().Frame("leftFrame");
+            if (wcf.IsTestElementPresent(driver, "XPath", "//a[contains(@href, '/broadWeb/bwMainRight.asp?pos=comport') and contains(@href, 'name=3')]"))
             {
-                this.dataGridView1.Invoke(new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow), new object[] { i_Row });
-                return;
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMainRight.asp?pos=comport') and contains(@href, 'name=3')]")).Click();
+                Thread.Sleep(1500);
+                EventLog.AddLog("Delete the com port");
+                driver.SwitchTo().ParentFrame();
+                driver.SwitchTo().Frame("rightFrame");
+                driver.FindElement(By.XPath("//a[2]/font/b")).Click();
+                Thread.Sleep(1000);
+                driver.SwitchTo().Alert().Accept();
+
+                long lStartTime = Environment.TickCount;
+                long lEndTime = 0;
+                do
+                {
+                    if (!wcf.IsTestElementPresent(driver, "XPath", "//a[2]/font/b"))
+                        break;
+                    lEndTime = Environment.TickCount;
+                } while ((lEndTime - lStartTime) <= 30000);
+
+                if (lEndTime - lStartTime > 30000)
+                {
+                    bPartResult = false;
+                    EventLog.AddLog("Cannot delete com port in 30s, test fail");
+                }
+                Thread.Sleep(3000);
+                driver.Navigate().Refresh();
+                Thread.Sleep(5000);
             }
 
-            this.dataGridView1.Rows.Insert(0, i_Row);
-            if (dataGridView1.Rows.Count > Max_Rows_Val)
-            {
-                dataGridView1.Rows.RemoveAt((dataGridView1.Rows.Count - 1));
-            }
-            this.dataGridView1.Update();
+            driver.SwitchTo().ParentFrame();
         }
 
         private void AddComport()
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//a[3]/font/b").Click();
+            driver.SwitchTo().Frame("rightFrame");
+            //driver.FindElement(By.XPath("//a[3]/font/b")).Click();
+            driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/comport/comportPg.asp?pos=node')]")).Click();
             Thread.Sleep(500);
-            api.ByName("infName").SelectVal("TCPIP").Exe();
+            new SelectElement(driver.FindElement(By.Name("infName"))).SelectByText("TCPIP");    // maybe select by value
             Thread.Sleep(500);
-            api.ByName("ComportNbr").Clear();
-            api.ByName("ComportNbr").Enter("3").Submit().Exe();  // comport = 3
+            driver.FindElement(By.Name("ComportNbr")).Clear();
+            driver.FindElement(By.Name("ComportNbr")).SendKeys("3");  // comport = 3
+            driver.FindElement(By.Name("submit")).Click();
         }
 
         private void AddDevice(string sWebAccessIP)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp?pos=comport') and contains(@href, 'name=3')]").Click(); // port = 3
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            api.ByXpath("//a[3]/font/b").Click();
-            api.ByName("DeviceName").Clear();
-            api.ByName("DeviceName").Enter("ModSim").Exe();
-            api.ByName("DeviceTypeSel").SelectTxt("Modicon").Exe();
-            api.ByName("P_IPAddr").Clear();
-            api.ByName("P_IPAddr").Enter(sWebAccessIP).Exe();
-            api.ByName("P_PortNbr").Clear();
-            api.ByName("P_PortNbr").Enter("502").Exe();
-            api.ByName("P_DevAddr").Clear();
-            api.ByName("P_DevAddr").Enter("1").Submit().Exe();
+            driver.SwitchTo().ParentFrame();
+            driver.SwitchTo().Frame("leftFrame");
 
-            api.Refresh();
+            driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMainRight.asp?pos=comport') and contains(@href, 'name=3')]")).Click(); // port = 3
+            driver.SwitchTo().ParentFrame();
+            driver.SwitchTo().Frame("rightFrame");
+            driver.FindElement(By.XPath("//a[3]/font/b")).Click();
+            //driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/device/devPg.asp')] and contains(@href, 'action=add')]")).Click();
+            driver.FindElement(By.Name("DeviceName")).Clear();
+            driver.FindElement(By.Name("DeviceName")).SendKeys("ModSim");
+            new SelectElement(driver.FindElement(By.Name("DeviceTypeSel"))).SelectByText("Modicon");
+            driver.FindElement(By.Name("P_IPAddr")).Clear();
+            driver.FindElement(By.Name("P_IPAddr")).SendKeys(sWebAccessIP);
+            driver.FindElement(By.Name("P_PortNbr")).Clear();
+            driver.FindElement(By.Name("P_PortNbr")).SendKeys("502");
+            driver.FindElement(By.Name("P_DevAddr")).Clear();
+            driver.FindElement(By.Name("P_DevAddr")).SendKeys("1");
+            driver.FindElement(By.Name("submit")).Click();
+
+            driver.Navigate().Refresh();
         }
 
         private void CreateModbusTag()
@@ -224,38 +295,33 @@ namespace CreateModbusDeviceTags
 
             if (lErrorCode == 0)
             {
-                api.SwitchToCurWindow(0);
-                api.SwitchToFrame("leftFrame", 0);
-                api.ByXpath("//a[contains(@href, '/broadWeb/device/devPg.asp') and contains(@href, 'dname=ModSim')]").Click();
+                driver.SwitchTo().ParentFrame();
+                driver.SwitchTo().Frame("leftFrame");
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/device/devPg.asp') and contains(@href, 'dname=ModSim')]")).Click();
             }
 
             if (lErrorCode == 0)
             {
-                api.SwitchToCurWindow(0);
-                api.SwitchToFrame("rightFrame", 0);
-                api.ByXpath("//a[2]/font/b").ClickAndWait(1000);
+                driver.SwitchTo().ParentFrame();
+                driver.SwitchTo().Frame("rightFrame");
+                driver.FindElement(By.XPath("//a[2]/font/b")).Click();
             }
-            PrintStep("Create Modbus Tag");
-
+            
             // Create AI tag
             EventLog.AddLog("Create AI tags start...");
             CreateModbusAITags();
-            PrintStep("Create AI tags");
 
             // Create AO tag
             EventLog.AddLog("Create AO tags start...");
             CreateModbusAOTags();
-            PrintStep("Create AO tags");
 
             // Create DI tag
             EventLog.AddLog("Create DI tags start...");
             CreateModbusDITags();
-            PrintStep("Create DI tags");
 
             // Create DO tag
             EventLog.AddLog("Create DO tags start...");
             CreateModbusDOTags();
-            PrintStep("Create DO tags");
 
             /*
             // Create TEXT tag
@@ -272,20 +338,21 @@ namespace CreateModbusDeviceTags
 
         private void CreateModbusAITags()
         {
-            api.ByName("ParaName").SelectVal("AI").Exe();
+            new SelectElement(driver.FindElement(By.Name("ParaName"))).SelectByText("AI");
             Thread.Sleep(1500);
             SetupBasicAnalogTagConfig();
             for (int i = 1; i <= 5; i++)
             {
                 try
                 {
-                    api.ByName("TagName").Clear();
-                    api.ByName("TagName").Enter("AT_AI0" + i.ToString("000")).Submit().Exe();
+                    driver.FindElement(By.Name("TagName")).Clear();
+                    driver.FindElement(By.Name("TagName")).SendKeys("AT_AI0" + i.ToString("000"));
+                    driver.FindElement(By.Name("Submit")).Click();
                 }
                 catch (Exception ex)
                 {
                     EventLog.AddLog("CreateModbusAITags error: " + ex.ToString());
-                    i--;
+                    bPartResult = false;
                 }
 
             }
@@ -293,202 +360,219 @@ namespace CreateModbusDeviceTags
 
         private void CreateModbusAOTags()
         {
-            api.ByName("ParaName").SelectVal("AO").Exe();
+            new SelectElement(driver.FindElement(By.Name("ParaName"))).SelectByText("AO");
             Thread.Sleep(1500);
             SetupBasicAnalogTagConfig();
             for (int i = 1; i <= 5; i++)
             {
                 try
                 {
-                    api.ByName("TagName").Clear();
-                    api.ByName("TagName").Enter("AT_AO0" + i.ToString("000")).Submit().Exe();
+                    driver.FindElement(By.Name("TagName")).Clear();
+                    driver.FindElement(By.Name("TagName")).SendKeys("AT_AO0" + i.ToString("000"));
+                    driver.FindElement(By.Name("Submit")).Click();
                 }
                 catch (Exception ex)
                 {
                     EventLog.AddLog("CreateModbusAOTags error: " + ex.ToString());
-                    i--;
+                    bPartResult = false;
                 }
             }
         }
 
         private void CreateModbusDITags()
         {
-            api.ByName("ParaName").SelectVal("DI").Exe();
+            new SelectElement(driver.FindElement(By.Name("ParaName"))).SelectByText("DI");
             Thread.Sleep(1500);
             SetupBasicDigitalTagConfig();
             for (int i = 1; i <= 5; i++)
             {
                 try
                 {
-                    api.ByName("TagName").Clear();
-                    api.ByName("TagName").Enter("AT_DI0" + i.ToString("000")).Submit().Exe();
+                    driver.FindElement(By.Name("TagName")).Clear();
+                    driver.FindElement(By.Name("TagName")).SendKeys("AT_DI0" + i.ToString("000"));
+                    driver.FindElement(By.Name("Submit")).Click();
                 }
                 catch (Exception ex)
                 {
                     EventLog.AddLog("CreateModbusDITags error: " + ex.ToString());
-                    i--;
+                    bPartResult = false;
                 }
             }
         }
 
         private void CreateModbusDOTags()
         {
-            api.ByName("ParaName").SelectVal("DO").Exe();
+            new SelectElement(driver.FindElement(By.Name("ParaName"))).SelectByText("DO");
             Thread.Sleep(1500);
             SetupBasicDigitalTagConfig();
             for (int i = 1; i <= 5; i++)
             {
                 try
                 {
-                    api.ByName("TagName").Clear();
-                    api.ByName("TagName").Enter("AT_DO0" + i.ToString("000")).Submit().Exe();
+                    driver.FindElement(By.Name("TagName")).Clear();
+                    driver.FindElement(By.Name("TagName")).SendKeys("AT_DO0" + i.ToString("000"));
+                    driver.FindElement(By.Name("Submit")).Click();
                 }
                 catch (Exception ex)
                 {
                     EventLog.AddLog("CreateModbusDOTags error: " + ex.ToString());
-                    i--;
+                    bPartResult = false;
                 }
             }
         }
 
         private void SetupBasicAnalogTagConfig()
         {
-            api.ByName("Datalog").Click();
-            api.ByName("DataLogDB").Clear();
-            api.ByName("DataLogDB").Enter("0").Exe();
-            api.ByName("ChangeLog").Click();
-            api.ByName("SpanHigh").Clear();
-            api.ByName("SpanHigh").Enter("1000").Exe();
-            api.ByName("OutputHigh").Clear();
-            api.ByName("OutputHigh").Enter("1000").Exe();
-            api.ByName("ReservedInt1").SelectTxt("2").Exe();
-            api.ByXpath("(//input[@name='LogTmRadio'])[2]").Click();
+            driver.FindElement(By.Name("Datalog")).Click();
+            driver.FindElement(By.Name("DataLogDB")).Clear();
+            driver.FindElement(By.Name("DataLogDB")).SendKeys("0");
+            driver.FindElement(By.Name("ChangeLog")).Click();
+            driver.FindElement(By.Name("SpanHigh")).Clear();
+            driver.FindElement(By.Name("SpanHigh")).SendKeys("1000");
+            driver.FindElement(By.Name("OutputHigh")).Clear();
+            driver.FindElement(By.Name("OutputHigh")).SendKeys("1000");
+            new SelectElement(driver.FindElement(By.Name("ReservedInt1"))).SelectByText("2");
+            driver.FindElement(By.XPath("(//input[@name='LogTmRadio'])[2]")).Click();
         }
 
         private void SetupBasicDigitalTagConfig()
         {
-            api.ByName("Datalog").Click();
-            api.ByName("DataLogDB").Clear();
-            api.ByName("DataLogDB").Enter("0").Exe();
-            api.ByName("ChangeLog").Click();
-            api.ByName("ReservedInt1").Click();
+            driver.FindElement(By.Name("Datalog")).Click();
+            driver.FindElement(By.Name("DataLogDB")).Clear();
+            driver.FindElement(By.Name("DataLogDB")).SendKeys("0");
+            driver.FindElement(By.Name("ChangeLog")).Click();
+            driver.FindElement(By.Name("ReservedInt1")).Click();
         }
 
-        private void ReturnSCADAPage()
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
-        }
-
-        private void Start_Click(object sender, EventArgs e)
-        {
-            long lErrorCode = 0;
-            EventLog.AddLog("===Create Modbus Device Tags start===");
-            CheckifIniFileChange();
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Create Modbus Device Tags end===");
-        }
-
-        private void PrintStep(string sTestItem)
-        {
-            DataGridViewRow dgvRow;
-            DataGridViewCell dgvCell;
-
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
-
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-            Application.DoEvents();
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
         }
 
         private void InitialRequiredInfo(string sFilePath)
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
-            /*
-            tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", "TestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
-            */
-            tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
-            ProjectName.Text = sDefaultProjectName1.ToString();
-            WebAccessIP.Text = sDefaultIP1.ToString();
+
+            tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sFilePath);
+
+            comboBox_Language.Text = sDefaultUserLanguage.ToString();
+            textbox_UserEmail.Text = sDefaultUserEmail.ToString();
+            comboBox_Browser.Text = sBrowser.ToString();
+            textBox_Primary_project.Text = sDefaultProjectName1.ToString();
+            textBox_Secondary_project.Text = sDefaultProjectName2.ToString();
+            textBox_Primary_IP.Text = sDefaultIP1.ToString();
+            textBox_Secondary_IP.Text = sDefaultIP2.ToString();
+            if (Int32.TryParse(sDefaultUserRetryNum.ToString(), out iRetryNum))     // 在這邊取得retry number
+            {
+                EventLog.AddLog("Converted retry number '{0}' to {1}.", sDefaultUserRetryNum.ToString(), iRetryNum);
+            }
+            else
+            {
+                EventLog.AddLog("Attempted conversion of '{0}' failed.",
+                                sDefaultUserRetryNum.ToString() == null ? "<null>" : sDefaultUserRetryNum.ToString());
+                EventLog.AddLog("Set the number of retry as 3");
+                iRetryNum = 3;  // 轉換失敗 直接指定預設值為3
+            }
         }
 
         private void CheckifIniFileChange()
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
+
             if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
             {
                 EventLog.AddLog(".ini file exist, check if .ini file need to update");
-                tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sIniFilePath);
 
-                if (ProjectName.Text != sDefaultProjectName1.ToString())
+                if (comboBox_Language.Text != sDefaultUserLanguage.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                    EventLog.AddLog("New ProjectName update to .ini file!!");
-                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
-                    EventLog.AddLog("New ini:" + ProjectName.Text);
+                    tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                    EventLog.AddLog("New Language update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserLanguage.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Language.Text);
                 }
-                if (WebAccessIP.Text != sDefaultIP1.ToString())
+                if (textbox_UserEmail.Text != sDefaultUserEmail.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                    EventLog.AddLog("New WebAccessIP update to .ini file!!");
+                    tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                    EventLog.AddLog("New UserEmail update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserEmail.ToString());
+                    EventLog.AddLog("New ini:" + textbox_UserEmail.Text);
+                }
+                if (comboBox_Browser.Text != sBrowser.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                    EventLog.AddLog("New Browser update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sBrowser.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Browser.Text);
+                }
+                if (textBox_Primary_project.Text != sDefaultProjectName1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Primary_project.Text);
+                }
+                if (textBox_Secondary_project.Text != sDefaultProjectName2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_project.Text);
+                }
+                if (textBox_Primary_IP.Text != sDefaultIP1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary IP update to .ini file!!");
                     EventLog.AddLog("Original ini:" + sDefaultIP1.ToString());
-                    EventLog.AddLog("New ini:" + WebAccessIP.Text);
+                    EventLog.AddLog("New ini:" + textBox_Primary_IP.Text);
+                }
+                if (textBox_Secondary_IP.Text != sDefaultIP2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_IP.Text);
                 }
             }
             else
-            {
+            {   // 若ini檔不存在 則建立新的
                 EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "RetryNum", "3", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
             }
         }
 

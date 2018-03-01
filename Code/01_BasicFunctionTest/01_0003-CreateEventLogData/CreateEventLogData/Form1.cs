@@ -7,25 +7,33 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
-using AdvWebUIAPI;
+using System.Diagnostics;
 using ThirdPartyToolControl;
 using iATester;
 using CommonFunction;
+using OpenQA.Selenium;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;       // for SelectElement use
+using System.Collections.ObjectModel;
 
 namespace CreateEventLogData
 {
     public partial class Form1 : Form, iATester.iCom
     {
-        IAdvSeleniumAPI api;
         cThirdPartyToolControl tpc = new cThirdPartyToolControl();
+        cWACommonFunction wcf = new cWACommonFunction();
         cEventLog EventLog = new cEventLog();
+        Stopwatch sw = new Stopwatch();
 
-        private delegate void DataGridViewCtrlAddDataRow(DataGridViewRow i_Row);
-        private DataGridViewCtrlAddDataRow m_DataGridViewCtrlAddDataRow;
-        internal const int Max_Rows_Val = 65535;
+        private IWebDriver driver;
+        int iRetryNum;
+        bool bFinalResult = true;
+        bool bPartResult = true;
         string baseUrl;
-        string sIniFilePath = @"C:\WebAccessAutoTestSetting.ini";
-        string slanguage;
+        string sTestItemName = "CreateEventLogData";
+        string sIniFilePath = @"C:\WebAccessAutoTestSettingInfo.ini";
+        string sTestLogFolder = @"C:\WALogData";
 
         //Send Log data to iAtester
         public event EventHandler<LogEventArgs> eLog = delegate { };
@@ -38,37 +46,53 @@ namespace CreateEventLogData
         {
             //Add test code
             long lErrorCode = 0;
-            EventLog.AddLog("===Create Event log data start (by iATester)===");
-            if (System.IO.File.Exists(sIniFilePath))    // 再load一次
+            EventLog.AddLog(string.Format("***** {0} test start (by iATester) *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            //Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            for (int i = 0; i < iRetryNum; i++)
             {
-                EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
-                InitialRequiredInfo(sIniFilePath);
+                EventLog.AddLog(string.Format("===Retry Number : {0} / {1} ===", i + 1, iRetryNum));
+                lErrorCode = Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+                if (lErrorCode == 0)
+                {
+                    eResult(this, new ResultEventArgs(iResult.Pass));
+                    break;
+                }
+                else
+                {
+                    if (i == iRetryNum - 1)
+                        eResult(this, new ResultEventArgs(iResult.Fail));
+                }
             }
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Create Event log data end (by iATester)===");
-
-            if (lErrorCode == 0)
-                eResult(this, new ResultEventArgs(iResult.Pass));
-            else
-                eResult(this, new ResultEventArgs(iResult.Fail));
 
             eStatus(this, new StatusEventArgs(iStatus.Completion));
+
+            EventLog.AddLog(string.Format("***** {0} test end (by iATester) *****", sTestItemName));
+        }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            EventLog.AddLog(string.Format("***** {0} test start *****", sTestItemName));
+            CheckifIniFileChange();
+            EventLog.AddLog("Primary Project= " + textBox_Primary_project.Text);
+            EventLog.AddLog("Primary IP= " + textBox_Primary_IP.Text);
+            EventLog.AddLog("Secondary Project= " + textBox_Secondary_project.Text);
+            EventLog.AddLog("Secondary IP= " + textBox_Secondary_IP.Text);
+            Form1_Load(textBox_Primary_project.Text, textBox_Primary_IP.Text, textBox_Secondary_project.Text, textBox_Secondary_IP.Text, sTestLogFolder, comboBox_Browser.Text, textbox_UserEmail.Text, comboBox_Language.Text);
+            EventLog.AddLog(string.Format("***** {0} test end *****", sTestItemName));
         }
 
         public Form1()
         {
             InitializeComponent();
-            try
-            {
-                m_DataGridViewCtrlAddDataRow = new DataGridViewCtrlAddDataRow(DataGridViewCtrlAddNewRow);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            Browser.SelectedIndex = 0;
+
+            comboBox_Browser.SelectedIndex = 0;
+            comboBox_Language.SelectedIndex = 0;
+            Text = string.Format("Advantech WebAccess Auto Test ( {0} )", sTestItemName);
             if (System.IO.File.Exists(sIniFilePath))
             {
                 EventLog.AddLog(sIniFilePath + " file exist, load initial setting");
@@ -76,66 +100,95 @@ namespace CreateEventLogData
             }
         }
 
-        long Form1_Load(string sProjectName, string sWebAccessIP, string sTestLogFolder, string sBrowser)
+        long Form1_Load(string sPrimaryProject, string sPrimaryIP, string sSecondaryProject, string sSecondaryIP, string sTestLogFolder, string sBrowser, string sUserEmail, string sLanguage)
         {
-            baseUrl = "http://" + sWebAccessIP;
-
-            if (sBrowser == "Internet Explorer")
+            bPartResult = true;
+            baseUrl = "http://" + sPrimaryIP;
+            if (bPartResult == true)
             {
-                EventLog.AddLog("Browser= Internet Explorer");
-                api = new AdvSeleniumAPI("IE", "");
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("Open browser for selenium driver use");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    if (sBrowser == "Internet Explorer")
+                    {
+                        EventLog.AddLog("Browser= Internet Explorer");
+                        InternetExplorerOptions options = new InternetExplorerOptions();
+                        options.IgnoreZoomLevel = true;
+                        driver = new InternetExplorerDriver(options);
+                        driver.Manage().Window.Maximize();
+                    }
+                    else
+                    {
+                        EventLog.AddLog("Not support temporary");
+                        bPartResult = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error opening browser: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Open browser", "Open browser for selenium driver use", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
             }
-            else if (sBrowser == "Mozilla FireFox")
+
+            //Login test
+            if (bPartResult == true)
             {
-                EventLog.AddLog("Browser= Mozilla FireFox");
-                api = new AdvSeleniumAPI("FireFox", "");
-                System.Threading.Thread.Sleep(1000);
+                EventLog.AddLog("Login WebAccess homepage");
+                sw.Reset(); sw.Start();
+                try
+                {
+                    driver.Navigate().GoToUrl(baseUrl + "/broadWeb/bwRoot.asp?username=admin");
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwconfig.asp?username=admin')]")).Click();
+                    driver.FindElement(By.Id("userField")).Submit();
+                    Thread.Sleep(3000);
+                    driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/bwMain.asp?pos=project') and contains(@href, 'ProjName=" + sPrimaryProject + "')]")).Click();
+                }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred logging on: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Login", "Login project manager page", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
             }
-
-            api.LinkWebUI(baseUrl + "/broadWeb/bwconfig.asp?username=admin");
-
-            api.ById("userField").Enter("").Submit().Exe();
-            PrintStep("Login WebAccess");
-
-            // Configure project by project name
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMain.asp') and contains(@href, 'ProjName=" + sProjectName + "')]").Click();
-            PrintStep("Configure project");
 
             //Create Data Log Trend
-            EventLog.AddLog("Create Event Log Data...");
-            //ReturnSCADAPage();
-            CreateEventLogData(sProjectName);
-            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveloglist.asp')]").Click();
-            CreateEventLogData2(sProjectName);  // 記錄1,3,5,7,9 中間有空隔不連續 ( AE feedback)
-            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveloglist.asp')]").Click();
-            CreateEventLogData3(sProjectName);  // 只記錄1個測點 (AE feedback)
-            //PrintStep("Create Event Log Data");
-            EventLog.AddLog("Create Event Log Data Done!");
-
-            api.Quit();
-            PrintStep("Quit browser");
-
-            bool bSeleniumResult = true;
-            int iTotalSeleniumAction = dataGridView1.Rows.Count;
-            for (int i = 0; i < iTotalSeleniumAction - 1; i++)
+            if (bPartResult == true)
             {
-                DataGridViewRow row = dataGridView1.Rows[i];
-                string sSeleniumResult = row.Cells[2].Value.ToString();
-                if (sSeleniumResult != "pass")
+                
+                sw.Reset(); sw.Start();
+                try
                 {
-                    bSeleniumResult = false;
-                    EventLog.AddLog("Test Fail !!");
-                    EventLog.AddLog("Fail TestItem = " + row.Cells[0].Value.ToString());
-                    EventLog.AddLog("BrowserAction = " + row.Cells[1].Value.ToString());
-                    EventLog.AddLog("Result = " + row.Cells[2].Value.ToString());
-                    EventLog.AddLog("ErrorCode = " + row.Cells[3].Value.ToString());
-                    EventLog.AddLog("ExeTime(ms) = " + row.Cells[4].Value.ToString());
-                    break;
+                    CheckData();
+                    
+                    if (bPartResult == true)
+                        CreateEventLogData(sPrimaryProject, sLanguage);
+                    if (bPartResult == true)
+                        CreateEventLogData2(sPrimaryProject, sLanguage);  // 記錄1,3,5,7,9 中間有空隔不連續 ( AE feedback)
+                    if (bPartResult == true)
+                        CreateEventLogData3(sPrimaryProject, sLanguage);  // 只記錄1個測點 (AE feedback)
+                    
                 }
+                catch (Exception ex)
+                {
+                    EventLog.AddLog(@"Error occurred create EventLogData: " + ex.ToString());
+                    bPartResult = false;
+                }
+                sw.Stop();
+                PrintStep("Create", "Create EventLogData", bPartResult, "None", sw.Elapsed.TotalMilliseconds.ToString());
+
+                Thread.Sleep(1000);
             }
 
-            if (bSeleniumResult)
+            driver.Dispose();
+
+            #region Result judgement
+            if (bFinalResult && bPartResult)
             {
                 Result.Text = "PASS!!";
                 Result.ForeColor = Color.Green;
@@ -149,10 +202,10 @@ namespace CreateEventLogData
                 EventLog.AddLog("Test Result: FAIL!!");
                 return -1;
             }
-
-            //return 0;
+            #endregion
         }
 
+        /*
         private void DataGridViewCtrlAddNewRow(DataGridViewRow i_Row)
         {
             if (this.dataGridView1.InvokeRequired)
@@ -168,363 +221,425 @@ namespace CreateEventLogData
             }
             this.dataGridView1.Update();
         }
+        */
 
-        private void CreateEventLogData(string sProjectName)
+        private void CreateEventLogData(string sProjectName, string slanguage)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-            
-            api.ByXpath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]").Click();
-            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]").Click();
-            
-            switch (slanguage)
+            try
             {
-                case "ENG":
-                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("EventTypeSel").SelectTxt("事件測點 == 參考值").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("EventTypeSel").SelectTxt("事件点 == 参考值").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("EventTypeSel").SelectTxt("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("EventTypeSel").SelectTxt("이벤트 태그 == Reference Value").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("EventTypeSel").SelectTxt("Repère d'Evénement == Valeur de Référence").Exe();
-                    break;
+                EventLog.AddLog("Create EventLogData");
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]")).Click();
 
-                default:
-                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
-                    break;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Event Tag == Reference Value");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("事件測點 == 參考值");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("事件点 == 参考值");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("이벤트 태그 == Reference Value");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Repère d'Evénement == Valeur de Référence");
+                        break;
+
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Event Tag == Reference Value");
+                        break;
+                }
+
+                driver.FindElement(By.Name("EventLogName")).Clear();
+                driver.FindElement(By.Name("EventLogName")).SendKeys("EventLog_" + sProjectName);
+                driver.FindElement(By.Name("EventTag")).Clear();
+                driver.FindElement(By.Name("EventTag")).SendKeys("ConAna_0241");
+                driver.FindElement(By.Name("EventRefVal")).Clear();
+                driver.FindElement(By.Name("EventRefVal")).SendKeys("51");
+                EventLog.AddLog("Set Event Log trigger event");
+
+                driver.FindElement(By.Name("EventLogTag")).Click();
+
+                new SelectElement(driver.FindElement(By.Name("ChSel"))).SelectByText("240");
+                Thread.Sleep(2000);
+                driver.SwitchTo().Alert().Accept();
+                Thread.Sleep(1000);
+
+                for (int i = 1; i <= 9; i++)
+                {
+                    try
+                    {
+                        driver.FindElement(By.Name(string.Format("TagName{0}", i))).SendKeys(string.Format("ConAna_000{0}", i));
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLog.AddLog("CreateEventLogData 1~9 error: " + ex.ToString());
+                    }
+                }
+                EventLog.AddLog("Create 1~9  tags to log");
+
+                for (int i = 10; i <= 99; i++)
+                {
+                    try
+                    {
+                        driver.FindElement(By.Name(string.Format("TagName{0}", i))).SendKeys(string.Format("ConAna_00{0}", i));
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLog.AddLog("CreateEventLogData 10~99 error: " + ex.ToString());
+                    }
+                }
+                EventLog.AddLog("Create 10~99  tags to log");
+
+                for (int i = 100; i <= 240; i++)
+                {
+                    try
+                    {
+                        if (i == 240)
+                        {
+                            driver.FindElement(By.Name(string.Format("TagName{0}", i))).SendKeys(string.Format("ConAna_0{0}", i));
+                            driver.FindElement(By.Name("submit")).Click();
+                        }
+                        else
+                        {
+                            driver.FindElement(By.Name(string.Format("TagName{0}", i))).SendKeys(string.Format("ConAna_0{0}", i));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLog.AddLog("CreateEventLogData 100~240 error: " + ex.ToString());
+                    }
+                }
+                EventLog.AddLog("Create 100~240  tags to log");
+
+                Thread.Sleep(1000);
+
+                driver.FindElement(By.Name("EventRefVal")).SendKeys("");
+                driver.FindElement(By.Name("submit")).Click();
+
+                Thread.Sleep(1000);
             }
-
-            api.ByName("EventLogName").Clear();
-            api.ByName("EventLogName").Enter("EventLog_" + sProjectName).Exe();
-            api.ByName("EventTag").Clear();
-            api.ByName("EventTag").Enter("ConAna_0241").Exe();
-            api.ByName("EventRefVal").Clear();
-            api.ByName("EventRefVal").Enter("51").Exe();
-            PrintStep("Set Event Log trigger event");
-
-            api.ByName("EventLogTag").Click();
-
-            api.ByName("ChSel").SelectVal("240").Exe();
-            Thread.Sleep(2000);
-            api.Accept();
-            Thread.Sleep(1000);
-
-            for (int i = 1; i <=9 ; i++)
+            catch (Exception ex)
             {
-                try
-                {
-                    api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_000{0}", i)).Exe();
-                }
-                catch (Exception ex)
-                {
-                    EventLog.AddLog("CreateEventLogData 1~9 error: " + ex.ToString());
-                    i--;
-                }
+                EventLog.AddLog("CreateEventLogData error: " + ex.ToString());
+                bPartResult = false;
             }
-            PrintStep("Create 1~9  tags to log");
-            EventLog.AddLog("Create 1~9  tags to log");
-
-            for (int i = 10; i <= 99; i++)
-            {
-                try
-                {
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_00{0}", i)).Exe();
-                }
-                catch (Exception ex)
-                {
-                    EventLog.AddLog("CreateEventLogData 10~99 error: " + ex.ToString());
-                    i--;
-                }
-            }
-            PrintStep("Create 10~99  tags to log");
-            EventLog.AddLog("Create 10~99  tags to log");
-
-            for (int i = 100; i <= 240; i++)
-            {
-                try
-                {
-                    if (i == 240)
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_0{0}", i)).Submit().Exe();
-                    else
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_0{0}", i)).Exe();
-                }
-                catch (Exception ex)
-                {
-                    EventLog.AddLog("CreateEventLogData 100~240 error: " + ex.ToString());
-                    i--;
-                }
-            }
-            PrintStep("Create 100~240 tags to log");
-            EventLog.AddLog("Create 100~240  tags to log");
-
-            Thread.Sleep(1000);
-            
-            api.ByName("EventRefVal").Enter("").Submit().Exe();
-            Thread.Sleep(1000);
         }
 
-        private void CreateEventLogData2(string sProjectName)
+        private void CreateEventLogData2(string sProjectName, string slanguage)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
-
-            //api.ByXpath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]").Click();
-            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]").Click();
-
-            switch (slanguage)
+            try
             {
-                case "ENG":
-                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("EventTypeSel").SelectTxt("事件測點 == 參考值").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("EventTypeSel").SelectTxt("事件点 == 参考值").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("EventTypeSel").SelectTxt("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("EventTypeSel").SelectTxt("이벤트 태그 == Reference Value").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("EventTypeSel").SelectTxt("Repère d'Evénement == Valeur de Référence").Exe();
-                    break;
+                EventLog.AddLog("Create EventLogData2");
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]")).Click();
 
-                default:
-                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
-                    break;
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Event Tag == Reference Value");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("事件測點 == 參考值");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("事件点 == 参考值");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("이벤트 태그 == Reference Value");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Repère d'Evénement == Valeur de Référence");
+                        break;
+
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Event Tag == Reference Value");
+                        break;
+
+                }
+
+                driver.FindElement(By.Name("EventLogName")).Clear();
+                driver.FindElement(By.Name("EventLogName")).SendKeys("EventLog13579_" + sProjectName);
+                driver.FindElement(By.Name("EventTag")).Clear();
+                driver.FindElement(By.Name("EventTag")).SendKeys("ConAna_0241");
+                driver.FindElement(By.Name("EventRefVal")).Clear();
+                driver.FindElement(By.Name("EventRefVal")).SendKeys("51");
+                EventLog.AddLog("Set Event Log trigger event");
+
+                driver.FindElement(By.Name("EventLogTag")).Click();
+
+                Thread.Sleep(1000);
+
+                for (int i = 1; i <= 9; i = i + 2)
+                {
+                    try
+                    {
+                        if (i == 9)
+                        {
+                            driver.FindElement(By.Name(string.Format("TagName{0}", i))).SendKeys(string.Format("ConAna_000{0}", i));
+                            driver.FindElement(By.Name("submit")).Click();
+                        }
+                        else
+                            driver.FindElement(By.Name(string.Format("TagName{0}", i))).SendKeys(string.Format("ConAna_000{0}", i));
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLog.AddLog("CreateEventLogData 1,3,5,7,9 error: " + ex.ToString());
+                    }
+                }
+                EventLog.AddLog("Create 1,3,5,7,9  tags to log");
+
+                Thread.Sleep(1000);
+
+                driver.FindElement(By.Name("EventRefVal")).SendKeys("");
+                driver.FindElement(By.Name("submit")).Click();
+
+                Thread.Sleep(1000);
             }
-
-            api.ByName("EventLogName").Clear();
-            api.ByName("EventLogName").Enter("EventLog13579_" + sProjectName).Exe();
-            api.ByName("EventTag").Clear();
-            api.ByName("EventTag").Enter("ConAna_0241").Exe();
-            api.ByName("EventRefVal").Clear();
-            api.ByName("EventRefVal").Enter("51").Exe();
-            PrintStep("Set Event Log trigger event");
-
-            api.ByName("EventLogTag").Click();
-            
-            Thread.Sleep(1000);
-
-            for (int i = 1; i <= 9; i=i+2)
+            catch (Exception ex)
             {
+                EventLog.AddLog("CreateEventLogData2 error: " + ex.ToString());
+                bPartResult = false;
+            }
+        }
+
+        private void CreateEventLogData3(string sProjectName, string slanguage)
+        {
+            try
+            {
+                EventLog.AddLog("Create EventLogData3");
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]")).Click();
+
+                switch (slanguage)
+                {
+                    case "ENG":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Event Tag == Reference Value");
+                        break;
+                    case "CHT":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("事件測點 == 參考值");
+                        break;
+                    case "CHS":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("事件点 == 参考值");
+                        break;
+                    case "JPN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値");
+                        break;
+                    case "KRN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("이벤트 태그 == Reference Value");
+                        break;
+                    case "FRN":
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Repère d'Evénement == Valeur de Référence");
+                        break;
+
+                    default:
+                        new SelectElement(driver.FindElement(By.Name("EventTypeSel"))).SelectByText("Event Tag == Reference Value");
+                        break;
+
+                }
+
+                driver.FindElement(By.Name("EventLogName")).Clear();
+                driver.FindElement(By.Name("EventLogName")).SendKeys("EventLog1_" + sProjectName);
+                driver.FindElement(By.Name("EventTag")).Clear();
+                driver.FindElement(By.Name("EventTag")).SendKeys("ConAna_0241");
+                driver.FindElement(By.Name("EventRefVal")).Clear();
+                driver.FindElement(By.Name("EventRefVal")).SendKeys("51");
+                EventLog.AddLog("Set Event Log trigger event");
+
+                driver.FindElement(By.Name("EventLogTag")).Click();
+
+                Thread.Sleep(1000);
+
                 try
                 {
-                    if(i==9)
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_000{0}", i)).Submit().Exe();
-                    else
-                        api.ByName(string.Format("TagName{0}", i)).Enter(string.Format("ConAna_000{0}", i)).Exe();
+                    driver.FindElement(By.Name(string.Format("TagName1"))).SendKeys(string.Format("ConAna_0001"));
+                    driver.FindElement(By.Name("submit")).Click();
                 }
                 catch (Exception ex)
                 {
                     EventLog.AddLog("CreateEventLogData 1,3,5,7,9 error: " + ex.ToString());
-                    i--;
                 }
-            }
-            PrintStep("Create 1,3,5,7,9  tags to log");
-            EventLog.AddLog("Create 1,3,5,7,9  tags to log");
 
-            Thread.Sleep(1000);
+                EventLog.AddLog("Create 1 tags to log");
 
-            api.ByName("EventRefVal").Enter("").Submit().Exe();
-            Thread.Sleep(1000);
-        }
+                Thread.Sleep(1000);
 
-        private void CreateEventLogData3(string sProjectName)
-        {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("rightFrame", 0);
+                driver.FindElement(By.Name("EventRefVal")).SendKeys("");
+                driver.FindElement(By.Name("submit")).Click();
 
-            //api.ByXpath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]").Click();
-            api.ByXpath("//a[contains(@href, '/broadWeb/eventLog/eveLogPg.asp') and contains(@href, 'pos=add')]").Click();
-
-            switch (slanguage)
-            {
-                case "ENG":
-                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
-                    break;
-                case "CHT":
-                    api.ByName("EventTypeSel").SelectTxt("事件測點 == 參考值").Exe();
-                    break;
-                case "CHS":
-                    api.ByName("EventTypeSel").SelectTxt("事件点 == 参考值").Exe();
-                    break;
-                case "JPN":
-                    api.ByName("EventTypeSel").SelectTxt("ｲﾍﾞﾝﾄﾀｸﾞ == 参照値").Exe();
-                    break;
-                case "KRN":
-                    api.ByName("EventTypeSel").SelectTxt("이벤트 태그 == Reference Value").Exe();
-                    break;
-                case "FRN":
-                    api.ByName("EventTypeSel").SelectTxt("Repère d'Evénement == Valeur de Référence").Exe();
-                    break;
-
-                default:
-                    api.ByName("EventTypeSel").SelectTxt("Event Tag == Reference Value").Exe();
-                    break;
-            }
-
-            api.ByName("EventLogName").Clear();
-            api.ByName("EventLogName").Enter("EventLog1_" + sProjectName).Exe();
-            api.ByName("EventTag").Clear();
-            api.ByName("EventTag").Enter("ConAna_0241").Exe();
-            api.ByName("EventRefVal").Clear();
-            api.ByName("EventRefVal").Enter("51").Exe();
-            PrintStep("Set Event Log trigger event");
-
-            api.ByName("EventLogTag").Click();
-
-            Thread.Sleep(1000);
-
-            try
-            {
-                    api.ByName(string.Format("TagName1")).Enter(string.Format("ConAna_0001")).Submit().Exe();
+                Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
-                EventLog.AddLog("CreateEventLogData 1,3,5,7,9 error: " + ex.ToString());
+                EventLog.AddLog("CreateEventLogData3 error: " + ex.ToString());
+                bPartResult = false;
             }
-
-            PrintStep("Create 1 tags to log");
-            EventLog.AddLog("Create 1 tags to log");
-
-            Thread.Sleep(1000);
-
-            api.ByName("EventRefVal").Enter("").Submit().Exe();
-            Thread.Sleep(1000);
         }
 
-        private void ReturnSCADAPage()
+        private void PrintStep(string sTestItem, string sDescription, bool bResult, string sErrorCode, string sExTime)
         {
-            api.SwitchToCurWindow(0);
-            api.SwitchToFrame("leftFrame", 0);
-            api.ByXpath("//a[contains(@href, '/broadWeb/bwMainRight.asp') and contains(@href, 'name=TestSCADA')]").Click();
-
-        }
-
-        private void Start_Click(object sender, EventArgs e)
-        {
-            long lErrorCode = 0;
-            EventLog.AddLog("===Create Event log data start===");
-            CheckifIniFileChange();
-            EventLog.AddLog("Project= " + ProjectName.Text);
-            EventLog.AddLog("WebAccess IP address= " + WebAccessIP.Text);
-            lErrorCode = Form1_Load(ProjectName.Text, WebAccessIP.Text, TestLogFolder.Text, Browser.Text);
-            EventLog.AddLog("===Create Event log trend data end===");
-        }
-
-        private void PrintStep(string sTestItem)
-        {
-            DataGridViewRow dgvRow;
-            DataGridViewCell dgvCell;
-
-            var list = api.GetStepResult();
-            foreach (var item in list)
-            {
-                AdvSeleniumAPI.ResultClass _res = (AdvSeleniumAPI.ResultClass)item;
-                //
-                dgvRow = new DataGridViewRow();
-                if (_res.Res == "fail")
-                    dgvRow.DefaultCellStyle.ForeColor = Color.Red;
-                dgvCell = new DataGridViewTextBoxCell(); //Column Time
-                //
-                if (_res == null) continue;
-                //
-                dgvCell.Value = sTestItem;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Decp;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Res;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Err;
-                dgvRow.Cells.Add(dgvCell);
-                //
-                dgvCell = new DataGridViewTextBoxCell();
-                dgvCell.Value = _res.Tdev;
-                dgvRow.Cells.Add(dgvCell);
-
-                m_DataGridViewCtrlAddDataRow(dgvRow);
-            }
-            Application.DoEvents();
+            EventLog.AddLog(string.Format("UI Result: {0},{1},{2},{3},{4}", sTestItem, sDescription, bResult, sErrorCode, sExTime));
         }
 
         private void InitialRequiredInfo(string sFilePath)
         {
             StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
-            /*
-            tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", "TestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", "172.18.3.62", @"C:\WebAccessAutoTestSetting.ini");
-            tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", @"C:\WebAccessAutoTestSetting.ini");
-            */
+
             tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sFilePath);
-            tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sFilePath);
-            slanguage = sDefaultUserLanguage.ToString();    // 在這邊讀取使用語言
-            ProjectName.Text = sDefaultProjectName1.ToString();
-            WebAccessIP.Text = sDefaultIP1.ToString();
+            tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sFilePath);
+            tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sFilePath);
+
+            comboBox_Language.Text = sDefaultUserLanguage.ToString();
+            textbox_UserEmail.Text = sDefaultUserEmail.ToString();
+            comboBox_Browser.Text = sBrowser.ToString();
+            textBox_Primary_project.Text = sDefaultProjectName1.ToString();
+            textBox_Secondary_project.Text = sDefaultProjectName2.ToString();
+            textBox_Primary_IP.Text = sDefaultIP1.ToString();
+            textBox_Secondary_IP.Text = sDefaultIP2.ToString();
+            if (Int32.TryParse(sDefaultUserRetryNum.ToString(), out iRetryNum))     // 在這邊取得retry number
+            {
+                EventLog.AddLog("Converted retry number '{0}' to {1}.", sDefaultUserRetryNum.ToString(), iRetryNum);
+            }
+            else
+            {
+                EventLog.AddLog("Attempted conversion of '{0}' failed.",
+                                sDefaultUserRetryNum.ToString() == null ? "<null>" : sDefaultUserRetryNum.ToString());
+                EventLog.AddLog("Set the number of retry as 3");
+                iRetryNum = 3;  // 轉換失敗 直接指定預設值為3
+            }
         }
 
         private void CheckifIniFileChange()
         {
+            StringBuilder sDefaultUserLanguage = new StringBuilder(255);
+            StringBuilder sDefaultUserEmail = new StringBuilder(255);
+            StringBuilder sDefaultUserRetryNum = new StringBuilder(255);
+            StringBuilder sBrowser = new StringBuilder(255);
             StringBuilder sDefaultProjectName1 = new StringBuilder(255);
             StringBuilder sDefaultProjectName2 = new StringBuilder(255);
             StringBuilder sDefaultIP1 = new StringBuilder(255);
             StringBuilder sDefaultIP2 = new StringBuilder(255);
+
             if (System.IO.File.Exists(sIniFilePath))    // 比對ini檔與ui上的值是否相同
             {
                 EventLog.AddLog(".ini file exist, check if .ini file need to update");
-                tpc.F_GetPrivateProfileString("ProjectName", "Ground PC or Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("ProjectName", "Cloud PC or Backup PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Ground PC or Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
-                tpc.F_GetPrivateProfileString("IP", "Cloud PC or Backup PC", "NA", sDefaultIP2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Language", "NA", sDefaultUserLanguage, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Email", "NA", sDefaultUserEmail, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "RetryNum", "NA", sDefaultUserRetryNum, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("UserInfo", "Browser", "NA", sBrowser, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Primary PC", "NA", sDefaultProjectName1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("ProjectName", "Secondary PC", "NA", sDefaultProjectName2, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Primary PC", "NA", sDefaultIP1, 255, sIniFilePath);
+                tpc.F_GetPrivateProfileString("IP", "Secondary PC", "NA", sDefaultIP2, 255, sIniFilePath);
 
-                if (ProjectName.Text != sDefaultProjectName1.ToString())
+                if (comboBox_Language.Text != sDefaultUserLanguage.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                    EventLog.AddLog("New ProjectName update to .ini file!!");
-                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
-                    EventLog.AddLog("New ini:" + ProjectName.Text);
+                    tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                    EventLog.AddLog("New Language update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserLanguage.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Language.Text);
                 }
-                if (WebAccessIP.Text != sDefaultIP1.ToString())
+                if (textbox_UserEmail.Text != sDefaultUserEmail.ToString())
                 {
-                    tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                    EventLog.AddLog("New WebAccessIP update to .ini file!!");
+                    tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                    EventLog.AddLog("New UserEmail update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultUserEmail.ToString());
+                    EventLog.AddLog("New ini:" + textbox_UserEmail.Text);
+                }
+                if (comboBox_Browser.Text != sBrowser.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                    EventLog.AddLog("New Browser update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sBrowser.ToString());
+                    EventLog.AddLog("New ini:" + comboBox_Browser.Text);
+                }
+                if (textBox_Primary_project.Text != sDefaultProjectName1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName1.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Primary_project.Text);
+                }
+                if (textBox_Secondary_project.Text != sDefaultProjectName2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary ProjectName update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultProjectName2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_project.Text);
+                }
+                if (textBox_Primary_IP.Text != sDefaultIP1.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Primary IP update to .ini file!!");
                     EventLog.AddLog("Original ini:" + sDefaultIP1.ToString());
-                    EventLog.AddLog("New ini:" + WebAccessIP.Text);
+                    EventLog.AddLog("New ini:" + textBox_Primary_IP.Text);
+                }
+                if (textBox_Secondary_IP.Text != sDefaultIP2.ToString())
+                {
+                    tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+                    EventLog.AddLog("New Secondary IP update to .ini file!!");
+                    EventLog.AddLog("Original ini:" + sDefaultIP2.ToString());
+                    EventLog.AddLog("New ini:" + textBox_Secondary_IP.Text);
                 }
             }
             else
-            {
+            {   // 若ini檔不存在 則建立新的
                 EventLog.AddLog(".ini file not exist, create new .ini file. Path: " + sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Ground PC or Primary PC", ProjectName.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("ProjectName", "Cloud PC or Backup PC", "CTestProject", sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Ground PC or Primary PC", WebAccessIP.Text, sIniFilePath);
-                tpc.F_WritePrivateProfileString("IP", "Cloud PC or Backup PC", "172.18.3.65", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Language", comboBox_Language.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Email", textbox_UserEmail.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "RetryNum", "3", sIniFilePath);
+                tpc.F_WritePrivateProfileString("UserInfo", "Browser", comboBox_Browser.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Primary PC", textBox_Primary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("ProjectName", "Secondary PC", textBox_Secondary_project.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Primary PC", textBox_Primary_IP.Text, sIniFilePath);
+                tpc.F_WritePrivateProfileString("IP", "Secondary PC", textBox_Secondary_IP.Text, sIniFilePath);
+            }
+        }
+
+        private void CheckData()
+        {
+            try
+            {
+                EventLog.AddLog("Check Data");
+                driver.SwitchTo().Frame("rightFrame");
+
+                driver.FindElement(By.XPath("//a[contains(@href, '/broadWeb/eventlog/EveLogList.asp')]")).Click();
+                Thread.Sleep(3000);
+
+                List<string> matchingLinks = new List<string>();
+                ReadOnlyCollection<IWebElement> links = driver.FindElements(By.XPath("//a[contains(@href, 'EveLogDel.asp?nid')]"));
+
+                for(int i= 0;i<links.Count;i++)
+                {
+                    driver.FindElement(By.XPath("/html/body/font/table/tbody/tr[3]/td/center/table/tbody/tr[2]/td[4]/font/a")).Click();
+                    Thread.Sleep(1000);
+                    driver.SwitchTo().Alert().Accept();
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.AddLog("CheckData error: " + ex.ToString());
+                bPartResult = false;
             }
         }
     }
